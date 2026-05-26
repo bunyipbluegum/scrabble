@@ -422,10 +422,91 @@ html,body{
 .bdg{ font-size:9px; padding:2px 6px; border-radius:8px; }
 .bdgy{ background:rgba(82,183,136,0.18); color:#52b788; }
 .bdgt{ background:rgba(233,196,106,0.12); color:#e9c46a; }
+
+
+/* ── LOGIN SCREEN ── */
+#login-screen{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:#1e3040;
+  z-index:200;
+  padding:32px 24px;
+}
+#login-screen.hidden{ display:none; }
+.login-logo{
+  font-family:'Arial Black',Arial,sans-serif;
+  font-size:28px;font-weight:900;
+  letter-spacing:4px;color:#fff;
+  margin-bottom:4px;
+}
+.login-sub{
+  font-size:13px;color:rgba(255,255,255,0.35);
+  margin-bottom:40px;letter-spacing:0.5px;
+}
+.login-form{
+  display:flex;flex-direction:column;
+  gap:12px;width:100%;max-width:300px;
+}
+.login-input{
+  padding:13px 16px;
+  border-radius:12px;border:none;
+  font-size:15px;
+  background:rgba(255,255,255,0.1);
+  color:#fff;outline:none;
+  border:1px solid rgba(255,255,255,0.08);
+  font-family:Arial,sans-serif;
+}
+.login-input::placeholder{ color:rgba(255,255,255,0.3); }
+.login-input:focus{ border-color:rgba(40,196,154,0.5); background:rgba(255,255,255,0.13); }
+.login-btn{
+  padding:14px;border-radius:12px;border:none;
+  background:#28c49a;color:#fff;
+  font-family:'Arial Black',Arial,sans-serif;
+  font-size:16px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(40,196,154,0.35);
+  margin-top:4px;
+}
+.login-btn:active{ opacity:0.85; }
+.login-error{
+  font-size:12px;color:#ff7070;
+  min-height:16px;text-align:center;
+  font-family:Arial,sans-serif;
+}
+.login-spinner{
+  width:36px;height:36px;
+  border:3px solid rgba(255,255,255,0.1);
+  border-top-color:#28c49a;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  margin:0 auto;
+  display:none;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+
+
 </style>
 </head>
 <body>
-<div class="app" id="app">
+
+
+<div id="login-screen">
+  <div class="login-logo">SCRABBLE</div>
+  <div class="login-sub">from Phil</div>
+  <form class="login-form" id="login-form">
+    <input class="login-input" id="login-email" type="email" 
+      placeholder="Email" autocomplete="email" required>
+    <input class="login-input" id="login-pass" type="password" 
+      placeholder="Contraseña" autocomplete="current-password" required>
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn" type="submit">Entrar</button>
+    <div class="login-spinner" id="login-spinner"></div>
+  </form>
+</div>
+
+<div class="app" id="app" style="display:none;">
 
   <!-- HEADING -->
   <div class="heading-bar">
@@ -433,7 +514,10 @@ html,body{
       <div class="heading-title">SCRABBLE</div>
       <div class="heading-sub">from Phil</div>
     </div>
-    <div class="heading-menu" onclick="openStats()">☰</div>
+<div style="display:flex;align-items:center;gap:10px;">
+  <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
+  <div class="heading-menu" onclick="openStats()">☰</div>
+</div>
   </div>
 
   <!-- SCORE BAR -->
@@ -498,6 +582,14 @@ html,body{
   <div class="stats-overlay" id="stats-overlay" onclick="closeStats()"></div>
   <div class="stats-panel" id="stats-panel">
     <div class="sh" onclick="closeStats()"></div>
+
+
+
+<button onclick="signOutUser()" style="width:100%;padding:10px;border-radius:10px;
+  border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);
+  font-family:Arial,sans-serif;font-size:13px;font-weight:700;
+  cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
+
 
     <!-- Nav buttons at top of menu -->
     <div style="display:flex;gap:8px;margin-bottom:14px;">
@@ -1236,5 +1328,70 @@ function init(){
 window.addEventListener('resize',()=>{ sizeBoard(); applyTransform(false); });
 init();
 </script>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",
+    authDomain: "scrabble-reilly.firebaseapp.com",
+    projectId: "scrabble-reilly",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app').style.display = 'flex';
+      const name = user.displayName || user.email.split('@')[0];
+      const nameEl = document.getElementById('user-display');
+      if (nameEl) nameEl.textContent = name;
+      if (typeof init === 'function') init();
+    } else {
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-pass').value;
+    const errorEl  = document.getElementById('login-error');
+    const spinner  = document.getElementById('login-spinner');
+    const btn      = document.querySelector('.login-btn');
+    errorEl.textContent = '';
+    spinner.style.display = 'block';
+    btn.style.display = 'none';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      spinner.style.display = 'none';
+      btn.style.display = 'block';
+      switch (err.code) {
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+          errorEl.textContent = 'Email o contraseña incorrectos'; break;
+        case 'auth/too-many-requests':
+          errorEl.textContent = 'Demasiados intentos. Intenta más tarde.'; break;
+        default:
+          errorEl.textContent = 'Error al iniciar sesión. Intenta de nuevo.';
+      }
+    }
+  });
+
+  window.signOutUser = async () => {
+    await signOut(auth);
+    closeStats();
+  };
+
+  window.firebaseAuth = auth;
+</script>
+
 </body>
 </html>
