@@ -1236,5 +1236,52 @@ function init(){
 window.addEventListener('resize',()=>{ sizeBoard(); applyTransform(false); });
 init();
 </script>
+
+  <!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "scrabble-reilly.firebaseapp.com",
+    projectId: "scrabble-reilly",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Watch auth state — show game or login screen
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('player-name').textContent = user.displayName || user.email.split('@')[0];
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+
+  // Login form handler
+  document.getElementById('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const pass  = document.getElementById('login-pass').value;
+    const err   = document.getElementById('login-error');
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch(e) {
+      err.textContent = 'Usuario o contraseña incorrectos';
+    }
+  });
+
+  // Sign out
+  document.getElementById('signout-btn').addEventListener('click', () => signOut(auth));
+
+  // Make auth available globally for later Firestore calls
+  window.firebaseAuth = auth;
+</script>
 </body>
 </html>
