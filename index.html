@@ -302,6 +302,7 @@ html,body{
 // ── CONSTANTS ──
 const PREMIUMS={};
 [['0-0','0-7','0-14','7-0','7-14','14-0','14-7','14-14']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tw'));
+PREMIUMS['7-7'] = 'dw'; // centre star = double word
 [['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1','1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
 [['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13','1-5','13-5','1-9','13-9']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
 [['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6','6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12','11-0','11-7','11-14','12-6','12-8','14-3','14-11']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
@@ -784,8 +785,11 @@ function drawWordOutlines(words,score){
     const rows=tiles.map(t=>t.r),cols=tiles.map(t=>t.c);
     const rMin=Math.min(...rows),rMax=Math.max(...rows);
     const cMin=Math.min(...cols),cMax=Math.max(...cols);
-    const x0=panX+leftOff+cMin*cs-PAD;
-    const y0=panY+offY+rMin*cs-PAD;
+    const pannerEl=document.getElementById('board-panner');
+const pannerRect=pannerEl.getBoundingClientRect();
+const wrapRect=document.getElementById('board-wrap').getBoundingClientRect();
+const x0=pannerRect.left-wrapRect.left+cMin*cs-PAD;
+const y0=pannerRect.top-wrapRect.top+rMin*cs-PAD;
     const w=(cMax-cMin+1)*cs+PAD*2;
     const h=(rMax-rMin+1)*cs+PAD*2;
     const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
