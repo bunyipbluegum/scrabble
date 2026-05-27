@@ -478,10 +478,7 @@ function highlightSnap(key){
   if(cell&&!cell.classList.contains('has-tile')) cell.classList.add('snap-target');
 }
 
-  function buildBoard(){
-  if(window.boardFixed) boardFixed = window.boardFixed;
-  const board=document.getElementById('board');
-  board.innerHTML='';
+function buildBoard(){
   const board=document.getElementById('board');
   board.innerHTML='';
   for(let r=0;r<GRID;r++){
@@ -514,12 +511,10 @@ function highlightSnap(key){
   if(snapKey) highlightSnap(snapKey);
 }
 
-
-  function buildRack(){
+function buildRack(){
   const rackEl=document.getElementById('rack');
   rackEl.innerHTML='';
-  const currentRack = window.rack || rack;
-  currentRack.forEach((l,i)=>{
+  rack.forEach((l,i)=>{
     const isSel=tapSelected&&tapSelected.type==='rack'&&tapSelected.idx===i;
     const tile=document.createElement('div');
     tile.className='rtile'+(l===null?' empty':'')+(isSel?' sel':'');
@@ -1028,15 +1023,17 @@ function subscribeToGame(gameId, uid) {
     document.getElementById('bag-label').textContent = (game.bag?.length || 0) + ' fichas';
 
     // Board
-    window.boardFixed = game.board || {};
-    window.boardNew = {};
-    if (typeof buildBoard === 'function') buildBoard();
+    boardFixed = game.board || {};
+boardNew = {};
+window.boardFixed = boardFixed;
+if (typeof buildBoard === 'function') buildBoard();
 
     // My rack — get from server
     try {
       const stateResult = await window.callGetGameState({ gameId });
-      window.rack = stateResult.data.myRack || [];
-      if (typeof buildRack === 'function') buildRack();
+      rack = stateResult.data.myRack || [];
+window.rack = rack;
+if (typeof buildRack === 'function') buildRack();
     } catch(e) {
       console.error('getGameState error:', e.message);
     }
