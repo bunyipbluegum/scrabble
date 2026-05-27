@@ -478,7 +478,10 @@ function highlightSnap(key){
   if(cell&&!cell.classList.contains('has-tile')) cell.classList.add('snap-target');
 }
 
-function buildBoard(){
+  function buildBoard(){
+  if(window.boardFixed) boardFixed = window.boardFixed;
+  const board=document.getElementById('board');
+  board.innerHTML='';
   const board=document.getElementById('board');
   board.innerHTML='';
   for(let r=0;r<GRID;r++){
@@ -511,10 +514,12 @@ function buildBoard(){
   if(snapKey) highlightSnap(snapKey);
 }
 
-function buildRack(){
+
+  function buildRack(){
   const rackEl=document.getElementById('rack');
   rackEl.innerHTML='';
-  rack.forEach((l,i)=>{
+  const currentRack = window.rack || rack;
+  currentRack.forEach((l,i)=>{
     const isSel=tapSelected&&tapSelected.type==='rack'&&tapSelected.idx===i;
     const tile=document.createElement('div');
     tile.className='rtile'+(l===null?' empty':'')+(isSel?' sel':'');
