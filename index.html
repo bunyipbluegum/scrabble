@@ -879,8 +879,15 @@ function drawWordOutlines(words, score) {
     const rows=tiles.map(t=>t.r),cols=tiles.map(t=>t.c);
     const rMin=Math.min(...rows),rMax=Math.max(...rows);
     const cMin=Math.min(...cols),cMax=Math.max(...cols);
-    const x0=pannerLeft+panX+cMin*cs-PAD;
-    const y0=offY+panY+rMin*cs-PAD;
+   // Get actual panner position relative to board-wrap
+const pannerEl = document.getElementById('board-panner');
+const wrapEl   = document.getElementById('board-wrap');
+const pannerRect = pannerEl.getBoundingClientRect();
+const wrapRect   = wrapEl.getBoundingClientRect();
+const relLeft = pannerRect.left - wrapRect.left;
+const relTop  = pannerRect.top  - wrapRect.top;
+const x0 = relLeft + cMin*cs - PAD;
+const y0 = relTop  + rMin*cs - PAD;
     const w=(cMax-cMin+1)*cs+PAD*2;
     const h=(rMax-rMin+1)*cs+PAD*2;
     const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
