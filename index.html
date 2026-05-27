@@ -493,8 +493,11 @@ html,body{
 
 
 <div id="login-screen">
-  <div class="login-logo">SCRABBLE</div>
-  <div class="login-sub">from Phil</div>
+
+  <div class="heading-title">SCRABBLE</div>
+  <div class="heading-sub" style="cursor:pointer;color:rgba(40,196,154,0.7);" 
+    onclick="startNewGame()">from Phil · New Game</div>
+    
   <form class="login-form" id="login-form">
     <input class="login-input" id="login-email" type="email" 
       placeholder="Email" autocomplete="email" required>
@@ -1286,6 +1289,11 @@ function showToastModal(word,pts){
 
 // ── PLAY WORD ──
 function playWord(){
+    // If connected to real game, use server
+    if(window.currentGameId){ window.submitMoveToServer(); return; }
+
+  // Otherwise use local mockup mode (fallback)
+
   const words=extractWords(),score=calcScore(words);
   myScore+=score;
   document.getElementById('my-score').textContent=myScore;
@@ -1333,8 +1341,13 @@ init();
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, doc, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getFunctions, httpsCallable }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-  const firebaseConfig = {
+    const firebaseConfig = {
     apiKey: "AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",
     authDomain: "scrabble-reilly.firebaseapp.com",
     projectId: "scrabble-reilly",
@@ -1342,6 +1355,8 @@ init();
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
+  const fns = getFunctions(app, 'northamerica-northeast2');
 
   onAuthStateChanged(auth, user => {
     if (user) {
@@ -1391,6 +1406,110 @@ init();
   };
 
   window.firebaseAuth = auth;
+  window.firebaseDb = db;
+  window.firebaseFns = fns;
+
+  // ── CLOUD FUNCTION CALLERS ──
+  window.callCreateGame = httpsCallable(fns, 'createGame');
+  window.callSubmitMove = httpsCallable(fns, 'submitMove');
+  window.callGetGameState = httpsCallable(fns, 'getGameState');
+
+  // ── GAME STATE ──
+  let currentGameId = null;
+  let unsubscribeGame = null;
+
+  // ── START A GAME (for testing — hardcoded opponent) ──
+  window.startNewGame = async () => {
+    try {
+      const user = auth.currentUser;
+      // Determine opponent based on who is logged in
+      const opponentUid = user.uid === '2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2'
+        ? 'QOubuRNcm1ZqONg5qZ5Oc5kdEQn2'  // Phil → Nancy
+        : '2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2'; // Nancy → Phil
+
+      const result = await window.callCreateGame({
+        opponentUid,
+        language: 'es'
+      });
+      currentGameId = result.data.gameId;
+      console.log('Game created:', currentGameId);
+      subscribeToGame(currentGameId);
+    } catch (err) {
+      console.error('createGame error:', err);
+      alert('Error creating game: ' + err.message);
+    }
+  };
+
+  // ── SUBSCRIBE TO GAME STATE ──
+  function subscribeToGame(gameId) {
+    if (unsubscribeGame) unsubscribeGame();
+    const gameRef = doc(db, 'games', gameId);
+    unsubscribeGame = onSnapshot(gameRef, async snap => {
+      if (!snap.exists()) return;
+      const game = snap.data();
+      const uid = auth.currentUser.uid;
+
+      // Update scores
+      document.getElementById('my-score').textContent =
+        game.scores[uid] || 0;
+      const opponentUid = game.players.find(p => p !== uid);
+      document.getElementById('their-score').textContent =
+        game.scores[opponentUid] || 0;
+
+      // Update turn indicator
+      const pill = document.getElementById('turn-pill');
+      const bagLabel = document.getElementById('bag-label');
+      pill.textContent = game.currentTurn === uid ? 'Tu turno' : 'Su turno';
+      pill.className = game.currentTurn === uid ? 'turn-pill' : 'turn-pill theirs';
+      bagLabel.textContent = (game.bag ? game.bag.length : 0) + ' fichas';
+
+      // Update board
+      window.boardFixed = game.board || {};
+      window.boardNew = {};
+      if (typeof buildBoard === 'function') buildBoard();
+
+      // Get my rack
+      const stateResult = await window.callGetGameState({ gameId });
+      window.rack = stateResult.data.myRack;
+      if (typeof buildRack === 'function') buildRack();
+
+      // Show last move toast
+      if (game.lastMove && game.lastMove.type === 'play' &&
+          game.lastMove.playerId !== uid) {
+        const word = game.lastMove.words ? game.lastMove.words[0] : '?';
+        showToastModal(word, game.lastMove.score);
+      }
+    });
+    window.currentGameId = gameId;
+  }
+
+  // ── WIRE UP JUGAR BUTTON TO CLOUD FUNCTION ──
+  window.submitMoveToServer = async () => {
+    if (!window.currentGameId) { alert('No active game'); return; }
+    const placed = Object.keys(window.boardNew || {});
+    if (!placed.length) return;
+
+    const tiles = placed.map(key => {
+      const [r, c] = key.split('-').map(Number);
+      return { r, c, letter: window.boardNew[key] };
+    });
+
+    try {
+      const result = await window.callSubmitMove({
+        gameId: window.currentGameId,
+        tiles,
+        action: 'play'
+      });
+      console.log('Move result:', result.data);
+      // Board updates via onSnapshot automatically
+      window.boardNew = {};
+      if (typeof buildBoard === 'function') buildBoard();
+      if (typeof updatePreview === 'function') updatePreview();
+    } catch (err) {
+      console.error('submitMove error:', err);
+      alert('Error: ' + err.message);
+    }
+  };
 </script>
 
 </body>

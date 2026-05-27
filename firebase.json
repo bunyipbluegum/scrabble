@@ -1,15 +1,18 @@
 {
+  "functions": {
+    "source": "functions",
+    "region": "northamerica-northeast2"
+  },
   "hosting": {
     "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*"],
     "rewrites": [
+      { "source": "**", "destination": "/index.html" }
+    ],
+    "headers": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "**/*.@(js|html|css)",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
       }
     ]
   }
