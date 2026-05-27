@@ -524,9 +524,12 @@ function buildBoard() {
         bt.addEventListener('pointerdown', e => { e.stopPropagation(); onTilePD(e, {type:'board',key,letter:boardNew[key]}); });
         cell.appendChild(bt);
       } else {
-        const p = PREMIUMS[key];
-        if (p) cell.classList.add(p);
-        else if (r===7 && c===7) cell.classList.add('center');
+        if (r===7 && c===7) {
+  cell.classList.add('center'); // centre always shows star, gets DW bonus via PREMIUMS
+} else {
+  const p = PREMIUMS[key];
+  if (p) cell.classList.add(p);
+}
       }
       board.appendChild(cell);
     }
