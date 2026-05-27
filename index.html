@@ -493,11 +493,9 @@ html,body{
 
 
 <div id="login-screen">
-
   <div class="heading-title">SCRABBLE</div>
   <div class="heading-sub" style="cursor:pointer;color:rgba(40,196,154,0.7);" 
     onclick="startNewGame()">from Phil · New Game</div>
-    
   <form class="login-form" id="login-form">
     <input class="login-input" id="login-email" type="email" 
       placeholder="Email" autocomplete="email" required>
@@ -515,7 +513,8 @@ html,body{
   <div class="heading-bar">
     <div>
       <div class="heading-title">SCRABBLE</div>
-      <div class="heading-sub">from Phil</div>
+      <div class="heading-sub" style="cursor:pointer;color:rgba(40,196,154,0.7);" 
+        onclick="startNewGame()">from Phil · New Game</div>
     </div>
 <div style="display:flex;align-items:center;gap:10px;">
   <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
@@ -1338,14 +1337,14 @@ init();
 </script>
 
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { getFirestore, doc, onSnapshot }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  import { getFunctions, httpsCallable }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFunctions, httpsCallable }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
 
     const firebaseConfig = {
     apiKey: "AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",
