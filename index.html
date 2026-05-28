@@ -628,6 +628,7 @@ function onTilePD(e,src){
 // Double-tap (iOS): use touchend timer
 let _lastTouch=0;
 $('board-wrap').addEventListener('touchend',e=>{
+  console.log('board pointerdown', e.pointerType, e.target.className);
   const S=window.S;
   if(S.isDragging||S.dragSrc) return;
   const now=Date.now();
