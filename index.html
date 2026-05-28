@@ -701,7 +701,7 @@ document.addEventListener('pointermove',e=>{
   }
 
   // Panning
-  if(S.isPanning&&S.scale>1.05){
+  if(S.isPanning){
     S.panX=S.panSTX+(e.clientX-S.panSX);
     S.panY=S.panSTY+(e.clientY-S.panSY);
     clampPan();
