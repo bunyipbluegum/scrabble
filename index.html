@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0040)file:///Users/toh/Downloads/index_1.html -->
+<!-- saved from url=(0040)file:///Users/toh/Downloads/index_2.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -165,7 +165,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
+<div id="login-screen" class="hidden">
   <div class="login-logo">SCRABBLE</div>
   <div class="login-sub">from Phil</div>
   <form class="login-form" id="login-form">
@@ -178,18 +178,15 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 </div>
 
 <!-- GAME -->
-<div class="app" id="app" style="display:none;">
+<div class="app" id="app" style="display: flex;">
 
   <div class="heading-bar">
     <div>
       <div class="heading-title">SCRABBLE</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div class="heading-sub" onclick="G.newGame()">New Game</div>
-        <div class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.4);">⊖ Zoom</div>
-      </div>
+      <div class="heading-sub" onclick="G.newGame()">from Phil · New Game</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
+      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);">phil</span>
       <div class="heading-menu" onclick="openStats()">☰</div>
     </div>
   </div>
@@ -200,18 +197,18 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <span class="sb-score" id="my-score">0</span>
     </div>
     <div class="sb-middle">
-      <span class="turn-pill" id="turn-pill">–</span>
-      <span class="bag-label" id="bag-label">– fichas</span>
+      <span class="turn-pill" id="turn-pill">Tu turno</span>
+      <span class="bag-label" id="bag-label">80 fichas</span>
     </div>
     <div class="sb-player right">
       <span class="sb-name" id="opponent-name">Oponente</span>
-      <span class="sb-score" id="their-score">0</span>
+      <span class="sb-score" id="their-score">10</span>
     </div>
   </div>
 
   <div class="board-wrap" id="board-wrap">
-    <div class="board-panner" id="board-panner">
-      <div class="board" id="board"></div>
+    <div class="board-panner" id="board-panner" style="width: 480px; height: 480px; top: 329px; left: 0px;">
+      <div class="board" id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0"></div><div class="cell" data-r="0" data-c="1"></div><div class="cell" data-r="0" data-c="2"></div><div class="cell dl" data-r="0" data-c="3"></div><div class="cell" data-r="0" data-c="4"></div><div class="cell" data-r="0" data-c="5"></div><div class="cell" data-r="0" data-c="6"></div><div class="cell tw" data-r="0" data-c="7"></div><div class="cell" data-r="0" data-c="8"></div><div class="cell" data-r="0" data-c="9"></div><div class="cell" data-r="0" data-c="10"></div><div class="cell dl" data-r="0" data-c="11"></div><div class="cell" data-r="0" data-c="12"></div><div class="cell" data-r="0" data-c="13"></div><div class="cell tw" data-r="0" data-c="14"></div><div class="cell" data-r="1" data-c="0"></div><div class="cell dw" data-r="1" data-c="1"></div><div class="cell" data-r="1" data-c="2"></div><div class="cell" data-r="1" data-c="3"></div><div class="cell" data-r="1" data-c="4"></div><div class="cell tl" data-r="1" data-c="5"></div><div class="cell" data-r="1" data-c="6"></div><div class="cell" data-r="1" data-c="7"></div><div class="cell" data-r="1" data-c="8"></div><div class="cell tl" data-r="1" data-c="9"></div><div class="cell" data-r="1" data-c="10"></div><div class="cell" data-r="1" data-c="11"></div><div class="cell" data-r="1" data-c="12"></div><div class="cell dw" data-r="1" data-c="13"></div><div class="cell" data-r="1" data-c="14"></div><div class="cell" data-r="2" data-c="0"></div><div class="cell" data-r="2" data-c="1"></div><div class="cell dw" data-r="2" data-c="2"></div><div class="cell" data-r="2" data-c="3"></div><div class="cell" data-r="2" data-c="4"></div><div class="cell" data-r="2" data-c="5"></div><div class="cell dl" data-r="2" data-c="6"></div><div class="cell" data-r="2" data-c="7"></div><div class="cell dl" data-r="2" data-c="8"></div><div class="cell" data-r="2" data-c="9"></div><div class="cell" data-r="2" data-c="10"></div><div class="cell" data-r="2" data-c="11"></div><div class="cell dw" data-r="2" data-c="12"></div><div class="cell" data-r="2" data-c="13"></div><div class="cell" data-r="2" data-c="14"></div><div class="cell dl" data-r="3" data-c="0"></div><div class="cell" data-r="3" data-c="1"></div><div class="cell" data-r="3" data-c="2"></div><div class="cell dw" data-r="3" data-c="3"></div><div class="cell" data-r="3" data-c="4"></div><div class="cell" data-r="3" data-c="5"></div><div class="cell" data-r="3" data-c="6"></div><div class="cell dl" data-r="3" data-c="7"></div><div class="cell" data-r="3" data-c="8"></div><div class="cell" data-r="3" data-c="9"></div><div class="cell" data-r="3" data-c="10"></div><div class="cell dw" data-r="3" data-c="11"></div><div class="cell" data-r="3" data-c="12"></div><div class="cell" data-r="3" data-c="13"></div><div class="cell dl" data-r="3" data-c="14"></div><div class="cell" data-r="4" data-c="0"></div><div class="cell" data-r="4" data-c="1"></div><div class="cell" data-r="4" data-c="2"></div><div class="cell" data-r="4" data-c="3"></div><div class="cell dw" data-r="4" data-c="4"></div><div class="cell" data-r="4" data-c="5"></div><div class="cell" data-r="4" data-c="6"></div><div class="cell" data-r="4" data-c="7"></div><div class="cell" data-r="4" data-c="8"></div><div class="cell" data-r="4" data-c="9"></div><div class="cell dw" data-r="4" data-c="10"></div><div class="cell" data-r="4" data-c="11"></div><div class="cell" data-r="4" data-c="12"></div><div class="cell" data-r="4" data-c="13"></div><div class="cell" data-r="4" data-c="14"></div><div class="cell" data-r="5" data-c="0"></div><div class="cell tl" data-r="5" data-c="1"></div><div class="cell" data-r="5" data-c="2"></div><div class="cell" data-r="5" data-c="3"></div><div class="cell" data-r="5" data-c="4"></div><div class="cell tl" data-r="5" data-c="5"></div><div class="cell" data-r="5" data-c="6"></div><div class="cell" data-r="5" data-c="7"></div><div class="cell" data-r="5" data-c="8"></div><div class="cell tl" data-r="5" data-c="9"></div><div class="cell" data-r="5" data-c="10"></div><div class="cell" data-r="5" data-c="11"></div><div class="cell" data-r="5" data-c="12"></div><div class="cell tl" data-r="5" data-c="13"></div><div class="cell" data-r="5" data-c="14"></div><div class="cell" data-r="6" data-c="0"></div><div class="cell" data-r="6" data-c="1"></div><div class="cell dl" data-r="6" data-c="2"></div><div class="cell" data-r="6" data-c="3"></div><div class="cell" data-r="6" data-c="4"></div><div class="cell" data-r="6" data-c="5"></div><div class="cell dl" data-r="6" data-c="6"></div><div class="cell" data-r="6" data-c="7"></div><div class="cell dl" data-r="6" data-c="8"></div><div class="cell" data-r="6" data-c="9"></div><div class="cell" data-r="6" data-c="10"></div><div class="cell" data-r="6" data-c="11"></div><div class="cell dl" data-r="6" data-c="12"></div><div class="cell" data-r="6" data-c="13"></div><div class="cell" data-r="6" data-c="14"></div><div class="cell tw" data-r="7" data-c="0"></div><div class="cell" data-r="7" data-c="1"></div><div class="cell" data-r="7" data-c="2"></div><div class="cell dl" data-r="7" data-c="3"></div><div class="cell" data-r="7" data-c="4"></div><div class="cell" data-r="7" data-c="5"></div><div class="cell" data-r="7" data-c="6"></div><div class="cell has-tile" data-r="7" data-c="7"><div class="btile"><span class="bl">P</span><span class="bv">3</span></div></div><div class="cell has-tile" data-r="7" data-c="8"><div class="btile"><span class="bl">I</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell" data-r="7" data-c="10"></div><div class="cell dl" data-r="7" data-c="11"></div><div class="cell" data-r="7" data-c="12"></div><div class="cell" data-r="7" data-c="13"></div><div class="cell tw" data-r="7" data-c="14"></div><div class="cell" data-r="8" data-c="0"></div><div class="cell" data-r="8" data-c="1"></div><div class="cell dl" data-r="8" data-c="2"></div><div class="cell" data-r="8" data-c="3"></div><div class="cell" data-r="8" data-c="4"></div><div class="cell" data-r="8" data-c="5"></div><div class="cell dl" data-r="8" data-c="6"></div><div class="cell" data-r="8" data-c="7"></div><div class="cell dl" data-r="8" data-c="8"></div><div class="cell" data-r="8" data-c="9"></div><div class="cell" data-r="8" data-c="10"></div><div class="cell" data-r="8" data-c="11"></div><div class="cell dl" data-r="8" data-c="12"></div><div class="cell" data-r="8" data-c="13"></div><div class="cell" data-r="8" data-c="14"></div><div class="cell" data-r="9" data-c="0"></div><div class="cell tl" data-r="9" data-c="1"></div><div class="cell" data-r="9" data-c="2"></div><div class="cell" data-r="9" data-c="3"></div><div class="cell" data-r="9" data-c="4"></div><div class="cell tl" data-r="9" data-c="5"></div><div class="cell" data-r="9" data-c="6"></div><div class="cell" data-r="9" data-c="7"></div><div class="cell" data-r="9" data-c="8"></div><div class="cell tl" data-r="9" data-c="9"></div><div class="cell" data-r="9" data-c="10"></div><div class="cell" data-r="9" data-c="11"></div><div class="cell" data-r="9" data-c="12"></div><div class="cell tl" data-r="9" data-c="13"></div><div class="cell" data-r="9" data-c="14"></div><div class="cell" data-r="10" data-c="0"></div><div class="cell" data-r="10" data-c="1"></div><div class="cell" data-r="10" data-c="2"></div><div class="cell" data-r="10" data-c="3"></div><div class="cell dw" data-r="10" data-c="4"></div><div class="cell" data-r="10" data-c="5"></div><div class="cell" data-r="10" data-c="6"></div><div class="cell" data-r="10" data-c="7"></div><div class="cell" data-r="10" data-c="8"></div><div class="cell" data-r="10" data-c="9"></div><div class="cell dw" data-r="10" data-c="10"></div><div class="cell" data-r="10" data-c="11"></div><div class="cell" data-r="10" data-c="12"></div><div class="cell" data-r="10" data-c="13"></div><div class="cell" data-r="10" data-c="14"></div><div class="cell dl" data-r="11" data-c="0"></div><div class="cell" data-r="11" data-c="1"></div><div class="cell" data-r="11" data-c="2"></div><div class="cell dw" data-r="11" data-c="3"></div><div class="cell" data-r="11" data-c="4"></div><div class="cell" data-r="11" data-c="5"></div><div class="cell" data-r="11" data-c="6"></div><div class="cell dl" data-r="11" data-c="7"></div><div class="cell" data-r="11" data-c="8"></div><div class="cell" data-r="11" data-c="9"></div><div class="cell" data-r="11" data-c="10"></div><div class="cell dw" data-r="11" data-c="11"></div><div class="cell" data-r="11" data-c="12"></div><div class="cell" data-r="11" data-c="13"></div><div class="cell dl" data-r="11" data-c="14"></div><div class="cell" data-r="12" data-c="0"></div><div class="cell" data-r="12" data-c="1"></div><div class="cell dw" data-r="12" data-c="2"></div><div class="cell" data-r="12" data-c="3"></div><div class="cell" data-r="12" data-c="4"></div><div class="cell" data-r="12" data-c="5"></div><div class="cell dl" data-r="12" data-c="6"></div><div class="cell" data-r="12" data-c="7"></div><div class="cell dl" data-r="12" data-c="8"></div><div class="cell" data-r="12" data-c="9"></div><div class="cell" data-r="12" data-c="10"></div><div class="cell" data-r="12" data-c="11"></div><div class="cell dw" data-r="12" data-c="12"></div><div class="cell" data-r="12" data-c="13"></div><div class="cell" data-r="12" data-c="14"></div><div class="cell" data-r="13" data-c="0"></div><div class="cell dw" data-r="13" data-c="1"></div><div class="cell" data-r="13" data-c="2"></div><div class="cell" data-r="13" data-c="3"></div><div class="cell" data-r="13" data-c="4"></div><div class="cell tl" data-r="13" data-c="5"></div><div class="cell" data-r="13" data-c="6"></div><div class="cell" data-r="13" data-c="7"></div><div class="cell" data-r="13" data-c="8"></div><div class="cell tl" data-r="13" data-c="9"></div><div class="cell" data-r="13" data-c="10"></div><div class="cell" data-r="13" data-c="11"></div><div class="cell" data-r="13" data-c="12"></div><div class="cell dw" data-r="13" data-c="13"></div><div class="cell" data-r="13" data-c="14"></div><div class="cell tw" data-r="14" data-c="0"></div><div class="cell" data-r="14" data-c="1"></div><div class="cell" data-r="14" data-c="2"></div><div class="cell dl" data-r="14" data-c="3"></div><div class="cell" data-r="14" data-c="4"></div><div class="cell" data-r="14" data-c="5"></div><div class="cell" data-r="14" data-c="6"></div><div class="cell tw" data-r="14" data-c="7"></div><div class="cell" data-r="14" data-c="8"></div><div class="cell" data-r="14" data-c="9"></div><div class="cell" data-r="14" data-c="10"></div><div class="cell dl" data-r="14" data-c="11"></div><div class="cell" data-r="14" data-c="12"></div><div class="cell" data-r="14" data-c="13"></div><div class="cell tw" data-r="14" data-c="14"></div></div>
     </div>
     <svg id="word-outline" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;overflow:visible;"></svg>
     <div class="preview-float" id="preview-float">
@@ -220,7 +217,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
     </div>
     <div class="zoom-hint" id="zoom-hint">Doble toque para alejar</div>
     <div class="toast-modal" id="toast-modal">
-      <span class="tm-text">🇲🇽 Jugaste <b id="tm-word">–</b> por <b id="tm-pts">–</b> puntos</span>
+      <span class="tm-text">🇲🇽 Jugaste <b id="tm-word">PIN</b> por <b id="tm-pts">10</b> puntos</span>
       <span class="tm-gem">💎 <span id="tm-gems">5</span></span>
     </div>
   </div>
@@ -233,7 +230,6 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
       <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
       <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
-<button class="abtn abtn-sec" onclick="zoomOut()" style="flex:0.6;font-size:10px;">🔍–</button>
     </div>
   </div>
 
@@ -355,15 +351,17 @@ function applyTransform(anim) {
 
 function clampPan() {
   const wrap = $('board-wrap');
-  const ww = wrap.clientWidth, wh = wrap.clientHeight;
-  const {boardPx} = window.S;
-  let {scale, panX, panY} = window.S;
+  const wRect = wrap.getBoundingClientRect();
+  const ww = wRect.width, wh = wRect.height;
+  const {boardPx, scale} = window.S;
   const sW = boardPx * scale;
-  const offY = getOffsetY();
-  panX = Math.min(0, Math.max(ww - sW, panX));
-  panY = Math.min(0, Math.max(offY + (wh - (offY + sW)), panY));
-  window.S.panX = panX;
-  window.S.panY = panY;
+  // Allow panning so board edges can reach wrap edges
+  const minX = ww - sW;
+  const maxX = 0;
+  const minY = wh - sW;
+  const maxY = 0;
+  window.S.panX = Math.min(maxX, Math.max(minX, window.S.panX));
+  window.S.panY = Math.min(maxY, Math.max(minY, window.S.panY));
 }
 
 function zoomToPoint(lx, ly, ns) {
@@ -382,30 +380,29 @@ function zoomToPoint(lx, ly, ns) {
 }
 
 function zoomOut() {
-  window.S.scale=1; window.S.panX=0; window.S.panY=0;
+  window.S.scale = 1; window.S.panX = 0; window.S.panY = 0;
   applyTransform(true);
-  document.getElementById('zoom-hint').classList.remove('show');
+  $('zoom-hint').classList.remove('show');
 }
 
 function cellCenter(r, c) {
-  const pannerEl = document.getElementById('board-panner');
-  const pannerRect = pannerEl.getBoundingClientRect();
+  const pannerEl = $('board-panner');
+  const pr = pannerEl.getBoundingClientRect();
   const {boardPx, scale} = window.S;
   const cs = boardPx / GRID;
   return {
-    x: pannerRect.left + (c + 0.5) * cs * scale,
-    y: pannerRect.top  + (r + 0.5) * cs * scale
+    x: pr.left + (c + 0.5) * cs * scale,
+    y: pr.top  + (r + 0.5) * cs * scale
   };
 }
 
 function clientToCell(cx, cy) {
-  const pannerEl = document.getElementById('board-panner');
-  const pannerRect = pannerEl.getBoundingClientRect();
+  const pannerEl = $('board-panner');
+  const pr = pannerEl.getBoundingClientRect();
   const {boardPx, scale} = window.S;
   const cs = boardPx / GRID;
-  // Use actual panner position — works correctly on all devices
-  const bx = (cx - pannerRect.left) / scale;
-  const by = (cy - pannerRect.top)  / scale;
+  const bx = (cx - pr.left) / scale;
+  const by = (cy - pr.top)  / scale;
   const c = Math.floor(bx / cs);
   const r = Math.floor(by / cs);
   if (r < 0 || r >= GRID || c < 0 || c >= GRID) return null;
@@ -432,7 +429,7 @@ function getSnapTarget(cx, cy) {
         const k = `${row}-${cc}`;
         if (boardFixed[k] || boardNew[k]) continue;
         const ctr = cellCenter(row, cc);
-        if (Math.hypot(cx-ctr.x, cy-ctr.y) < cs*1.0) return k;
+        if (Math.hypot(cx-ctr.x, cy-ctr.y) < cs*2.8) return k;
       }
     } else if (dir === 'V') {
       const col  = +placed[0].split('-')[1];
@@ -445,7 +442,7 @@ function getSnapTarget(cx, cy) {
         const k = `${rr}-${col}`;
         if (boardFixed[k] || boardNew[k]) continue;
         const ctr = cellCenter(rr, col);
-        if (Math.hypot(cx-ctr.x, cy-ctr.y) < cs*1.0) return k;
+        if (Math.hypot(cx-ctr.x, cy-ctr.y) < cs*2.8) return k;
       }
     }
   }
@@ -466,13 +463,13 @@ function getSnapTarget(cx, cy) {
   }
   cands.sort((a,b) => a.isEnd===b.isEnd ? a.dist-b.dist : (a.isEnd?-1:1));
   for (const cd of cands) {
-    if (cd.dist < cs*0.9 && !boardFixed[cd.k] && !boardNew[cd.k]) return cd.k;
+    if (cd.dist < cs*2.0 && !boardFixed[cd.k] && !boardNew[cd.k]) return cd.k;
   }
 
   const ex = clientToCell(cx, cy);
   if (ex) { const k=`${ex.r}-${ex.c}`; if (!boardFixed[k]&&!boardNew[k]) return k; }
 
-  let bk=null, bd=cs*1.0;
+  let bk=null, bd=cs*2.2;
   for (let r=0;r<GRID;r++) for (let c=0;c<GRID;c++) {
     const k=`${r}-${c}`;
     if (boardFixed[k]||boardNew[k]) continue;
@@ -526,12 +523,9 @@ function buildBoard() {
         bt.addEventListener('pointerdown', e => { e.stopPropagation(); onTilePD(e, {type:'board',key,letter:boardNew[key]}); });
         cell.appendChild(bt);
       } else {
-        if (r===7 && c===7) {
-  cell.classList.add('center'); // centre always shows star, gets DW bonus via PREMIUMS
-} else {
-  const p = PREMIUMS[key];
-  if (p) cell.classList.add(p);
-}
+        const p = PREMIUMS[key];
+        if (p) cell.classList.add(p);
+        else if (r===7 && c===7) cell.classList.add('center');
       }
       board.appendChild(cell);
     }
@@ -572,13 +566,30 @@ function onTilePD(e, src) {
 }
 
 // ── BOARD BACKGROUND POINTER DOWN ──
+// Double-tap via touchend for iOS Safari compatibility
+$('board-wrap').addEventListener('touchend', e => {
+  const S = window.S;
+  if (S.dragSrc || S.isDragging) return;
+  const t = e.changedTouches[0];
+  const now = Date.now();
+  const sameSpot = Math.hypot(t.clientX-S.lastTapX, t.clientY-S.lastTapY) < 30;
+  if (now - S.lastTapT < 380 && sameSpot) {
+    e.preventDefault();
+    zoomOut();
+    S.lastTapT = 0;
+    return;
+  }
+  S.lastTapT = now; S.lastTapX = t.clientX; S.lastTapY = t.clientY;
+}, {passive:false});
+
 $('board-wrap').addEventListener('pointerdown', e => {
   const S = window.S;
   if (S.dragSrc) return;
   const now = Date.now();
   const sameSpot = Math.hypot(e.clientX-S.lastTapX, e.clientY-S.lastTapY) < 22;
-  if (now - S.lastTapT < 340 && sameSpot) { zoomOut(); S.lastTapT = 0; return; }
-  S.lastTapT = now; S.lastTapX = e.clientX; S.lastTapY = e.clientY;
+  // Only use pointer double-tap on non-touch devices
+  if (e.pointerType !== 'touch' && now - S.lastTapT < 340 && sameSpot) { zoomOut(); S.lastTapT = 0; return; }
+  if (e.pointerType !== 'touch') { S.lastTapT = now; S.lastTapX = e.clientX; S.lastTapY = e.clientY; }
   if (S.tapSelected) {
     const cell = e.target.closest('.cell');
     if (cell && !cell.classList.contains('has-tile')) {
@@ -604,22 +615,6 @@ document.addEventListener('pointermove', e => {
     }
     if (!S.isDragging) return;
     moveGhost(e.clientX, e.clientY);
-
-// Auto-pan board to follow tile when near edges
-if (S.scale > 1.05) {
-  const wrap = document.getElementById('board-wrap');
-  const wRect = wrap.getBoundingClientRect();
-  const edgeZone = 60; // px from edge to start panning
-  const panSpeed = 8;
-  let didPan = false;
-  if (e.clientX < wRect.left + edgeZone)  { S.panX += panSpeed; didPan=true; }
-  if (e.clientX > wRect.right - edgeZone) { S.panX -= panSpeed; didPan=true; }
-  if (e.clientY < wRect.top + edgeZone)   { S.panY += panSpeed; didPan=true; }
-  if (e.clientY > wRect.bottom - edgeZone){ S.panY -= panSpeed; didPan=true; }
-  if (didPan) { clampPan(); applyTransform(false); }
-}
-
-
     // Zoom when entering board area
     const wrap  = $('board-wrap');
     const wRect = wrap.getBoundingClientRect();
@@ -652,9 +647,16 @@ if (S.scale > 1.05) {
     return;
   }
   if (S.isPanning && S.scale > 1.05) {
-    S.panX = S.panSTX + (e.clientX-S.panSX);
-    S.panY = S.panSTY + (e.clientY-S.panSY);
+    const newPanX = S.panSTX + (e.clientX-S.panSX);
+    const newPanY = S.panSTY + (e.clientY-S.panSY);
+    // Track velocity for momentum
+    S._velX = newPanX - S.panX;
+    S._velY = newPanY - S.panY;
+    S.panX = newPanX;
+    S.panY = newPanY;
     clampPan(); applyTransform(false);
+    // Redraw word outlines to follow board
+    if (typeof updatePreview === 'function') updatePreview();
   }
 });
 
@@ -707,7 +709,25 @@ document.addEventListener('pointerup', e => {
     S.dragSrc=null;
     buildBoard(); buildRack(); updatePreview(); return;
   }
-  if (S.isPanning) S.isPanning=false;
+  if (S.isPanning) {
+    S.isPanning=false;
+    // Momentum deceleration
+    const velX = S._velX||0, velY = S._velY||0;
+    if (Math.abs(velX)>1 || Math.abs(velY)>1) {
+      let vx=velX, vy=velY;
+      const decay = () => {
+        if (!window.S.isPanning && (Math.abs(vx)>0.5||Math.abs(vy)>0.5)) {
+          window.S.panX += vx; window.S.panY += vy;
+          vx*=0.88; vy*=0.88;
+          clampPan(); applyTransform(false);
+          if (typeof updatePreview==='function') updatePreview();
+          requestAnimationFrame(decay);
+        }
+      };
+      requestAnimationFrame(decay);
+    }
+    S._velX=0; S._velY=0;
+  }
 });
 
 document.addEventListener('pointercancel', () => {
@@ -889,26 +909,21 @@ function drawWordOutlines(words, score) {
   svg.innerHTML='';
   if(!words||!words.length) return;
   const S=window.S;
-  const {boardPx,scale,panX,panY}=S;
+  const {boardPx,scale}=S;
   const cs=(boardPx/GRID)*scale;
   const PAD=3,R=7;
-  const offY=getOffsetY();
-  const pannerLeft=getPannerLeft();
+  const pannerEl=$('board-panner');
+  const pr=pannerEl.getBoundingClientRect();
+  const wrapEl=$('board-wrap');
+  const wr=wrapEl.getBoundingClientRect();
 
   words.forEach((tiles,wi)=>{
     if(tiles.length<2) return;
     const rows=tiles.map(t=>t.r),cols=tiles.map(t=>t.c);
     const rMin=Math.min(...rows),rMax=Math.max(...rows);
     const cMin=Math.min(...cols),cMax=Math.max(...cols);
-   // Get actual panner position relative to board-wrap
-const pannerEl = document.getElementById('board-panner');
-const wrapEl   = document.getElementById('board-wrap');
-const pannerRect = pannerEl.getBoundingClientRect();
-const wrapRect   = wrapEl.getBoundingClientRect();
-const relLeft = pannerRect.left - wrapRect.left;
-const relTop  = pannerRect.top  - wrapRect.top;
-const x0 = relLeft + cMin*cs - PAD;
-const y0 = relTop  + rMin*cs - PAD;
+    const x0=(pr.left-wr.left)+cMin*cs-PAD;
+    const y0=(pr.top-wr.top)+rMin*cs-PAD;
     const w=(cMax-cMin+1)*cs+PAD*2;
     const h=(rMax-rMin+1)*cs+PAD*2;
     const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
@@ -986,7 +1001,6 @@ function closeStats(){$('stats-panel').classList.remove('open');$('stats-overlay
 // ── INIT — called after auth confirms login ──
 function initGame() {
   setTimeout(()=>{
-    zoomOut();  // ← add this
     sizeBoard();
     window.S.boardFixed={};
     window.S.boardNew={};
