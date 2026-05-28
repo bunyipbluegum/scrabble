@@ -57,6 +57,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   /* top/left set by JS to centre board; transform set by JS for pan/zoom */
   transform-origin:top left;
   box-shadow:0 0 0 3px #0a1820, 0 8px 32px rgba(0,0,0,0.6);
+  touch-action:none;
 }
 #board{
   display:grid;
@@ -72,6 +73,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   position:relative;overflow:hidden;
   background:var(--board-bg);
   cursor:pointer;
+  touch-action:none;
 }
 .cell::after{
   font-family:'Arial Black',Arial,sans-serif;
@@ -636,29 +638,24 @@ $('board-wrap').addEventListener('touchend',e=>{
 
 // Pan handler — attached to document so it catches all touches on board area
 function startPan(e,cx,cy){
+  $('board-wrap').addEventListener('pointerdown',e=>{
   const S=window.S;
   if(S.dragSrc) return;
-  // Check if touch is within board-wrap
-  const wrap=$('board-wrap');
-  const wr=wrap.getBoundingClientRect();
-  if(cx<wr.left||cx>wr.right||cy<wr.top||cy>wr.bottom) return;
-  // Don't pan if tapping a rack tile or new board tile
-  const target=document.elementFromPoint(cx,cy);
-  if(target&&(target.closest('.rtile')||target.closest('.btile.new'))) return;
-  // tap-to-place
   if(S.tapSelected){
-    const cell=target&&target.closest('.cell');
+    const cell=e.target.closest('.cell');
     if(cell&&!cell.classList.contains('has-tile')){
       placeTileAt(parseInt(cell.dataset.r),parseInt(cell.dataset.c)); return;
     }
-    if(!target?.closest('.btile.new')&&!target?.closest('.rtile')){
+    if(!e.target.closest('.btile.new')&&!e.target.closest('.rtile')){
       S.tapSelected=null; buildBoard(); buildRack(); return;
     }
   }
   S.isPanning=true;
-  S.panSX=cx; S.panSY=cy;
+  S.panSX=e.clientX; S.panSY=e.clientY;
   S.panSTX=S.panX; S.panSTY=S.panY;
   $('board-wrap').classList.add('panning');
+},{passive:false});
+  
 }
 
 $('board-wrap').addEventListener('pointerdown',e=>{
