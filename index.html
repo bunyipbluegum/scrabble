@@ -388,28 +388,26 @@ function zoomOut() {
 }
 
 function cellCenter(r, c) {
-  const wrap = $('board-wrap');
-  const rect = wrap.getBoundingClientRect();
-  const {boardPx, scale, panX, panY} = window.S;
-  const offY = getOffsetY();
-  const pannerLeft = getPannerLeft();
+  const pannerEl = document.getElementById('board-panner');
+  const pannerRect = pannerEl.getBoundingClientRect();
+  const {boardPx, scale} = window.S;
   const cs = boardPx / GRID;
   return {
-    x: rect.left + pannerLeft + panX + (c + 0.5) * cs * scale,
-    y: rect.top  + offY       + panY + (r + 0.5) * cs * scale
+    x: pannerRect.left + (c + 0.5) * cs * scale,
+    y: pannerRect.top  + (r + 0.5) * cs * scale
   };
 }
 
 function clientToCell(cx, cy) {
-  const wrap = $('board-wrap');
-  const rect = wrap.getBoundingClientRect();
-  const {boardPx, scale, panX, panY} = window.S;
-  const offY = getOffsetY();
-  const pannerLeft = getPannerLeft();
-  const bx = (cx - rect.left - pannerLeft - panX) / scale;
-  const by = (cy - rect.top - offY - panY) / scale + 1.0;
+  const pannerEl = document.getElementById('board-panner');
+  const pannerRect = pannerEl.getBoundingClientRect();
+  const {boardPx, scale} = window.S;
   const cs = boardPx / GRID;
-  const c = Math.floor(bx / cs), r = Math.floor(by / cs);
+  // Use actual panner position — works correctly on all devices
+  const bx = (cx - pannerRect.left) / scale;
+  const by = (cy - pannerRect.top)  / scale;
+  const c = Math.floor(bx / cs);
+  const r = Math.floor(by / cs);
   if (r < 0 || r >= GRID || c < 0 || c >= GRID) return null;
   return {r, c};
 }
@@ -606,6 +604,22 @@ document.addEventListener('pointermove', e => {
     }
     if (!S.isDragging) return;
     moveGhost(e.clientX, e.clientY);
+
+// Auto-pan board to follow tile when near edges
+if (S.scale > 1.05) {
+  const wrap = document.getElementById('board-wrap');
+  const wRect = wrap.getBoundingClientRect();
+  const edgeZone = 60; // px from edge to start panning
+  const panSpeed = 8;
+  let didPan = false;
+  if (e.clientX < wRect.left + edgeZone)  { S.panX += panSpeed; didPan=true; }
+  if (e.clientX > wRect.right - edgeZone) { S.panX -= panSpeed; didPan=true; }
+  if (e.clientY < wRect.top + edgeZone)   { S.panY += panSpeed; didPan=true; }
+  if (e.clientY > wRect.bottom - edgeZone){ S.panY -= panSpeed; didPan=true; }
+  if (didPan) { clampPan(); applyTransform(false); }
+}
+
+
     // Zoom when entering board area
     const wrap  = $('board-wrap');
     const wRect = wrap.getBoundingClientRect();
