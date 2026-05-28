@@ -183,7 +183,10 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   <div class="heading-bar">
     <div>
       <div class="heading-title">SCRABBLE</div>
-      <div class="heading-sub" onclick="G.newGame()">from Phil · New Game</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="heading-sub" onclick="G.newGame()">New Game</div>
+        <div class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.4);">⊖ Zoom</div>
+      </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
@@ -969,6 +972,7 @@ function closeStats(){$('stats-panel').classList.remove('open');$('stats-overlay
 // ── INIT — called after auth confirms login ──
 function initGame() {
   setTimeout(()=>{
+    zoomOut();  // ← add this
     sizeBoard();
     window.S.boardFixed={};
     window.S.boardNew={};
