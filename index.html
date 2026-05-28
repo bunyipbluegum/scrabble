@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<!-- saved from url=(0040)file:///Users/toh/Downloads/index_3.html -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3040">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,14 +20,15 @@
   --accent:#28c49a; --heading-bg:#1a2a3a;
 }
 html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif;color:#fff;overflow:hidden;touch-action:none;user-select:none;}
+
+/* APP SHELL */
 .app{display:flex;flex-direction:column;width:100%;height:100dvh;max-width:480px;margin:0 auto;background:var(--wrap-bg);position:relative;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);}
 
 /* HEADING */
 .heading-bar{background:var(--heading-bg);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:6px 14px 5px;border-bottom:1px solid rgba(255,255,255,0.08);}
 .heading-title{font-size:13px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;}
-.heading-sub{font-size:10px;color:rgba(40,196,154,0.7);letter-spacing:0.5px;cursor:pointer;}
+.heading-sub{font-size:10px;color:rgba(40,196,154,0.7);letter-spacing:0.5px;cursor:pointer;display:inline-block;margin-right:10px;}
 .heading-menu{font-size:20px;color:rgba(255,255,255,0.4);cursor:pointer;padding:0 2px;}
-.heading-menu:active{color:#fff;}
 
 /* SCORE BAR */
 .score-bar{background:#fff;flex-shrink:0;display:flex;align-items:center;padding:5px 14px 4px;border-bottom:2px solid #e0e0e0;position:relative;}
@@ -40,13 +42,44 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .turn-pill.theirs{background:#aaa;}
 .bag-label{font-size:9px;color:#ccc;}
 
-/* BOARD */
-.board-wrap{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--wrap-bg);cursor:grab;}
-.board-wrap.panning{cursor:grabbing;}
-.board-panner{position:absolute;transform-origin:0 0;box-shadow:0 0 0 3px #0a1820,0 8px 32px rgba(0,0,0,0.6);}
-.board{display:grid;grid-template-columns:repeat(15,1fr);}
-.cell{display:flex;align-items:center;justify-content:center;border:0.5px solid var(--board-line);position:relative;overflow:hidden;background:var(--board-bg);cursor:pointer;}
-.cell::after{font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:9px;letter-spacing:-0.3px;line-height:1;pointer-events:none;text-align:center;}
+/* BOARD WRAP — fills remaining flex space */
+.board-wrap{
+  flex:1;
+  min-height:0;
+  position:relative;
+  overflow:hidden;
+  background:var(--wrap-bg);
+  touch-action:none;
+}
+
+/* BOARD — absolutely positioned inside wrap, centred by JS */
+#board-panner{
+  position:absolute;
+  /* top/left set by JS to centre board; transform set by JS for pan/zoom */
+  transform-origin:top left;
+  box-shadow:0 0 0 3px #0a1820, 0 8px 32px rgba(0,0,0,0.6);
+}
+#board{
+  display:grid;
+  grid-template-columns:repeat(15,1fr);
+  /* width/height set by JS */
+}
+
+/* CELLS — aspect-ratio:1 keeps them square regardless of board size */
+.cell{
+  aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  border:0.5px solid var(--board-line);
+  position:relative;overflow:hidden;
+  background:var(--board-bg);
+  cursor:pointer;
+}
+.cell::after{
+  font-family:'Arial Black',Arial,sans-serif;
+  font-weight:900;font-size:9px;
+  letter-spacing:-0.3px;line-height:1;
+  pointer-events:none;text-align:center;
+}
 .cell.tw{background:var(--tw);} .cell.tw::after{content:'TW';color:rgba(255,255,255,0.95);}
 .cell.dw{background:var(--dw);} .cell.dw::after{content:'DW';color:rgba(255,255,255,0.92);}
 .cell.tl{background:var(--tl);} .cell.tl::after{content:'TL';color:rgba(255,255,255,0.95);}
@@ -54,18 +87,40 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .cell.center{background:var(--dw);} .cell.center::after{content:'★';font-size:13px;color:rgba(255,255,255,0.9);}
 .cell.snap-target{background:rgba(40,196,154,0.45)!important;outline:2px solid var(--accent);outline-offset:-1px;z-index:3;}
 .cell.snap-target::after{content:'';}
+.cell.has-tile{cursor:default;}
 
-/* TILES */
-.btile{width:91%;height:91%;background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--tile-border);box-shadow:0 2px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.6);position:relative;pointer-events:none;}
+/* BOARD TILES */
+.btile{
+  width:91%;height:91%;
+  background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));
+  border-radius:3px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:1px solid var(--tile-border);
+  box-shadow:0 2px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.6);
+  position:relative;pointer-events:none;
+}
 .btile .bl{font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;color:var(--tile-text);line-height:1;}
 .btile .bv{font-size:5px;font-weight:800;color:#6a4000;position:absolute;bottom:1px;right:2px;}
-.btile.new{background:linear-gradient(165deg,#fffcd0 55%,#f8ec50);border-color:var(--accent);box-shadow:0 2px 0 #157050,0 0 6px rgba(40,196,154,0.5),inset 0 1px 0 rgba(255,255,255,0.75);pointer-events:auto;cursor:grab;}
+.btile.new{
+  background:linear-gradient(165deg,#fffcd0 55%,#f8ec50);
+  border-color:var(--accent);
+  box-shadow:0 2px 0 #157050,0 0 6px rgba(40,196,154,0.5),inset 0 1px 0 rgba(255,255,255,0.75);
+  pointer-events:auto;cursor:grab;
+}
 .btile.new.sel-board{border-color:#ff7700;box-shadow:0 2px 0 #b05000,0 0 8px rgba(255,120,0,0.65);}
 
 /* RACK */
 .rack-area{background:linear-gradient(180deg,var(--rack-bg),var(--rack-mid));border-top:3px solid var(--rack-border);flex-shrink:0;padding:6px 5px 5px;box-shadow:0 -4px 12px rgba(0,0,0,0.4);}
 .rack-tiles{display:flex;gap:3px;justify-content:center;margin-bottom:5px;}
-.rtile{flex:1;max-width:54px;height:58px;background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));border-radius:7px;border:2px solid var(--tile-border);box-shadow:0 4px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:grab;touch-action:none;transition:transform 0.1s,box-shadow 0.1s,border-color 0.1s,opacity 0.1s;}
+.rtile{
+  flex:1;max-width:54px;height:58px;
+  background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));
+  border-radius:7px;border:2px solid var(--tile-border);
+  box-shadow:0 4px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;cursor:grab;touch-action:none;
+  transition:transform 0.1s,box-shadow 0.1s,border-color 0.1s,opacity 0.1s;
+}
 .rtile.sel{border-color:var(--accent);box-shadow:0 4px 0 #157050,0 0 10px rgba(40,196,154,0.6);transform:translateY(-7px);}
 .rtile.drag-src{opacity:0.25;transform:scale(0.86);}
 .rtile.empty{background:rgba(0,0,0,0.18);border:2px dashed rgba(255,255,255,0.1);box-shadow:none;cursor:default;touch-action:auto;}
@@ -83,16 +138,15 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .abtn-play:disabled{background:rgba(40,196,154,0.25);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed;}
 .abtn-pass{flex:0.8;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);font-size:11px;}
 
-/* GHOST */
+/* GHOST TILE */
 #ghost{position:fixed;pointer-events:none;z-index:999;width:54px;height:60px;background:linear-gradient(165deg,#fffcd0 55%,#f8ec50);border-radius:8px;border:2px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:4px 8px 20px rgba(0,0,0,0.6);opacity:0;transform:rotate(5deg) scale(1.12);transition:opacity 0.08s;}
 #ghost .gl{font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;color:var(--tile-text);line-height:1;}
 #ghost .gv{font-size:11px;font-weight:800;color:#6a4000;}
 
-/* TOASTS & OVERLAYS */
+/* OVERLAYS */
 .toast-modal{position:absolute;top:10px;left:50%;transform:translateX(-50%) translateY(-90px);background:var(--coral);border-radius:14px;padding:9px 16px;display:flex;align-items:center;gap:8px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,0.4);white-space:nowrap;transition:transform 0.38s cubic-bezier(0.34,1.4,0.64,1),opacity 0.3s;opacity:0;pointer-events:none;}
 .toast-modal.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.tm-text{font-size:13px;font-weight:700;color:#fff;}
-.tm-text b{color:#fff8c0;}
+.tm-text{font-size:13px;font-weight:700;color:#fff;} .tm-text b{color:#fff8c0;}
 .tm-gem{display:flex;align-items:center;gap:3px;background:rgba(0,0,0,0.18);border-radius:10px;padding:2px 8px;font-size:12px;font-weight:700;color:#fff;}
 .preview-float{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:rgba(10,20,30,0.88);border-radius:14px;padding:5px 14px;display:flex;align-items:center;gap:8px;z-index:20;pointer-events:none;opacity:0;transition:opacity 0.18s;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,0.45);}
 .preview-float.show{opacity:1;}
@@ -102,7 +156,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .zoom-hint{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);border-radius:8px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,0.55);pointer-events:none;z-index:5;opacity:0;transition:opacity 0.3s;}
 .zoom-hint.show{opacity:1;}
 
-/* SWAP PANEL */
+/* SWAP */
 .swap-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:40;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.28s;}
 .swap-overlay.open{opacity:1;pointer-events:auto;}
 .swap-panel{background:#1a2a3a;border-radius:18px 18px 0 0;padding:16px 14px 20px;width:100%;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);box-shadow:0 -8px 32px rgba(0,0,0,0.5);}
@@ -120,7 +174,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .swap-confirm{flex:2;padding:10px;border-radius:10px;border:none;background:#ff8800;color:#fff;font-family:Arial,sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(255,136,0,0.4);}
 .swap-confirm:disabled{background:rgba(255,136,0,0.25);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed;}
 
-/* STATS PANEL */
+/* STATS */
 .stats-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:60;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .stats-overlay.open{opacity:1;pointer-events:auto;}
 .stats-panel{position:absolute;bottom:0;left:0;right:0;background:#0d1f3c;border-radius:18px 18px 0 0;padding:14px 14px 28px;z-index:61;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);}
@@ -135,16 +189,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .gr{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;}
 .grl{display:flex;align-items:center;gap:7px;}
 .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
-.avg{background:rgba(82,183,136,0.2);color:#52b788;}
-.avo{background:rgba(233,196,106,0.2);color:#e9c46a;}
-.grn{font-size:13px;font-weight:600;color:#fff;}
-.grl2{font-size:10px;color:rgba(255,255,255,0.3);}
+.avg{background:rgba(82,183,136,0.2);color:#52b788;} .avo{background:rgba(233,196,106,0.2);color:#e9c46a;}
+.grn{font-size:13px;font-weight:600;color:#fff;} .grl2{font-size:10px;color:rgba(255,255,255,0.3);}
 .grr{display:flex;align-items:center;gap:6px;}
-.gsc{font-size:14px;font-weight:700;}
-.gscw{color:#52b788;} .gscl{color:rgba(255,255,255,0.4);}
+.gsc{font-size:14px;font-weight:700;} .gscw{color:#52b788;} .gscl{color:rgba(255,255,255,0.4);}
 .bdg{font-size:9px;padding:2px 6px;border-radius:8px;}
-.bdgy{background:rgba(82,183,136,0.18);color:#52b788;}
-.bdgt{background:rgba(233,196,106,0.12);color:#e9c46a;}
+.bdgy{background:rgba(82,183,136,0.18);color:#52b788;} .bdgt{background:rgba(233,196,106,0.12);color:#e9c46a;}
 
 /* LOGIN */
 #login-screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1e3040;z-index:200;padding:32px 24px;}
@@ -165,12 +215,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen" class="hidden">
+<div id="login-screen">
   <div class="login-logo">SCRABBLE</div>
   <div class="login-sub">from Phil</div>
   <form class="login-form" id="login-form">
-    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required="">
-    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required="">
+    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required>
+    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>
     <div class="login-error" id="login-error"></div>
     <button class="login-btn" type="submit">Entrar</button>
     <div class="login-spinner" id="login-spinner"></div>
@@ -178,16 +228,18 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 </div>
 
 <!-- GAME -->
-<div class="app" id="app" style="display: flex;">
+<div class="app" id="app" style="display:none;">
 
   <div class="heading-bar">
     <div>
       <div class="heading-title">SCRABBLE</div>
-      <div class="heading-sub" onclick="G.newGame()">New Game</div>
-      <div class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.35);margin-left:8px;">⊖ Zoom</div>
+      <div style="margin-top:2px;">
+        <span class="heading-sub" onclick="G&&G.newGame()">New Game</span>
+        <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
+      </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);">phil</span>
+      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
       <div class="heading-menu" onclick="openStats()">☰</div>
     </div>
   </div>
@@ -195,28 +247,28 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   <div class="score-bar">
     <div class="sb-player">
       <span class="sb-name">Tú</span>
-      <span class="sb-score" id="my-score">10</span>
+      <span class="sb-score" id="my-score">0</span>
     </div>
     <div class="sb-middle">
-      <span class="turn-pill theirs" id="turn-pill">Su turno</span>
-      <span class="bag-label" id="bag-label">77 fichas</span>
+      <span class="turn-pill" id="turn-pill">–</span>
+      <span class="bag-label" id="bag-label">– fichas</span>
     </div>
     <div class="sb-player right">
       <span class="sb-name" id="opponent-name">Oponente</span>
-      <span class="sb-score" id="their-score">10</span>
+      <span class="sb-score" id="their-score">0</span>
     </div>
   </div>
 
   <div class="board-wrap" id="board-wrap">
-    <div class="board-panner" id="board-panner" style="width: 480px; height: 480px; top: 322px; left: 0px;">
-      <div class="board" id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0"></div><div class="cell" data-r="0" data-c="1"></div><div class="cell" data-r="0" data-c="2"></div><div class="cell dl" data-r="0" data-c="3"></div><div class="cell" data-r="0" data-c="4"></div><div class="cell" data-r="0" data-c="5"></div><div class="cell" data-r="0" data-c="6"></div><div class="cell tw" data-r="0" data-c="7"></div><div class="cell" data-r="0" data-c="8"></div><div class="cell" data-r="0" data-c="9"></div><div class="cell" data-r="0" data-c="10"></div><div class="cell dl" data-r="0" data-c="11"></div><div class="cell" data-r="0" data-c="12"></div><div class="cell" data-r="0" data-c="13"></div><div class="cell tw" data-r="0" data-c="14"></div><div class="cell" data-r="1" data-c="0"></div><div class="cell dw" data-r="1" data-c="1"></div><div class="cell" data-r="1" data-c="2"></div><div class="cell" data-r="1" data-c="3"></div><div class="cell" data-r="1" data-c="4"></div><div class="cell tl" data-r="1" data-c="5"></div><div class="cell" data-r="1" data-c="6"></div><div class="cell" data-r="1" data-c="7"></div><div class="cell" data-r="1" data-c="8"></div><div class="cell tl" data-r="1" data-c="9"></div><div class="cell" data-r="1" data-c="10"></div><div class="cell" data-r="1" data-c="11"></div><div class="cell" data-r="1" data-c="12"></div><div class="cell dw" data-r="1" data-c="13"></div><div class="cell" data-r="1" data-c="14"></div><div class="cell" data-r="2" data-c="0"></div><div class="cell" data-r="2" data-c="1"></div><div class="cell dw" data-r="2" data-c="2"></div><div class="cell" data-r="2" data-c="3"></div><div class="cell" data-r="2" data-c="4"></div><div class="cell" data-r="2" data-c="5"></div><div class="cell dl" data-r="2" data-c="6"></div><div class="cell" data-r="2" data-c="7"></div><div class="cell dl" data-r="2" data-c="8"></div><div class="cell" data-r="2" data-c="9"></div><div class="cell" data-r="2" data-c="10"></div><div class="cell" data-r="2" data-c="11"></div><div class="cell dw" data-r="2" data-c="12"></div><div class="cell" data-r="2" data-c="13"></div><div class="cell" data-r="2" data-c="14"></div><div class="cell dl" data-r="3" data-c="0"></div><div class="cell" data-r="3" data-c="1"></div><div class="cell" data-r="3" data-c="2"></div><div class="cell dw" data-r="3" data-c="3"></div><div class="cell" data-r="3" data-c="4"></div><div class="cell" data-r="3" data-c="5"></div><div class="cell" data-r="3" data-c="6"></div><div class="cell dl" data-r="3" data-c="7"></div><div class="cell" data-r="3" data-c="8"></div><div class="cell" data-r="3" data-c="9"></div><div class="cell" data-r="3" data-c="10"></div><div class="cell dw" data-r="3" data-c="11"></div><div class="cell" data-r="3" data-c="12"></div><div class="cell" data-r="3" data-c="13"></div><div class="cell dl" data-r="3" data-c="14"></div><div class="cell" data-r="4" data-c="0"></div><div class="cell" data-r="4" data-c="1"></div><div class="cell" data-r="4" data-c="2"></div><div class="cell" data-r="4" data-c="3"></div><div class="cell dw" data-r="4" data-c="4"></div><div class="cell" data-r="4" data-c="5"></div><div class="cell" data-r="4" data-c="6"></div><div class="cell" data-r="4" data-c="7"></div><div class="cell" data-r="4" data-c="8"></div><div class="cell" data-r="4" data-c="9"></div><div class="cell dw" data-r="4" data-c="10"></div><div class="cell" data-r="4" data-c="11"></div><div class="cell" data-r="4" data-c="12"></div><div class="cell" data-r="4" data-c="13"></div><div class="cell" data-r="4" data-c="14"></div><div class="cell" data-r="5" data-c="0"></div><div class="cell tl" data-r="5" data-c="1"></div><div class="cell" data-r="5" data-c="2"></div><div class="cell" data-r="5" data-c="3"></div><div class="cell" data-r="5" data-c="4"></div><div class="cell tl" data-r="5" data-c="5"></div><div class="cell" data-r="5" data-c="6"></div><div class="cell" data-r="5" data-c="7"></div><div class="cell" data-r="5" data-c="8"></div><div class="cell tl" data-r="5" data-c="9"></div><div class="cell has-tile" data-r="5" data-c="10"><div class="btile"><span class="bl">G</span><span class="bv">2</span></div></div><div class="cell" data-r="5" data-c="11"></div><div class="cell" data-r="5" data-c="12"></div><div class="cell tl" data-r="5" data-c="13"></div><div class="cell" data-r="5" data-c="14"></div><div class="cell" data-r="6" data-c="0"></div><div class="cell" data-r="6" data-c="1"></div><div class="cell dl" data-r="6" data-c="2"></div><div class="cell" data-r="6" data-c="3"></div><div class="cell" data-r="6" data-c="4"></div><div class="cell" data-r="6" data-c="5"></div><div class="cell dl" data-r="6" data-c="6"></div><div class="cell" data-r="6" data-c="7"></div><div class="cell dl" data-r="6" data-c="8"></div><div class="cell" data-r="6" data-c="9"></div><div class="cell has-tile" data-r="6" data-c="10"><div class="btile"><span class="bl">U</span><span class="bv">1</span></div></div><div class="cell" data-r="6" data-c="11"></div><div class="cell dl" data-r="6" data-c="12"></div><div class="cell" data-r="6" data-c="13"></div><div class="cell" data-r="6" data-c="14"></div><div class="cell tw" data-r="7" data-c="0"></div><div class="cell" data-r="7" data-c="1"></div><div class="cell" data-r="7" data-c="2"></div><div class="cell dl" data-r="7" data-c="3"></div><div class="cell" data-r="7" data-c="4"></div><div class="cell" data-r="7" data-c="5"></div><div class="cell" data-r="7" data-c="6"></div><div class="cell has-tile" data-r="7" data-c="7"><div class="btile"><span class="bl">P</span><span class="bv">3</span></div></div><div class="cell has-tile" data-r="7" data-c="8"><div class="btile"><span class="bl">I</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="10"><div class="btile"><span class="bl">S</span><span class="bv">1</span></div></div><div class="cell dl" data-r="7" data-c="11"></div><div class="cell" data-r="7" data-c="12"></div><div class="cell" data-r="7" data-c="13"></div><div class="cell tw" data-r="7" data-c="14"></div><div class="cell" data-r="8" data-c="0"></div><div class="cell" data-r="8" data-c="1"></div><div class="cell dl" data-r="8" data-c="2"></div><div class="cell" data-r="8" data-c="3"></div><div class="cell" data-r="8" data-c="4"></div><div class="cell" data-r="8" data-c="5"></div><div class="cell dl" data-r="8" data-c="6"></div><div class="cell" data-r="8" data-c="7"></div><div class="cell dl" data-r="8" data-c="8"></div><div class="cell" data-r="8" data-c="9"></div><div class="cell" data-r="8" data-c="10"></div><div class="cell" data-r="8" data-c="11"></div><div class="cell dl" data-r="8" data-c="12"></div><div class="cell" data-r="8" data-c="13"></div><div class="cell" data-r="8" data-c="14"></div><div class="cell" data-r="9" data-c="0"></div><div class="cell tl" data-r="9" data-c="1"></div><div class="cell" data-r="9" data-c="2"></div><div class="cell" data-r="9" data-c="3"></div><div class="cell" data-r="9" data-c="4"></div><div class="cell tl" data-r="9" data-c="5"></div><div class="cell" data-r="9" data-c="6"></div><div class="cell" data-r="9" data-c="7"></div><div class="cell" data-r="9" data-c="8"></div><div class="cell tl" data-r="9" data-c="9"></div><div class="cell" data-r="9" data-c="10"></div><div class="cell" data-r="9" data-c="11"></div><div class="cell" data-r="9" data-c="12"></div><div class="cell tl" data-r="9" data-c="13"></div><div class="cell" data-r="9" data-c="14"></div><div class="cell" data-r="10" data-c="0"></div><div class="cell" data-r="10" data-c="1"></div><div class="cell" data-r="10" data-c="2"></div><div class="cell" data-r="10" data-c="3"></div><div class="cell dw" data-r="10" data-c="4"></div><div class="cell" data-r="10" data-c="5"></div><div class="cell" data-r="10" data-c="6"></div><div class="cell" data-r="10" data-c="7"></div><div class="cell" data-r="10" data-c="8"></div><div class="cell" data-r="10" data-c="9"></div><div class="cell dw" data-r="10" data-c="10"></div><div class="cell" data-r="10" data-c="11"></div><div class="cell" data-r="10" data-c="12"></div><div class="cell" data-r="10" data-c="13"></div><div class="cell" data-r="10" data-c="14"></div><div class="cell dl" data-r="11" data-c="0"></div><div class="cell" data-r="11" data-c="1"></div><div class="cell" data-r="11" data-c="2"></div><div class="cell dw" data-r="11" data-c="3"></div><div class="cell" data-r="11" data-c="4"></div><div class="cell" data-r="11" data-c="5"></div><div class="cell" data-r="11" data-c="6"></div><div class="cell dl" data-r="11" data-c="7"></div><div class="cell" data-r="11" data-c="8"></div><div class="cell" data-r="11" data-c="9"></div><div class="cell" data-r="11" data-c="10"></div><div class="cell dw" data-r="11" data-c="11"></div><div class="cell" data-r="11" data-c="12"></div><div class="cell" data-r="11" data-c="13"></div><div class="cell dl" data-r="11" data-c="14"></div><div class="cell" data-r="12" data-c="0"></div><div class="cell" data-r="12" data-c="1"></div><div class="cell dw" data-r="12" data-c="2"></div><div class="cell" data-r="12" data-c="3"></div><div class="cell" data-r="12" data-c="4"></div><div class="cell" data-r="12" data-c="5"></div><div class="cell dl" data-r="12" data-c="6"></div><div class="cell" data-r="12" data-c="7"></div><div class="cell dl" data-r="12" data-c="8"></div><div class="cell" data-r="12" data-c="9"></div><div class="cell" data-r="12" data-c="10"></div><div class="cell" data-r="12" data-c="11"></div><div class="cell dw" data-r="12" data-c="12"></div><div class="cell" data-r="12" data-c="13"></div><div class="cell" data-r="12" data-c="14"></div><div class="cell" data-r="13" data-c="0"></div><div class="cell dw" data-r="13" data-c="1"></div><div class="cell" data-r="13" data-c="2"></div><div class="cell" data-r="13" data-c="3"></div><div class="cell" data-r="13" data-c="4"></div><div class="cell tl" data-r="13" data-c="5"></div><div class="cell" data-r="13" data-c="6"></div><div class="cell" data-r="13" data-c="7"></div><div class="cell" data-r="13" data-c="8"></div><div class="cell tl" data-r="13" data-c="9"></div><div class="cell" data-r="13" data-c="10"></div><div class="cell" data-r="13" data-c="11"></div><div class="cell" data-r="13" data-c="12"></div><div class="cell dw" data-r="13" data-c="13"></div><div class="cell" data-r="13" data-c="14"></div><div class="cell tw" data-r="14" data-c="0"></div><div class="cell" data-r="14" data-c="1"></div><div class="cell" data-r="14" data-c="2"></div><div class="cell dl" data-r="14" data-c="3"></div><div class="cell" data-r="14" data-c="4"></div><div class="cell" data-r="14" data-c="5"></div><div class="cell" data-r="14" data-c="6"></div><div class="cell tw" data-r="14" data-c="7"></div><div class="cell" data-r="14" data-c="8"></div><div class="cell" data-r="14" data-c="9"></div><div class="cell" data-r="14" data-c="10"></div><div class="cell dl" data-r="14" data-c="11"></div><div class="cell" data-r="14" data-c="12"></div><div class="cell" data-r="14" data-c="13"></div><div class="cell tw" data-r="14" data-c="14"></div></div>
+    <div id="board-panner">
+      <div id="board"></div>
     </div>
     <svg id="word-outline" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;overflow:visible;"></svg>
     <div class="preview-float" id="preview-float">
       <span class="pf-words" id="pf-words"></span>
       <span class="pf-pts" id="pf-pts"></span>
     </div>
-    <div class="zoom-hint" id="zoom-hint">Doble toque para alejar</div>
+    <div class="zoom-hint" id="zoom-hint">⊖ doble toque para alejar</div>
     <div class="toast-modal" id="toast-modal">
       <span class="tm-text">🇲🇽 Jugaste <b id="tm-word">–</b> por <b id="tm-pts">–</b> puntos</span>
       <span class="tm-gem">💎 <span id="tm-gems">5</span></span>
@@ -224,12 +276,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   </div>
 
   <div class="rack-area" id="rack-area">
-    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">R</span><span class="rv">1</span></div><div class="rtile"><span class="rl">A</span><span class="rv">1</span></div><div class="rtile"><span class="rl">T</span><span class="rv">1</span></div><div class="rtile"><span class="rl">B</span><span class="rv">3</span></div></div>
+    <div class="rack-tiles" id="rack"></div>
     <div class="action-row">
       <button class="abtn abtn-sec" onclick="recallAll()">↩ Retira</button>
       <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ Mezclar</button>
       <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
-      <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
+      <button class="abtn abtn-play" id="play-btn" disabled onclick="playWord()">Jugar</button>
       <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
     </div>
   </div>
@@ -242,7 +294,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <div class="swap-tiles-row" id="swap-tiles-row"></div>
       <div class="swap-actions">
         <button class="swap-cancel" onclick="closeSwap()">Cancelar</button>
-        <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()">Selecciona fichas</button>
+        <button class="swap-confirm" id="swap-confirm-btn" disabled onclick="confirmSwap()">Selecciona fichas</button>
       </div>
     </div>
   </div>
@@ -254,7 +306,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🎮 More Games</button>
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">⚙️ Settings</button>
     </div>
-    <button onclick="G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
+    <button onclick="G&&G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
     <div class="slbl">Mis estadísticas</div>
     <div class="sgrid">
       <div class="sc"><div class="sv2">–</div><div class="sl2">Ganadas</div></div>
@@ -269,670 +321,606 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <div style="color:rgba(255,255,255,0.3);font-size:12px;text-align:center;padding:8px;">Cargando...</div>
     </div>
   </div>
-
 </div>
 
 <div id="ghost"><div class="gl" id="ghost-l"></div><div class="gv" id="ghost-v"></div></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// ALL SHARED STATE — on window so both script tags share it
-// ═══════════════════════════════════════════════════════
+// ══════════════════════════════════════
+// SHARED STATE (window.S)
+// ══════════════════════════════════════
 window.S = {
-  boardFixed: {},   // committed tiles from previous turns
-  boardNew:   {},   // tiles placed this turn (not yet played)
-  rack:       [],   // current player's rack
-  scale: 1, panX: 0, panY: 0,
-  boardPx: 0,
-  tapSelected: null,
-  dragSrc: null, isDragging: false, dragMoved: false,
-  pSX: 0, pSY: 0, snapKey: null,
-  lastPlacedDir: null,
-  lastTapT: 0, lastTapX: 0, lastTapY: 0,
-  isPanning: false, panSX: 0, panSY: 0, panSTX: 0, panSTY: 0,
-  swapPicked: new Set(),
-  gemCount: 5,
-  currentGameId: null,
-  myUid: null,
+  boardFixed:{}, boardNew:{}, rack:[],
+  // pan & zoom: panX/panY are offsets ADDED to the base centre position
+  scale:1, panX:0, panY:0,
+  // base position of panner (centres board in wrap when no pan)
+  baseLeft:0, baseTop:0,
+  boardPx:0, cellPx:0,
+  tapSelected:null,
+  dragSrc:null, isDragging:false, dragMoved:false,
+  pSX:0, pSY:0, snapKey:null, _hasZoomed:false,
+  lastPlacedDir:null,
+  isPanning:false, panSX:0, panSY:0, panSTX:0, panSTY:0,
+  swapPicked:new Set(),
+  gemCount:5, currentGameId:null, myUid:null,
 };
 
-// ── CONSTANTS ──
-const GRID = 15;
-const ZOOM = 2.2;
-const VALS = {A:1,B:3,C:3,D:2,E:1,F:4,G:2,H:4,I:1,J:8,L:1,M:3,N:1,'Ñ':8,O:1,P:3,Q:5,R:1,S:1,T:1,U:1,V:4,X:8,Y:4,Z:10,' ':0};
-const lv = l => VALS[l] || 0;
-
-const PREMIUMS = {};
+const GRID=15, ZOOM=2.2;
+const VALS={A:1,B:3,C:3,D:2,E:1,F:4,G:2,H:4,I:1,J:8,L:1,M:3,N:1,'Ñ':8,O:1,P:3,Q:5,R:1,S:1,T:1,U:1,V:4,X:8,Y:4,Z:10,' ':0};
+const lv=l=>VALS[l]||0;
+const PREMIUMS={};
 [['0-0','0-7','0-14','7-0','7-14','14-0','14-7','14-14']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tw'));
 [['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1','1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
 [['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13','1-5','13-5','1-9','13-9']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
 [['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6','6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12','11-0','11-7','11-14','12-6','12-8','14-3','14-11']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
-PREMIUMS['7-7'] = 'dw'; // centre star = double word
+PREMIUMS['7-7']='dw'; // centre star = double word score
 
-const ghost  = document.getElementById('ghost');
-const ghostL = document.getElementById('ghost-l');
-const ghostV = document.getElementById('ghost-v');
+const ghost=document.getElementById('ghost');
+const ghostL=document.getElementById('ghost-l');
+const ghostV=document.getElementById('ghost-v');
+const $=id=>document.getElementById(id);
 
-// ── SHORTCUTS ──
-const $ = id => document.getElementById(id);
-
-// ── SIZING ──
-function sizeBoard() {
-  const wrap = $('board-wrap');
-  const raw  = wrap.clientWidth;
-  window.S.boardPx = Math.floor(raw / 15) * 15;
-  const bp = window.S.boardPx;
-  const panner = $('board-panner');
-  const board  = $('board');
-  panner.style.width  = bp + 'px';
-  panner.style.height = bp + 'px';
-  board.style.width   = bp + 'px';
-  board.style.height  = bp + 'px';
-  const wrapH   = wrap.clientHeight;
-  const offsetY = Math.max(6, Math.floor((wrapH - bp) / 2));
-  panner.style.top  = offsetY + 'px';
-  panner.style.left = Math.floor((raw - bp) / 2) + 'px';
+// ── BOARD SIZING ──
+// boardPx = side length of the board in CSS px (square, = wrap width)
+// baseLeft/baseTop = where panner sits when pan=0 (centred in wrap)
+function sizeBoard(){
+  const wrap=$('board-wrap');
+  const ww=wrap.clientWidth, wh=wrap.clientHeight;
+  // Board is a square equal to the wrap width
+  const bp=ww;
+  window.S.boardPx=bp;
+  window.S.cellPx=bp/GRID;
+  window.S.baseLeft=0;                          // board fills full width
+  window.S.baseTop=Math.max(0,(wh-bp)/2);       // centred vertically
+  const panner=$('board-panner');
+  const board=$('board');
+  panner.style.width=bp+'px';
+  panner.style.height=bp+'px';
+  board.style.width=bp+'px';
+  board.style.height=bp+'px';
+  // Reset pan/zoom on resize
+  window.S.panX=0; window.S.panY=0; window.S.scale=1;
+  applyTransform(false);
 }
 
-function getOffsetY() {
-  const wrap = $('board-wrap');
-  return Math.max(6, Math.floor((wrap.clientHeight - window.S.boardPx) / 2));
-}
-function getPannerLeft() {
-  const wrap = $('board-wrap');
-  return Math.floor((wrap.clientWidth - window.S.boardPx) / 2);
-}
-
-function applyTransform(anim) {
-  const p = $('board-panner');
-  const {panX, panY, scale} = window.S;
-  p.style.transition = anim ? 'transform 0.26s cubic-bezier(0.34,1.3,0.64,1)' : 'none';
-  p.style.transform  = `translate(${panX}px,${panY}px) scale(${scale})`;
+// ── TRANSFORM ──
+// The panner's CSS: position absolute, top=baseTop+panY, left=baseLeft+panX
+// Scale is applied via CSS transform from top-left origin
+function applyTransform(anim){
+  const p=$('board-panner');
+  const {panX,panY,scale,baseLeft,baseTop}=window.S;
+  p.style.transition=anim?'transform 0.26s cubic-bezier(0.34,1.3,0.64,1)':'none';
+  // Position the panner at its base, then apply pan offset and scale
+  p.style.left=baseLeft+'px';
+  p.style.top=baseTop+'px';
+  p.style.transformOrigin='0 0';
+  p.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;
 }
 
-function clampPan() {
-  const wrap = $('board-wrap');
-  const wRect = wrap.getBoundingClientRect();
-  const ww = wRect.width, wh = wRect.height;
-  const {boardPx, scale} = window.S;
-  const sW = boardPx * scale;
-  // Allow panning so board edges can reach wrap edges
-  const minX = ww - sW;
-  const maxX = 0;
-  const minY = wh - sW;
-  const maxY = 0;
-  window.S.panX = Math.min(maxX, Math.max(minX, window.S.panX));
-  window.S.panY = Math.min(maxY, Math.max(minY, window.S.panY));
+function clampPan(){
+  const wrap=$('board-wrap');
+  const ww=wrap.clientWidth, wh=wrap.clientHeight;
+  const {boardPx,scale,baseLeft,baseTop}=window.S;
+  const scaledBp=boardPx*scale;
+  // Pan limits: board edges must not go beyond wrap edges
+  // Left edge: baseLeft+panX >= 0  →  panX >= -baseLeft
+  // Right edge: baseLeft+panX+scaledBp <= ww  →  panX <= ww-baseLeft-scaledBp
+  const minX=Math.min(0, ww-baseLeft-scaledBp);
+  const maxX=Math.max(0,-baseLeft);
+  // Top edge: baseTop+panY >= 0  →  panY >= -baseTop
+  // Bottom edge: baseTop+panY+scaledBp <= wh  →  panY <= wh-baseTop-scaledBp
+  const minY=Math.min(0, wh-baseTop-scaledBp);
+  const maxY=Math.max(0,-baseTop);
+  window.S.panX=Math.min(maxX,Math.max(minX,window.S.panX));
+  window.S.panY=Math.min(maxY,Math.max(minY,window.S.panY));
 }
 
-function zoomToPoint(lx, ly, ns) {
-  const {scale, panX, panY} = window.S;
-  const r = ns / scale;
-  window.S.panX = lx - (lx - panX) * r;
-  window.S.panY = ly - (ly - panY) * r;
-  window.S.scale = ns;
-  clampPan();
-  applyTransform(true);
-  if (ns > 1.05) {
-    $('zoom-hint').classList.add('show');
-    clearTimeout(window._zt);
-    window._zt = setTimeout(() => $('zoom-hint').classList.remove('show'), 2500);
-  }
-}
-
-function zoomOut() {
-  window.S.scale = 1; window.S.panX = 0; window.S.panY = 0;
-  window.S._velX = 0; window.S._velY = 0;
-  window.S.isPanning = false;
+function zoomOut(){
+  window.S.scale=1; window.S.panX=0; window.S.panY=0;
+  window.S.isPanning=false; window.S._hasZoomed=false;
   applyTransform(true);
   $('zoom-hint').classList.remove('show');
   $('board-wrap').classList.remove('panning');
 }
 
-function cellCenter(r, c) {
-  const pannerEl = $('board-panner');
-  const pr = pannerEl.getBoundingClientRect();
-  const {boardPx, scale} = window.S;
-  const cs = boardPx / GRID;
+function zoomToWrapPoint(wx,wy,ns){
+  // wx,wy = point in wrap-local coords (relative to wrap top-left)
+  // We want that point to stay fixed as we zoom
+  const {scale,panX,panY,baseLeft,baseTop}=window.S;
+  // Current board-local coords of that point:
+  // wx = baseLeft+panX + boardLocal_x*scale
+  // boardLocal_x = (wx - baseLeft - panX) / scale
+  // After zoom: wx = baseLeft+newPanX + boardLocal_x*newScale
+  // → newPanX = wx - baseLeft - boardLocal_x*newScale
+  const boardX=(wx-baseLeft-panX)/scale;
+  const boardY=(wy-baseTop-panY)/scale;
+  window.S.panX=wx-baseLeft-boardX*ns;
+  window.S.panY=wy-baseTop-boardY*ns;
+  window.S.scale=ns;
+  clampPan();
+  applyTransform(true);
+  $('zoom-hint').classList.add('show');
+  clearTimeout(window._zt);
+  window._zt=setTimeout(()=>$('zoom-hint').classList.remove('show'),3000);
+}
+
+// ── COORDINATE HELPERS ──
+// Convert client coords to board cell {r,c}
+function clientToCell(cx,cy){
+  const wrap=$('board-wrap');
+  const wr=wrap.getBoundingClientRect();
+  const {boardPx,scale,panX,panY,baseLeft,baseTop}=window.S;
+  const cs=boardPx/GRID;
+  // wrap-local coords
+  const wx=cx-wr.left, wy=cy-wr.top;
+  // board-local coords (undo base position, pan, and scale)
+  const bx=(wx-baseLeft-panX)/scale;
+  const by=(wy-baseTop-panY)/scale;
+  const c=Math.floor(bx/cs), r=Math.floor(by/cs);
+  if(r<0||r>=GRID||c<0||c>=GRID) return null;
+  return {r,c};
+}
+
+// Get client coords of centre of cell (r,c)
+function cellCenter(r,c){
+  const wrap=$('board-wrap');
+  const wr=wrap.getBoundingClientRect();
+  const {boardPx,scale,panX,panY,baseLeft,baseTop}=window.S;
+  const cs=boardPx/GRID;
   return {
-    x: pr.left + (c + 0.5) * cs * scale,
-    y: pr.top  + (r + 0.5) * cs * scale
+    x: wr.left + baseLeft + panX + (c+0.5)*cs*scale,
+    y: wr.top  + baseTop  + panY + (r+0.5)*cs*scale,
   };
 }
 
-function clientToCell(cx, cy) {
-  const pannerEl = $('board-panner');
-  const pr = pannerEl.getBoundingClientRect();
-  const {boardPx, scale} = window.S;
-  const cs = boardPx / GRID;
-  const bx = (cx - pr.left) / scale;
-  const by = (cy - pr.top)  / scale;
-  const c = Math.floor(bx / cs);
-  const r = Math.floor(by / cs);
-  if (r < 0 || r >= GRID || c < 0 || c >= GRID) return null;
-  return {r, c};
-}
-
 // ── SMART SNAP ──
-function getSnapTarget(cx, cy) {
-  const {boardPx, scale, boardFixed, boardNew} = window.S;
-  const cs  = (boardPx / GRID) * scale;
-  const placed = Object.keys(boardNew);
-  const all  = {...boardFixed, ...boardNew};
+function getSnapTarget(cx,cy){
+  const {boardPx,scale,boardFixed,boardNew}=window.S;
+  const cs=(boardPx/GRID)*scale;
+  const placed=Object.keys(boardNew);
+  const all={...boardFixed,...boardNew};
+  const SNAP_R=cs*1.5; // snap radius = 1.5 cells in screen px
 
-  if (placed.length > 0) {
-    const dir = getDir();
-    if (dir === 'H') {
-      const row  = +placed[0].split('-')[0];
-      const cols = placed.map(k => +k.split('-')[1]).sort((a,b) => a-b);
-      for (const nc of [cols[cols.length-1]+1, cols[0]-1]) {
-        if (nc < 0 || nc >= GRID) continue;
-        let cc = nc;
-        while (cc >= 0 && cc < GRID && all[`${row}-${cc}`]) cc += (nc > cols[cols.length-1] ? 1 : -1);
-        if (cc < 0 || cc >= GRID) continue;
-        const k = `${row}-${cc}`;
-        if (boardFixed[k] || boardNew[k]) continue;
-        const ctr = cellCenter(row, cc);
-        if (Math.hypot(cx-ctr.x, cy-ctr.y) < cs*2.8) return k;
+  // 1: continue established direction
+  if(placed.length>0){
+    const dir=getDir();
+    if(dir==='H'){
+      const row=+placed[0].split('-')[0];
+      const cols=placed.map(k=>+k.split('-')[1]).sort((a,b)=>a-b);
+      for(const nc of [cols[cols.length-1]+1,cols[0]-1]){
+        let cc=nc;
+        // skip over occupied
+        const step=nc>cols[cols.length-1]?1:-1;
+        while(cc>=0&&cc<GRID&&all[`${row}-${cc}`]) cc+=step;
+        if(cc<0||cc>=GRID) continue;
+        const k=`${row}-${cc}`;
+        if(boardFixed[k]||boardNew[k]) continue;
+        const ctr=cellCenter(row,cc);
+        if(Math.hypot(cx-ctr.x,cy-ctr.y)<SNAP_R*2) return k;
       }
-    } else if (dir === 'V') {
-      const col  = +placed[0].split('-')[1];
-      const rows = placed.map(k => +k.split('-')[0]).sort((a,b) => a-b);
-      for (const nr of [rows[rows.length-1]+1, rows[0]-1]) {
-        if (nr < 0 || nr >= GRID) continue;
-        let rr = nr;
-        while (rr >= 0 && rr < GRID && all[`${rr}-${col}`]) rr += (nr > rows[rows.length-1] ? 1 : -1);
-        if (rr < 0 || rr >= GRID) continue;
-        const k = `${rr}-${col}`;
-        if (boardFixed[k] || boardNew[k]) continue;
-        const ctr = cellCenter(rr, col);
-        if (Math.hypot(cx-ctr.x, cy-ctr.y) < cs*2.8) return k;
+    } else if(dir==='V'){
+      const col=+placed[0].split('-')[1];
+      const rows=placed.map(k=>+k.split('-')[0]).sort((a,b)=>a-b);
+      for(const nr of [rows[rows.length-1]+1,rows[0]-1]){
+        let rr=nr;
+        const step=nr>rows[rows.length-1]?1:-1;
+        while(rr>=0&&rr<GRID&&all[`${rr}-${col}`]) rr+=step;
+        if(rr<0||rr>=GRID) continue;
+        const k=`${rr}-${col}`;
+        if(boardFixed[k]||boardNew[k]) continue;
+        const ctr=cellCenter(rr,col);
+        if(Math.hypot(cx-ctr.x,cy-ctr.y)<SNAP_R*2) return k;
       }
     }
   }
 
-  const cands = [];
-  for (const key of [...Object.keys(boardFixed), ...Object.keys(boardNew)]) {
-    const [fr, fc] = key.split('-').map(Number);
-    for (const [dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
-      const nr=fr+dr, nc=fc+dc;
-      if (nr<0||nr>=GRID||nc<0||nc>=GRID) continue;
-      const k = `${nr}-${nc}`;
-      if (all[k]) continue;
-      const ctr = cellCenter(nr, nc);
-      const dist = Math.hypot(cx-ctr.x, cy-ctr.y);
-      const isEnd = !all[`${nr-dr}-${nc-dc}`];
-      cands.push({k, dist, isEnd});
+  // 2: adjacent to any existing tile — prefer word ends
+  const cands=[];
+  for(const key of [...Object.keys(boardFixed),...Object.keys(boardNew)]){
+    const[fr,fc]=key.split('-').map(Number);
+    for(const[dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const nr=fr+dr,nc=fc+dc;
+      if(nr<0||nr>=GRID||nc<0||nc>=GRID) continue;
+      const k=`${nr}-${nc}`;
+      if(all[k]) continue;
+      const ctr=cellCenter(nr,nc);
+      const dist=Math.hypot(cx-ctr.x,cy-ctr.y);
+      const isEnd=!all[`${nr-dr}-${nc-dc}`];
+      cands.push({k,dist,isEnd});
     }
   }
-  cands.sort((a,b) => a.isEnd===b.isEnd ? a.dist-b.dist : (a.isEnd?-1:1));
-  for (const cd of cands) {
-    if (cd.dist < cs*2.0 && !boardFixed[cd.k] && !boardNew[cd.k]) return cd.k;
+  cands.sort((a,b)=>a.isEnd===b.isEnd?a.dist-b.dist:(a.isEnd?-1:1));
+  for(const cd of cands){
+    if(cd.dist<SNAP_R&&!boardFixed[cd.k]&&!boardNew[cd.k]) return cd.k;
   }
 
-  const ex = clientToCell(cx, cy);
-  if (ex) { const k=`${ex.r}-${ex.c}`; if (!boardFixed[k]&&!boardNew[k]) return k; }
+  // 3: exact cell under finger
+  const ex=clientToCell(cx,cy);
+  if(ex){const k=`${ex.r}-${ex.c}`;if(!boardFixed[k]&&!boardNew[k])return k;}
 
-  let bk=null, bd=cs*2.2;
-  for (let r=0;r<GRID;r++) for (let c=0;c<GRID;c++) {
-    const k=`${r}-${c}`;
-    if (boardFixed[k]||boardNew[k]) continue;
-    const ctr=cellCenter(r,c), d=Math.hypot(cx-ctr.x,cy-ctr.y);
-    if (d<bd){bd=d;bk=k;}
-  }
-  return bk;
-}
-
-function getDir() {
-  const placed = Object.keys(window.S.boardNew);
-  if (placed.length <= 1) return window.S.lastPlacedDir || null;
-  const rows = placed.map(k=>+k.split('-')[0]);
-  const cols = placed.map(k=>+k.split('-')[1]);
-  if (rows.every(r=>r===rows[0])) return 'H';
-  if (cols.every(c=>c===cols[0])) return 'V';
   return null;
 }
 
-function highlightSnap(key) {
+function getDir(){
+  const placed=Object.keys(window.S.boardNew);
+  if(placed.length<=1) return window.S.lastPlacedDir||null;
+  const rows=placed.map(k=>+k.split('-')[0]);
+  const cols=placed.map(k=>+k.split('-')[1]);
+  if(rows.every(r=>r===rows[0])) return 'H';
+  if(cols.every(c=>c===cols[0])) return 'V';
+  return null;
+}
+
+function highlightSnap(key){
   document.querySelectorAll('.cell.snap-target').forEach(c=>c.classList.remove('snap-target'));
-  if (!key) return;
-  const [r,c] = key.split('-');
-  const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-  if (cell && !cell.classList.contains('has-tile')) cell.classList.add('snap-target');
+  if(!key) return;
+  const[r,c]=key.split('-');
+  const cell=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+  if(cell&&!cell.classList.contains('has-tile')) cell.classList.add('snap-target');
 }
 
 // ── BUILD BOARD ──
-function buildBoard() {
-  const {boardFixed, boardNew, tapSelected, snapKey} = window.S;
-  const board = $('board');
-  board.innerHTML = '';
-  for (let r=0;r<GRID;r++) {
-    for (let c=0;c<GRID;c++) {
-      const key  = `${r}-${c}`;
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.dataset.r = r; cell.dataset.c = c;
-      if (boardFixed[key]) {
+function buildBoard(){
+  const{boardFixed,boardNew,tapSelected,snapKey}=window.S;
+  const board=$('board');
+  board.innerHTML='';
+  for(let r=0;r<GRID;r++){
+    for(let c=0;c<GRID;c++){
+      const key=`${r}-${c}`;
+      const cell=document.createElement('div');
+      cell.className='cell'; cell.dataset.r=r; cell.dataset.c=c;
+      if(boardFixed[key]){
         cell.classList.add('has-tile');
-        const bt = document.createElement('div');
-        bt.className = 'btile';
-        bt.innerHTML = `<span class="bl">${boardFixed[key]}</span><span class="bv">${lv(boardFixed[key])}</span>`;
+        const bt=document.createElement('div');
+        bt.className='btile';
+        bt.innerHTML=`<span class="bl">${boardFixed[key]}</span><span class="bv">${lv(boardFixed[key])}</span>`;
         cell.appendChild(bt);
-      } else if (boardNew[key]) {
+      } else if(boardNew[key]){
         cell.classList.add('has-tile');
-        const isSel = tapSelected && tapSelected.type==='board' && tapSelected.key===key;
-        const bt = document.createElement('div');
-        bt.className = 'btile new' + (isSel ? ' sel-board' : '');
-        bt.innerHTML = `<span class="bl">${boardNew[key]}</span><span class="bv">${lv(boardNew[key])}</span>`;
-        bt.addEventListener('pointerdown', e => { e.stopPropagation(); onTilePD(e, {type:'board',key,letter:boardNew[key]}); });
+        const isSel=tapSelected&&tapSelected.type==='board'&&tapSelected.key===key;
+        const bt=document.createElement('div');
+        bt.className='btile new'+(isSel?' sel-board':'');
+        bt.innerHTML=`<span class="bl">${boardNew[key]}</span><span class="bv">${lv(boardNew[key])}</span>`;
+        bt.addEventListener('pointerdown',e=>{e.stopPropagation();onTilePD(e,{type:'board',key,letter:boardNew[key]});});
         cell.appendChild(bt);
       } else {
-        const p = PREMIUMS[key];
-        if (p) cell.classList.add(p);
-        else if (r===7 && c===7) cell.classList.add('center');
+        if(r===7&&c===7) cell.classList.add('center');
+        else { const p=PREMIUMS[key]; if(p) cell.classList.add(p); }
       }
       board.appendChild(cell);
     }
   }
-  if (snapKey) highlightSnap(snapKey);
+  if(snapKey) highlightSnap(snapKey);
 }
 
 // ── BUILD RACK ──
-function buildRack() {
-  const {rack, tapSelected} = window.S;
-  const rackEl = $('rack');
-  rackEl.innerHTML = '';
-  rack.forEach((l, i) => {
-    const isSel = tapSelected && tapSelected.type==='rack' && tapSelected.idx===i;
-    const tile  = document.createElement('div');
-    tile.className = 'rtile' + (l===null?' empty':'') + (isSel?' sel':'');
-    if (l !== null) {
-      tile.innerHTML = `<span class="rl">${l}</span><span class="rv">${lv(l)}</span>`;
-      tile.addEventListener('pointerdown', e => onTilePD(e, {type:'rack',idx:i,letter:l}));
+function buildRack(){
+  const{rack,tapSelected}=window.S;
+  const rackEl=$('rack');
+  rackEl.innerHTML='';
+  rack.forEach((l,i)=>{
+    const isSel=tapSelected&&tapSelected.type==='rack'&&tapSelected.idx===i;
+    const tile=document.createElement('div');
+    tile.className='rtile'+(l===null?' empty':'')+(isSel?' sel':'');
+    if(l!==null){
+      tile.innerHTML=`<span class="rl">${l}</span><span class="rv">${lv(l)}</span>`;
+      tile.addEventListener('pointerdown',e=>onTilePD(e,{type:'rack',idx:i,letter:l}));
     }
     rackEl.appendChild(tile);
   });
 }
 
 // ── POINTER DOWN ON TILE ──
-function onTilePD(e, src) {
+function onTilePD(e,src){
   e.preventDefault(); e.stopPropagation();
-  const S = window.S;
-  S.pSX = e.clientX; S.pSY = e.clientY;
-  S.dragSrc = src; S.isDragging = false; S.dragMoved = false; S.snapKey = null;
-  ghostL.textContent = src.letter;
-  ghostV.textContent = lv(src.letter);
-  moveGhost(e.clientX, e.clientY);
-  if (src.type === 'rack') {
-    const tiles = document.querySelectorAll('.rtile');
-    if (tiles[src.idx]) tiles[src.idx].classList.add('drag-src');
+  const S=window.S;
+  S.pSX=e.clientX; S.pSY=e.clientY;
+  S.dragSrc=src; S.isDragging=false; S.dragMoved=false; S.snapKey=null;
+  ghostL.textContent=src.letter; ghostV.textContent=lv(src.letter);
+  moveGhost(e.clientX,e.clientY);
+  if(src.type==='rack'){
+    const tiles=document.querySelectorAll('.rtile');
+    if(tiles[src.idx]) tiles[src.idx].classList.add('drag-src');
   }
 }
 
-// ── BOARD BACKGROUND POINTER DOWN ──
-// Double-tap via touchend for iOS Safari compatibility
-let _lastTouchEnd = 0;
-$('board-wrap').addEventListener('touchend', e => {
-  const S = window.S;
-  if (S.dragSrc || S.isDragging) return;
-  const now = Date.now();
-  if (now - _lastTouchEnd < 350) {
-    e.preventDefault();
-    zoomOut();
-    _lastTouchEnd = 0;
-    return;
-  }
-  _lastTouchEnd = now;
-}, {passive:false});
+// ── BOARD BACKGROUND ──
+// Double-tap (iOS): use touchend timer
+let _lastTouch=0;
+$('board-wrap').addEventListener('touchend',e=>{
+  const S=window.S;
+  if(S.isDragging||S.dragSrc) return;
+  const now=Date.now();
+  if(now-_lastTouch<320){e.preventDefault();zoomOut();_lastTouch=0;return;}
+  _lastTouch=now;
+},{passive:false});
 
-$('board-wrap').addEventListener('pointerdown', e => {
-  const S = window.S;
-  if (S.dragSrc) return;
-  const now = Date.now();
-  const sameSpot = Math.hypot(e.clientX-S.lastTapX, e.clientY-S.lastTapY) < 22;
-  // Only use pointer double-tap on non-touch devices
-  if (e.pointerType !== 'touch' && now - S.lastTapT < 340 && sameSpot) { zoomOut(); S.lastTapT = 0; return; }
-  if (e.pointerType !== 'touch') { S.lastTapT = now; S.lastTapX = e.clientX; S.lastTapY = e.clientY; }
-  if (S.tapSelected) {
-    const cell = e.target.closest('.cell');
-    if (cell && !cell.classList.contains('has-tile')) {
-      placeTileAt(parseInt(cell.dataset.r), parseInt(cell.dataset.c)); return;
+$('board-wrap').addEventListener('pointerdown',e=>{
+  const S=window.S;
+  if(S.dragSrc) return;
+  // tap-to-place
+  if(S.tapSelected){
+    const cell=e.target.closest('.cell');
+    if(cell&&!cell.classList.contains('has-tile')){
+      placeTileAt(parseInt(cell.dataset.r),parseInt(cell.dataset.c)); return;
     }
-    if (!e.target.closest('.btile.new') && !e.target.closest('.rtile')) {
-      S.tapSelected = null; buildBoard(); buildRack(); return;
+    if(!e.target.closest('.btile.new')&&!e.target.closest('.rtile')){
+      S.tapSelected=null; buildBoard(); buildRack(); return;
     }
   }
-  S.isPanning = true;
-  S.panSX = e.clientX; S.panSY = e.clientY; S.panSTX = S.panX; S.panSTY = S.panY;
+  // start pan
+  S.isPanning=true;
+  S.panSX=e.clientX; S.panSY=e.clientY;
+  S.panSTX=S.panX; S.panSTY=S.panY;
   $('board-wrap').classList.add('panning');
-}, {passive:false});
+},{passive:false});
 
-// ── POINTER MOVE ──
-document.addEventListener('pointermove', e => {
-  const S = window.S;
-  if (S.dragSrc) {
-    const dd = Math.hypot(e.clientX-S.pSX, e.clientY-S.pSY);
-    if (!S.dragMoved && dd > 7) {
-      S.dragMoved = true; S.isDragging = true;
-      ghost.style.opacity = '1'; S.tapSelected = null;
+// ── POINTERMOVE ──
+document.addEventListener('pointermove',e=>{
+  const S=window.S;
+  if(S.dragSrc){
+    const dd=Math.hypot(e.clientX-S.pSX,e.clientY-S.pSY);
+    if(!S.dragMoved&&dd>8){
+      S.dragMoved=true; S.isDragging=true;
+      ghost.style.opacity='1'; S.tapSelected=null;
     }
-    if (!S.isDragging) return;
-    moveGhost(e.clientX, e.clientY);
-    // Zoom when entering board area
- // Zoom in once when tile first enters board area
- if (!S._hasZoomed && S.scale < ZOOM-0.1) {
-      const wrap  = $('board-wrap');
-      const wRect = wrap.getBoundingClientRect();
-      if (e.clientX>=wRect.left && e.clientX<=wRect.right &&
-          e.clientY>=wRect.top  && e.clientY<=wRect.bottom) {
-        S._hasZoomed = true;
-        zoomToPoint(e.clientX-wRect.left, e.clientY-wRect.top, ZOOM);
+    if(!S.isDragging) return;
+    moveGhost(e.clientX,e.clientY);
+
+    // Zoom in ONCE when tile first enters board area
+    if(!S._hasZoomed&&S.scale<ZOOM-0.1){
+      const wrap=$('board-wrap');
+      const wr=wrap.getBoundingClientRect();
+      if(e.clientX>=wr.left&&e.clientX<=wr.right&&e.clientY>=wr.top&&e.clientY<=wr.bottom){
+        S._hasZoomed=true;
+        zoomToWrapPoint(e.clientX-wr.left,e.clientY-wr.top,ZOOM);
       }
     }
+
     // Check if over rack
-    const rackEl   = $('rack-area');
-    const rackRect = rackEl.getBoundingClientRect();
-    const overRack = e.clientX>=rackRect.left && e.clientX<=rackRect.right &&
-                     e.clientY>=rackRect.top  && e.clientY<=rackRect.bottom;
-    if (overRack) {
+    const rackEl=$('rack-area');
+    const rr=rackEl.getBoundingClientRect();
+    const overRack=e.clientX>=rr.left&&e.clientX<=rr.right&&e.clientY>=rr.top&&e.clientY<=rr.bottom;
+    if(overRack){
       highlightSnap(null);
-      document.querySelectorAll('.rtile').forEach(rt => rt.classList.remove('drop-rack'));
-      let bestIdx=-1, bestDist=Infinity;
-      document.querySelectorAll('.rtile').forEach((rt, i) => {
-        if (S.rack[i] !== null) return;
-        const rr = rt.getBoundingClientRect();
-        const dist = Math.hypot(e.clientX-(rr.left+rr.width/2), e.clientY-(rr.top+rr.height/2));
-        if (dist < bestDist) { bestDist=dist; bestIdx=i; }
+      document.querySelectorAll('.rtile').forEach(rt=>rt.classList.remove('drop-rack'));
+      let bestIdx=-1,bestDist=Infinity;
+      document.querySelectorAll('.rtile').forEach((rt,i)=>{
+        if(S.rack[i]!==null) return;
+        const r=rt.getBoundingClientRect();
+        const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
+        if(d<bestDist){bestDist=d;bestIdx=i;}
       });
-      if (bestIdx >= 0) document.querySelectorAll('.rtile')[bestIdx]?.classList.add('drop-rack');
+      if(bestIdx>=0) document.querySelectorAll('.rtile')[bestIdx]?.classList.add('drop-rack');
     } else {
       document.querySelectorAll('.rtile.drop-rack').forEach(t=>t.classList.remove('drop-rack'));
-      const ns = getSnapTarget(e.clientX, e.clientY);
-      if (ns !== S.snapKey) { S.snapKey = ns; highlightSnap(ns); }
+      const ns=getSnapTarget(e.clientX,e.clientY);
+      if(ns!==S.snapKey){S.snapKey=ns;highlightSnap(ns);}
     }
     return;
   }
-  if (S.isPanning && S.scale > 1.05) {
-    S.panX = S.panSTX + (e.clientX-S.panSX);
-    S.panY = S.panSTY + (e.clientY-S.panSY);
-    clampPan(); applyTransform(false);
+
+  // Panning
+  if(S.isPanning&&S.scale>1.05){
+    S.panX=S.panSTX+(e.clientX-S.panSX);
+    S.panY=S.panSTY+(e.clientY-S.panSY);
+    clampPan();
+    applyTransform(false);
   }
 });
 
-// ── POINTER UP ──
-document.addEventListener('pointerup', e => {
-  const S = window.S;
+// ── POINTERUP ──
+document.addEventListener('pointerup',e=>{
+  const S=window.S;
   $('board-wrap').classList.remove('panning');
-  if (S.dragSrc) {
-    ghost.style.opacity = '0';
+
+  if(S.dragSrc){
+    ghost.style.opacity='0';
     document.querySelectorAll('.rtile.drag-src').forEach(t=>t.classList.remove('drag-src'));
     highlightSnap(null);
-    if (S.isDragging) {
-      const rackEl   = $('rack-area');
-      const rackRect = rackEl.getBoundingClientRect();
-      const overRack = e.clientX>=rackRect.left && e.clientX<=rackRect.right &&
-                       e.clientY>=rackRect.top  && e.clientY<=rackRect.bottom;
-      if (overRack) {
-        if (S.dragSrc.type==='board' && S.boardNew[S.dragSrc.key]) {
-          let targetIdx=-1, bestDist=Infinity;
+
+    if(S.isDragging){
+      const rackEl=$('rack-area');
+      const rr=rackEl.getBoundingClientRect();
+      const overRack=e.clientX>=rr.left&&e.clientX<=rr.right&&e.clientY>=rr.top&&e.clientY<=rr.bottom;
+
+      if(overRack){
+        // Drop back to rack
+        if(S.dragSrc.type==='board'&&S.boardNew[S.dragSrc.key]){
+          let tIdx=-1,bDist=Infinity;
           document.querySelectorAll('.rtile').forEach((rt,i)=>{
-            const rr=rt.getBoundingClientRect();
-            const dist=Math.hypot(e.clientX-(rr.left+rr.width/2),e.clientY-(rr.top+rr.height/2));
-            if(dist<bestDist&&S.rack[i]===null){bestDist=dist;targetIdx=i;}
+            const r=rt.getBoundingClientRect();
+            const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
+            if(d<bDist&&S.rack[i]===null){bDist=d;tIdx=i;}
           });
-          if (targetIdx===-1) targetIdx=S.rack.indexOf(null);
-          if (targetIdx>=0) {
-            S.rack[targetIdx]=S.dragSrc.letter;
-            delete S.boardNew[S.dragSrc.key];
-            S.lastPlacedDir=getDir();
-          }
-        } else if (S.dragSrc.type==='rack') {
-          let targetIdx=-1, bestDist=Infinity;
+          if(tIdx===-1) tIdx=S.rack.indexOf(null);
+          if(tIdx>=0){S.rack[tIdx]=S.dragSrc.letter;delete S.boardNew[S.dragSrc.key];S.lastPlacedDir=getDir();}
+        } else if(S.dragSrc.type==='rack'){
+          let tIdx=-1,bDist=Infinity;
           document.querySelectorAll('.rtile').forEach((rt,i)=>{
             if(i===S.dragSrc.idx) return;
-            const rr=rt.getBoundingClientRect();
-            const dist=Math.hypot(e.clientX-(rr.left+rr.width/2),e.clientY-(rr.top+rr.height/2));
-            if(dist<bestDist&&S.rack[i]===null){bestDist=dist;targetIdx=i;}
+            const r=rt.getBoundingClientRect();
+            const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
+            if(d<bDist&&S.rack[i]===null){bDist=d;tIdx=i;}
           });
-          if(targetIdx>=0){S.rack[targetIdx]=S.rack[S.dragSrc.idx];S.rack[S.dragSrc.idx]=null;}
+          if(tIdx>=0){S.rack[tIdx]=S.rack[S.dragSrc.idx];S.rack[S.dragSrc.idx]=null;}
         }
-      } else {
-        if (S.snapKey && !S.boardFixed[S.snapKey]) {
-          if (!S.boardNew[S.snapKey]) commitDragTo(S.snapKey);
-          else if (!(S.dragSrc.type==='board' && S.dragSrc.key===S.snapKey)) swapWith(S.snapKey);
-          S.lastPlacedDir = getDir();
-        }
+      } else if(S.snapKey&&!S.boardFixed[S.snapKey]){
+        if(!S.boardNew[S.snapKey]) commitDragTo(S.snapKey);
+        else if(!(S.dragSrc.type==='board'&&S.dragSrc.key===S.snapKey)) swapWith(S.snapKey);
+        S.lastPlacedDir=getDir();
       }
       S.isDragging=false; S.snapKey=null;
-    } else { handleTap(S.dragSrc); }
-    S.dragSrc=null; S._hasZoomed=false;
-    buildBoard(); buildRack(); updatePreview(); return;
-  }
-  if (S.isPanning) {
-    S.isPanning=false;
-    // Momentum deceleration
-    const velX = S._velX||0, velY = S._velY||0;
-    if (Math.abs(velX)>1 || Math.abs(velY)>1) {
-      let vx=velX, vy=velY;
-      const decay = () => {
-        if (!window.S.isPanning && (Math.abs(vx)>0.5||Math.abs(vy)>0.5)) {
-          window.S.panX += vx; window.S.panY += vy;
-          vx*=0.88; vy*=0.88;
-          clampPan(); applyTransform(false);
-          if (typeof updatePreview==='function') updatePreview();
-          requestAnimationFrame(decay);
-        }
-      };
-      requestAnimationFrame(decay);
+    } else {
+      handleTap(S.dragSrc);
     }
-    S._velX=0; S._velY=0;
+    S.dragSrc=null; S._hasZoomed=false;
+    buildBoard(); buildRack(); updatePreview();
+    return;
   }
+
+  if(S.isPanning) S.isPanning=false;
 });
 
-document.addEventListener('pointercancel', () => {
-  const S = window.S;
+document.addEventListener('pointercancel',()=>{
+  const S=window.S;
   ghost.style.opacity='0'; highlightSnap(null);
   document.querySelectorAll('.rtile.drag-src').forEach(t=>t.classList.remove('drag-src'));
   document.querySelectorAll('.rtile.drop-rack').forEach(t=>t.classList.remove('drop-rack'));
   $('board-wrap').classList.remove('panning');
-  S.dragSrc=null; S.isDragging=false; S.isPanning=false;
+  S.dragSrc=null; S.isDragging=false; S.isPanning=false; S._hasZoomed=false;
   buildBoard(); buildRack();
 });
 
 function moveGhost(x,y){ghost.style.left=(x-27)+'px';ghost.style.top=(y-66)+'px';}
+function commitDragTo(k){const S=window.S;if(S.dragSrc.type==='rack'){S.boardNew[k]=S.dragSrc.letter;S.rack[S.dragSrc.idx]=null;}else{delete S.boardNew[S.dragSrc.key];S.boardNew[k]=S.dragSrc.letter;}}
+function swapWith(k){const S=window.S;const dl=S.boardNew[k];if(S.dragSrc.type==='rack'){S.boardNew[k]=S.dragSrc.letter;S.rack[S.dragSrc.idx]=dl;}else{S.boardNew[k]=S.dragSrc.letter;S.boardNew[S.dragSrc.key]=dl;}}
 
-function commitDragTo(k) {
-  const S = window.S;
-  if (S.dragSrc.type==='rack') { S.boardNew[k]=S.dragSrc.letter; S.rack[S.dragSrc.idx]=null; }
-  else { delete S.boardNew[S.dragSrc.key]; S.boardNew[k]=S.dragSrc.letter; }
-}
-function swapWith(k) {
-  const S = window.S;
-  const dl = S.boardNew[k];
-  if (S.dragSrc.type==='rack') { S.boardNew[k]=S.dragSrc.letter; S.rack[S.dragSrc.idx]=dl; }
-  else { S.boardNew[k]=S.dragSrc.letter; S.boardNew[S.dragSrc.key]=dl; }
-}
-
-// ── TAP LOGIC ──
-function handleTap(src) {
-  const S = window.S;
-  if (S.tapSelected) {
-    if (src.type==='rack' && S.tapSelected.type==='rack') {
-      if (S.tapSelected.idx===src.idx) { S.tapSelected=null; buildRack(); return; }
-      const tmp=S.rack[S.tapSelected.idx]; S.rack[S.tapSelected.idx]=S.rack[src.idx]; S.rack[src.idx]=tmp;
-      S.tapSelected=null; buildRack(); return;
+// ── TAP ──
+function handleTap(src){
+  const S=window.S;
+  if(S.tapSelected){
+    if(src.type==='rack'&&S.tapSelected.type==='rack'){
+      if(S.tapSelected.idx===src.idx){S.tapSelected=null;buildRack();return;}
+      const tmp=S.rack[S.tapSelected.idx];S.rack[S.tapSelected.idx]=S.rack[src.idx];S.rack[src.idx]=tmp;
+      S.tapSelected=null;buildRack();return;
     }
-    if (src.type==='board' && S.tapSelected.type==='board') {
-      if (S.tapSelected.key===src.key) { S.tapSelected=null; buildBoard(); return; }
-      S.tapSelected=src; buildBoard(); return;
+    if(src.type==='board'&&S.tapSelected.type==='board'){
+      if(S.tapSelected.key===src.key){S.tapSelected=null;buildBoard();return;}
+      S.tapSelected=src;buildBoard();return;
     }
-    if (src.type==='board' && S.tapSelected.type==='rack' && S.boardNew[src.key]) {
-      const rl=S.rack[S.tapSelected.idx], bl=S.boardNew[src.key];
-      S.boardNew[src.key]=rl; S.rack[S.tapSelected.idx]=bl;
-      S.tapSelected=null; buildBoard(); buildRack(); return;
+    if(src.type==='board'&&S.tapSelected.type==='rack'&&S.boardNew[src.key]){
+      const rl=S.rack[S.tapSelected.idx],bl=S.boardNew[src.key];
+      S.boardNew[src.key]=rl;S.rack[S.tapSelected.idx]=bl;
+      S.tapSelected=null;buildBoard();buildRack();return;
     }
-    if (src.type==='rack' && S.tapSelected.type==='board') {
-      const rl=S.rack[src.idx], bl=S.boardNew[S.tapSelected.key];
-      S.boardNew[S.tapSelected.key]=rl; S.rack[src.idx]=bl;
-      S.tapSelected=null; buildBoard(); buildRack(); return;
+    if(src.type==='rack'&&S.tapSelected.type==='board'){
+      const rl=S.rack[src.idx],bl=S.boardNew[S.tapSelected.key];
+      S.boardNew[S.tapSelected.key]=rl;S.rack[src.idx]=bl;
+      S.tapSelected=null;buildBoard();buildRack();return;
     }
-    S.tapSelected=src; buildBoard(); buildRack(); return;
+    S.tapSelected=src;buildBoard();buildRack();return;
   }
-  if (src.type==='rack' && S.rack[src.idx]!==null) { S.tapSelected=src; buildRack(); }
-  else if (src.type==='board' && S.boardNew[src.key]) { S.tapSelected=src; buildBoard(); }
+  if(src.type==='rack'&&S.rack[src.idx]!==null){S.tapSelected=src;buildRack();}
+  else if(src.type==='board'&&S.boardNew[src.key]){S.tapSelected=src;buildBoard();}
 }
 
-function placeTileAt(r, c) {
-  const S = window.S;
-  const key = `${r}-${c}`;
-  if (S.boardFixed[key] || S.boardNew[key] || !S.tapSelected) return;
-  if (S.tapSelected.type==='rack') { S.boardNew[key]=S.rack[S.tapSelected.idx]; S.rack[S.tapSelected.idx]=null; }
-  else { S.boardNew[key]=S.boardNew[S.tapSelected.key]; delete S.boardNew[S.tapSelected.key]; }
+function placeTileAt(r,c){
+  const S=window.S;
+  const key=`${r}-${c}`;
+  if(S.boardFixed[key]||S.boardNew[key]||!S.tapSelected) return;
+  if(S.tapSelected.type==='rack'){S.boardNew[key]=S.rack[S.tapSelected.idx];S.rack[S.tapSelected.idx]=null;}
+  else{S.boardNew[key]=S.boardNew[S.tapSelected.key];delete S.boardNew[S.tapSelected.key];}
   S.lastPlacedDir=getDir(); S.tapSelected=null;
-  const ctr = cellCenter(r, c);
-  const wrap = $('board-wrap');
-  const rect = wrap.getBoundingClientRect();
-  if (S.scale < ZOOM-0.1) zoomToPoint(ctr.x-rect.left, ctr.y-rect.top, ZOOM);
-  buildBoard(); buildRack(); updatePreview();
+  // Zoom to placed cell
+  const ctr=cellCenter(r,c);
+  const wrap=$('board-wrap');
+  const wr=wrap.getBoundingClientRect();
+  if(S.scale<ZOOM-0.1) zoomToWrapPoint(ctr.x-wr.left,ctr.y-wr.top,ZOOM);
+  buildBoard();buildRack();updatePreview();
 }
 
 // ── RECALL / SHUFFLE ──
-function recallAll() {
-  const S = window.S;
-  Object.values(S.boardNew).forEach(l => { const i=S.rack.indexOf(null); if(i>=0) S.rack[i]=l; });
-  S.boardNew={}; S.tapSelected=null; S.snapKey=null; S.lastPlacedDir=null;
-  clearWordOutlines(); zoomOut(); buildBoard(); buildRack(); updatePreview();
+function recallAll(){
+  const S=window.S;
+  Object.values(S.boardNew).forEach(l=>{const i=S.rack.indexOf(null);if(i>=0)S.rack[i]=l;});
+  S.boardNew={};S.tapSelected=null;S.snapKey=null;S.lastPlacedDir=null;
+  clearWordOutlines();zoomOut();buildBoard();buildRack();updatePreview();
 }
-function shuffleRack() {
-  const S = window.S;
-  S.tapSelected=null;
-  const idxs = S.rack.map((l,i)=>l!==null?i:-1).filter(i=>i>=0);
-  const letters = idxs.map(i=>S.rack[i]);
+function shuffleRack(){
+  const S=window.S; S.tapSelected=null;
+  const idxs=S.rack.map((l,i)=>l!==null?i:-1).filter(i=>i>=0);
+  const letters=idxs.map(i=>S.rack[i]);
   for(let i=letters.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[letters[i],letters[j]]=[letters[j],letters[i]];}
   idxs.forEach((idx,i)=>S.rack[idx]=letters[i]);
   buildRack();
 }
 
 // ── SWAP ──
-function openSwap() {
-  const S = window.S;
-  if (Object.keys(S.boardNew).length>0) { alert('Retira tus fichas del tablero antes de cambiar.'); return; }
-  S.swapPicked.clear(); buildSwapPanel();
-  $('swap-overlay').classList.add('open');
+function openSwap(){
+  const S=window.S;
+  if(Object.keys(S.boardNew).length>0){alert('Retira tus fichas del tablero antes de cambiar.');return;}
+  S.swapPicked.clear();buildSwapPanel();$('swap-overlay').classList.add('open');
 }
-function closeSwap() { window.S.swapPicked.clear(); $('swap-overlay').classList.remove('open'); }
-function buildSwapPanel() {
-  const S = window.S;
-  const row = $('swap-tiles-row');
+function closeSwap(){window.S.swapPicked.clear();$('swap-overlay').classList.remove('open');}
+function buildSwapPanel(){
+  const S=window.S,row=$('swap-tiles-row');
   row.innerHTML='';
-  S.rack.forEach((l,i) => {
-    if (l===null) return;
-    const tile = document.createElement('div');
-    tile.className = 'swap-tile' + (S.swapPicked.has(i)?' picked':'');
-    tile.innerHTML = `<span class="sl">${l}</span><span class="sv">${lv(l)}</span>`;
-    tile.addEventListener('click', () => {
-      if(S.swapPicked.has(i)) S.swapPicked.delete(i); else S.swapPicked.add(i);
-      buildSwapPanel();
-    });
+  S.rack.forEach((l,i)=>{
+    if(l===null) return;
+    const tile=document.createElement('div');
+    tile.className='swap-tile'+(S.swapPicked.has(i)?' picked':'');
+    tile.innerHTML=`<span class="sl">${l}</span><span class="sv">${lv(l)}</span>`;
+    tile.addEventListener('click',()=>{if(S.swapPicked.has(i))S.swapPicked.delete(i);else S.swapPicked.add(i);buildSwapPanel();});
     row.appendChild(tile);
   });
-  const btn=document.getElementById('swap-confirm-btn');
-  const n=S.swapPicked.size;
+  const btn=$('swap-confirm-btn'),n=S.swapPicked.size;
   btn.disabled=n===0;
   btn.textContent=n>0?`Cambiar ${n} ficha${n>1?'s':''}`:' Selecciona fichas';
 }
-function confirmSwap() {
-  const S = window.S;
-  if (S.swapPicked.size===0) return;
-  if (S.currentGameId && window.G && window.G.submitMove) {
-    const indices = Array.from(S.swapPicked);
-    window.G.submitMove({gameId:S.currentGameId, action:'exchange', indices})
-      .then(()=>closeSwap())
-      .catch(err=>alert('Error: '+err.message));
-  } else { closeSwap(); }
+function confirmSwap(){
+  const S=window.S;
+  if(S.swapPicked.size===0) return;
+  if(S.currentGameId&&window.G){
+    window.G.submitMove({gameId:S.currentGameId,action:'exchange',indices:Array.from(S.swapPicked)})
+      .then(()=>closeSwap()).catch(err=>alert('Error: '+err.message));
+  } else {closeSwap();}
 }
 
 // ── WORD LOGIC ──
-function allTiles() {
-  const m={};
-  Object.entries(window.S.boardFixed).forEach(([k,l])=>m[k]=l);
-  Object.entries(window.S.boardNew).forEach(([k,l])=>m[k]=l);
-  return m;
-}
-function traceWord(r,c,dr,dc) {
-  const m=allTiles();
-  while(m[`${r-dr}-${c-dc}`]){r-=dr;c-=dc;}
-  const t=[];
-  while(m[`${r}-${c}`]){t.push({r,c,letter:m[`${r}-${c}`]});r+=dr;c+=dc;}
-  return t;
-}
-function extractWords() {
-  const placed=Object.keys(window.S.boardNew);
-  if(!placed.length) return [];
+function allTiles(){const m={};Object.entries(window.S.boardFixed).forEach(([k,l])=>m[k]=l);Object.entries(window.S.boardNew).forEach(([k,l])=>m[k]=l);return m;}
+function traceWord(r,c,dr,dc){const m=allTiles();while(m[`${r-dr}-${c-dc}`]){r-=dr;c-=dc;}const t=[];while(m[`${r}-${c}`]){t.push({r,c,letter:m[`${r}-${c}`]});r+=dr;c+=dc;}return t;}
+function extractWords(){
+  const placed=Object.keys(window.S.boardNew);if(!placed.length)return[];
   const nk=new Set(placed),words=[];
   const rows=placed.map(k=>+k.split('-')[0]),cols=placed.map(k=>+k.split('-')[1]);
   const sR=rows.every(r=>r===rows[0]),sC=cols.every(c=>c===cols[0]);
   const add=tiles=>{if(tiles.length>1&&tiles.some(t=>nk.has(`${t.r}-${t.c}`)))words.push(tiles);};
-  if(placed.length===1){
-    const h=traceWord(rows[0],cols[0],0,1),v=traceWord(rows[0],cols[0],1,0);
-    if(h.length>1)add(h); if(v.length>1)add(v);
-    if(!words.length)words.push([{r:rows[0],c:cols[0],letter:window.S.boardNew[placed[0]]}]);
-  } else if(sR){
-    add(traceWord(rows[0],cols[0],0,1));
-    placed.forEach(k=>{const[r,c]=k.split('-').map(Number);add(traceWord(r,c,1,0));});
-  } else if(sC){
-    add(traceWord(rows[0],cols[0],1,0));
-    placed.forEach(k=>{const[r,c]=k.split('-').map(Number);add(traceWord(r,c,0,1));});
-  }
+  if(placed.length===1){const h=traceWord(rows[0],cols[0],0,1),v=traceWord(rows[0],cols[0],1,0);if(h.length>1)add(h);if(v.length>1)add(v);if(!words.length)words.push([{r:rows[0],c:cols[0],letter:window.S.boardNew[placed[0]]}]);}
+  else if(sR){add(traceWord(rows[0],cols[0],0,1));placed.forEach(k=>{const[r,c]=k.split('-').map(Number);add(traceWord(r,c,1,0));});}
+  else if(sC){add(traceWord(rows[0],cols[0],1,0));placed.forEach(k=>{const[r,c]=k.split('-').map(Number);add(traceWord(r,c,0,1));});}
   return words;
 }
-function calcScore(words) {
-  const nk=new Set(Object.keys(window.S.boardNew));
-  let total=0;
-  words.forEach(tiles=>{
-    let ws=0,wm=1;
-    tiles.forEach(({r,c,letter})=>{
-      const key=`${r}-${c}`,v=lv(letter),p=nk.has(key)?PREMIUMS[key]:null;
-      ws+=p==='tl'?v*3:p==='dl'?v*2:v;
-      if(p==='tw')wm*=3; else if(p==='dw')wm*=2;
-    });
-    total+=ws*wm;
-  });
+function calcScore(words){
+  const nk=new Set(Object.keys(window.S.boardNew));let total=0;
+  words.forEach(tiles=>{let ws=0,wm=1;tiles.forEach(({r,c,letter})=>{const key=`${r}-${c}`,v=lv(letter),p=nk.has(key)?PREMIUMS[key]:null;ws+=p==='tl'?v*3:p==='dl'?v*2:v;if(p==='tw')wm*=3;else if(p==='dw')wm*=2;});total+=ws*wm;});
   if(Object.keys(window.S.boardNew).length===7)total+=50;
   return total;
 }
 
 // ── WORD OUTLINES ──
-function drawWordOutlines(words, score) {
-  const svg=$('word-outline');
-  svg.innerHTML='';
+// Uses cellCenter() which is always accurate regardless of pan/zoom
+function drawWordOutlines(words,score){
+  const svg=$('word-outline');svg.innerHTML='';
   if(!words||!words.length) return;
-  const S=window.S;
-  const {boardPx,scale}=S;
+  const{boardPx,scale}=window.S;
   const cs=(boardPx/GRID)*scale;
-  const PAD=3,R=7;
-  const pannerEl=$('board-panner');
-  const pr=pannerEl.getBoundingClientRect();
-  const wrapEl=$('board-wrap');
-  const wr=wrapEl.getBoundingClientRect();
+  const PAD=3*scale,R=7;
+  const wrap=$('board-wrap');
+  const wr=wrap.getBoundingClientRect();
 
   words.forEach((tiles,wi)=>{
     if(tiles.length<2) return;
     const rows=tiles.map(t=>t.r),cols=tiles.map(t=>t.c);
     const rMin=Math.min(...rows),rMax=Math.max(...rows);
     const cMin=Math.min(...cols),cMax=Math.max(...cols);
-    const x0=(pr.left-wr.left)+cMin*cs-PAD;
-    const y0=(pr.top-wr.top)+rMin*cs-PAD;
-    const w=(cMax-cMin+1)*cs+PAD*2;
-    const h=(rMax-rMin+1)*cs+PAD*2;
+    // Use cellCenter for top-left and bottom-right corners
+    const tl=cellCenter(rMin,cMin);
+    const br=cellCenter(rMax,cMax);
+    const x0=tl.x-wr.left-cs/2-PAD;
+    const y0=tl.y-wr.top-cs/2-PAD;
+    const w=(br.x-wr.left+cs/2+PAD)-(x0);
+    const h=(br.y-wr.top+cs/2+PAD)-(y0);
+
     const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
     rect.setAttribute('x',x0);rect.setAttribute('y',y0);
     rect.setAttribute('width',w);rect.setAttribute('height',h);
     rect.setAttribute('rx',R);rect.setAttribute('ry',R);
-    rect.setAttribute('fill','none');rect.setAttribute('stroke','#22dd88');rect.setAttribute('stroke-width','4.5');
+    rect.setAttribute('fill','none');rect.setAttribute('stroke','#22dd88');rect.setAttribute('stroke-width','4');
     svg.appendChild(rect);
+
     if(wi===words.length-1&&score>0){
-      const bx=x0+w,by=y0+h+1;
+      const bx=x0+w, by=y0+h+2;
       const bw=score>=100?40:34,bh=20;
       const badge=document.createElementNS('http://www.w3.org/2000/svg','rect');
       badge.setAttribute('x',bx-bw/2);badge.setAttribute('y',by-bh/2);
@@ -951,7 +939,7 @@ function drawWordOutlines(words, score) {
 function clearWordOutlines(){const s=$('word-outline');if(s)s.innerHTML='';}
 
 // ── PREVIEW ──
-function updatePreview() {
+function updatePreview(){
   const pf=$('preview-float'),btn=$('play-btn');
   const placed=Object.keys(window.S.boardNew);
   if(!placed.length){pf.classList.remove('show');btn.disabled=true;clearWordOutlines();return;}
@@ -964,252 +952,148 @@ function updatePreview() {
     drawWordOutlines(words.filter(w=>w.length>1),score);
   } else {
     $('pf-words').textContent=placed.length+' ficha'+(placed.length>1?'s':'')+' colocada'+(placed.length>1?'s':'');
-    $('pf-pts').textContent='';
-    pf.classList.add('show');btn.disabled=true;
-    clearWordOutlines();
+    $('pf-pts').textContent='';pf.classList.add('show');btn.disabled=true;clearWordOutlines();
   }
 }
 
-// ── TOAST ──
 let _toastTimer=null;
 function showToastModal(word,pts){
-  $('tm-word').textContent=word;
-  $('tm-pts').textContent=pts;
-  $('tm-gems').textContent=window.S.gemCount;
-  const tm=$('toast-modal');
-  tm.classList.add('show');
-  clearTimeout(_toastTimer);
-  _toastTimer=setTimeout(()=>tm.classList.remove('show'),3200);
+  $('tm-word').textContent=word;$('tm-pts').textContent=pts;$('tm-gems').textContent=window.S.gemCount;
+  const tm=$('toast-modal');tm.classList.add('show');
+  clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>tm.classList.remove('show'),3200);
 }
 
-// ── PLAY / PASS ──
-function playWord() {
-  const S=window.S;
-  if(S.currentGameId && window.G) { window.G.submitPlay(); return; }
-  alert('Crea una partida primero tocando "New Game"');
-}
-function passTurn() {
-  const S=window.S;
-  if(S.currentGameId && window.G) { window.G.pass(); return; }
-}
-
-// ── STATS ──
+function playWord(){const S=window.S;if(S.currentGameId&&window.G){window.G.submitPlay();return;}alert('Crea una partida primero tocando "New Game"');}
+function passTurn(){const S=window.S;if(S.currentGameId&&window.G){window.G.pass();}}
 function openStats(){$('stats-panel').classList.add('open');$('stats-overlay').classList.add('open');}
 function closeStats(){$('stats-panel').classList.remove('open');$('stats-overlay').classList.remove('open');}
 
-// ── INIT — called after auth confirms login ──
-function initGame() {
+// ── INIT ──
+function initGame(){
   setTimeout(()=>{
     sizeBoard();
-    window.S.boardFixed={};
-    window.S.boardNew={};
-    window.S.rack=[];
-    buildBoard();
-    buildRack();
-  }, 120);
+    window.S.boardFixed={};window.S.boardNew={};window.S.rack=[];
+    buildBoard();buildRack();
+  },150);
 }
-window.addEventListener('resize',()=>{sizeBoard();applyTransform(false);});
+window.addEventListener('resize',()=>{sizeBoard();});
 </script>
 
-<!-- ══════════════════════════════════════════════════
-     FIREBASE MODULE — uses window.S for all shared state
-     ══════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════
+     FIREBASE MODULE
+     ══════════════════════════════════════════ -->
 <script type="module">
-import { initializeApp }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, onSnapshot, collection, query, where, getDocs }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getFunctions, httpsCallable }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import{getFirestore,doc,onSnapshot,collection,query,where,getDocs}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFunctions,httpsCallable}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
 
-const firebaseConfig = {
-  apiKey:     "AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",
-  authDomain: "scrabble-reilly.firebaseapp.com",
-  projectId:  "scrabble-reilly",
+const firebaseConfig={apiKey:"AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",authDomain:"scrabble-reilly.firebaseapp.com",projectId:"scrabble-reilly"};
+const PHIL_UID='2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2';
+const NANCY_UID='QOubuRNcm1ZqONg5qZ5Oc5kdEQn2';
+const REGION='northamerica-northeast2';
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const fns=getFunctions(app,REGION);
+const fnCreate=httpsCallable(fns,'createGame');
+const fnSubmit=httpsCallable(fns,'submitMove');
+const fnState=httpsCallable(fns,'getGameState');
+
+let unsubGame=null;
+
+window.G={
+  newGame:async()=>{
+    const user=auth.currentUser;if(!user){alert('Inicia sesión primero');return;}
+    const oppUid=user.uid===PHIL_UID?NANCY_UID:PHIL_UID;
+    try{const res=await fnCreate({opponentUid:oppUid,language:'es'});console.log('Game created:',res.data.gameId);subscribeToGame(res.data.gameId,user.uid);}
+    catch(err){console.error('createGame error:',err);alert('Error: '+err.message);}
+  },
+  submitPlay:async()=>{
+    const S=window.S;if(!S.currentGameId){alert('No active game');return;}
+    const placed=Object.keys(S.boardNew);if(!placed.length)return;
+    const tiles=placed.map(key=>{const[r,c]=key.split('-').map(Number);return{r,c,letter:S.boardNew[key]};});
+    try{
+      const res=await fnSubmit({gameId:S.currentGameId,tiles,action:'play'});
+      console.log('Move result:',res.data);
+      S.boardNew={};clearWordOutlines();buildBoard();updatePreview();
+    }catch(err){console.error('submitMove error:',err);alert('Error: '+err.message);}
+  },
+  pass:async()=>{const S=window.S;if(!S.currentGameId)return;try{await fnSubmit({gameId:S.currentGameId,action:'pass'});}catch(err){alert('Error: '+err.message);}},
+  submitMove:(data)=>fnSubmit(data),
+  signOut:async()=>{if(unsubGame){unsubGame();unsubGame=null;}window.S.currentGameId=null;window.S.myUid=null;await signOut(auth);closeStats();},
 };
 
-const PHIL_UID  = '2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2';
-const NANCY_UID = 'QOubuRNcm1ZqONg5qZ5Oc5kdEQn2';
-const REGION    = 'northamerica-northeast2';
-
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-const fns  = getFunctions(app, REGION);
-
-const fnCreateGame   = httpsCallable(fns, 'createGame');
-const fnSubmitMove   = httpsCallable(fns, 'submitMove');
-const fnGetGameState = httpsCallable(fns, 'getGameState');
-
-let unsubGame = null;
-
-// ── EXPOSE API to non-module script via window.G ──
-window.G = {
-
-  newGame: async () => {
-    const user = auth.currentUser;
-    if (!user) { alert('Inicia sesión primero'); return; }
-    const oppUid = user.uid === PHIL_UID ? NANCY_UID : PHIL_UID;
-    try {
-      const res = await fnCreateGame({ opponentUid: oppUid, language: 'es' });
-      console.log('Game created:', res.data.gameId);
-      subscribeToGame(res.data.gameId, user.uid);
-    } catch(err) {
-      console.error('createGame error:', err);
-      alert('Error creating game: ' + err.message);
-    }
-  },
-
-  submitPlay: async () => {
-    const S = window.S;
-    if (!S.currentGameId) { alert('No active game'); return; }
-    const placed = Object.keys(S.boardNew);
-    if (!placed.length) return;
-    const tiles = placed.map(key => {
-      const [r,c] = key.split('-').map(Number);
-      return { r, c, letter: S.boardNew[key] };
-    });
-    try {
-      const res = await fnSubmitMove({ gameId: S.currentGameId, tiles, action: 'play' });
-      console.log('Move result:', res.data);
-      S.boardNew = {};
-      clearWordOutlines();
-      buildBoard();
-      updatePreview();
-    } catch(err) {
-      console.error('submitMove error:', err);
-      alert('Error: ' + err.message);
-    }
-  },
-
-  pass: async () => {
-    const S = window.S;
-    if (!S.currentGameId) return;
-    try {
-      await fnSubmitMove({ gameId: S.currentGameId, action: 'pass' });
-    } catch(err) { alert('Error: ' + err.message); }
-  },
-
-  submitMove: (data) => fnSubmitMove(data),
-
-  signOut: async () => {
-    if (unsubGame) { unsubGame(); unsubGame = null; }
-    window.S.currentGameId = null;
-    window.S.myUid = null;
-    await signOut(auth);
-    closeStats();
-  },
-};
-
-// ── SUBSCRIBE TO GAME ──
-function subscribeToGame(gameId, uid) {
-  if (unsubGame) unsubGame();
-  window.S.currentGameId = gameId;
-  window.S.myUid = uid;
-
-  const gameRef = doc(db, 'games', gameId);
-  unsubGame = onSnapshot(gameRef, async snap => {
-    if (!snap.exists()) return;
-    const game   = snap.data();
-    const myUid  = window.S.myUid || uid;
-    const oppUid = game.players.find(p => p !== myUid);
-
-    // Scores
-    document.getElementById('my-score').textContent    = game.scores?.[myUid]  || 0;
-    document.getElementById('their-score').textContent = game.scores?.[oppUid] || 0;
-
-    // Turn pill
-    const pill = document.getElementById('turn-pill');
-    const isMyTurn = game.currentTurn === myUid;
-    pill.textContent = isMyTurn ? 'Tu turno' : 'Su turno';
-    pill.className   = 'turn-pill' + (isMyTurn ? '' : ' theirs');
-
-    // Bag
-    document.getElementById('bag-label').textContent = (game.bag?.length || 0) + ' fichas';
-
-    // Board — only update committed tiles, preserve this-turn tiles
-    window.S.boardFixed = game.board || {};
-    window.S.boardNew   = {};
+function subscribeToGame(gameId,uid){
+  if(unsubGame)unsubGame();
+  window.S.currentGameId=gameId;window.S.myUid=uid;
+  const gameRef=doc(db,'games',gameId);
+  unsubGame=onSnapshot(gameRef,async snap=>{
+    if(!snap.exists())return;
+    const game=snap.data();
+    const myUid=window.S.myUid||uid;
+    const oppUid=game.players.find(p=>p!==myUid);
+    document.getElementById('my-score').textContent=game.scores?.[myUid]||0;
+    document.getElementById('their-score').textContent=game.scores?.[oppUid]||0;
+    const pill=document.getElementById('turn-pill');
+    const isMyTurn=game.currentTurn===myUid;
+    pill.textContent=isMyTurn?'Tu turno':'Su turno';
+    pill.className='turn-pill'+(isMyTurn?'':' theirs');
+    document.getElementById('bag-label').textContent=(game.bag?.length||0)+' fichas';
+    window.S.boardFixed=game.board||{};window.S.boardNew={};
     buildBoard();
-
-    // Rack from server
-    try {
-      const res = await fnGetGameState({ gameId });
-      window.S.rack = res.data.myRack || [];
-      buildRack();
-    } catch(e) { console.error('getGameState:', e.message); }
-
-    // Toast on opponent's move
-    if (game.lastMove?.type==='play' && game.lastMove.playerId !== myUid) {
-      const word = game.lastMove.words?.[0] || '?';
-      showToastModal(word, game.lastMove.score);
+    try{const res=await fnState({gameId});window.S.rack=res.data.myRack||[];buildRack();}
+    catch(e){console.error('getGameState:',e.message);}
+    if(game.lastMove?.type==='play'&&game.lastMove.playerId!==myUid){
+      showToastModal(game.lastMove.words?.[0]||'?',game.lastMove.score);
     }
-  }, err => { console.error('onSnapshot error:', err); });
+  },err=>console.error('onSnapshot error:',err));
 }
 
-// ── AUTH STATE ──
-onAuthStateChanged(auth, async user => {
-  if (user) {
+onAuthStateChanged(auth,async user=>{
+  if(user){
     document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('app').style.display = 'flex';
-    const name = user.displayName || user.email.split('@')[0];
-    const nameEl = document.getElementById('user-display');
-    if (nameEl) nameEl.textContent = name;
-    window.S.myUid = user.uid;
-
-    // Init empty board
-    if (typeof initGame === 'function') initGame();
-
-    // Find most recent active game
-    try {
-      const q    = query(collection(db,'games'), where('players','array-contains',user.uid));
-      const snap = await getDocs(q);
-      const active = snap.docs
-        .filter(d => d.data().status === 'active')
-        .sort((a,b) => (b.data().createdAt?.seconds||0) - (a.data().createdAt?.seconds||0));
-      console.log('Active games:', active.length);
-      if (active.length > 0) {
-        console.log('Resuming game:', active[0].id);
-        subscribeToGame(active[0].id, user.uid);
-      }
-    } catch(err) { console.error('Game lookup error:', err.message); }
-
-  } else {
+    document.getElementById('app').style.display='flex';
+    const name=user.displayName||user.email.split('@')[0];
+    const nameEl=document.getElementById('user-display');
+    if(nameEl)nameEl.textContent=name;
+    window.S.myUid=user.uid;
+    if(typeof initGame==='function')initGame();
+    try{
+      const q=query(collection(db,'games'),where('players','array-contains',user.uid));
+      const snap=await getDocs(q);
+      const active=snap.docs.filter(d=>d.data().status==='active')
+        .sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
+      console.log('Active games:',active.length);
+      if(active.length>0){console.log('Resuming game:',active[0].id);subscribeToGame(active[0].id,user.uid);}
+    }catch(err){console.error('Game lookup error:',err.message);}
+  }else{
     document.getElementById('login-screen').classList.remove('hidden');
-    document.getElementById('app').style.display = 'none';
-    if (unsubGame) { unsubGame(); unsubGame=null; }
-    window.S.currentGameId = null;
+    document.getElementById('app').style.display='none';
+    if(unsubGame){unsubGame();unsubGame=null;}
+    window.S.currentGameId=null;
   }
 });
 
-// ── LOGIN FORM ──
-document.getElementById('login-form').addEventListener('submit', async e => {
+document.getElementById('login-form').addEventListener('submit',async e=>{
   e.preventDefault();
-  const email    = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-pass').value;
-  const errorEl  = document.getElementById('login-error');
-  const spinner  = document.getElementById('login-spinner');
-  const btn      = document.querySelector('.login-btn');
-  errorEl.textContent=''; spinner.style.display='block'; btn.style.display='none';
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch(err) {
-    spinner.style.display='none'; btn.style.display='block';
-    switch(err.code) {
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-      case 'auth/invalid-credential':
-        errorEl.textContent='Email o contraseña incorrectos'; break;
-      case 'auth/too-many-requests':
-        errorEl.textContent='Demasiados intentos. Intenta más tarde.'; break;
-      default:
-        errorEl.textContent='Error al iniciar sesión. Intenta de nuevo.';
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-pass').value;
+  const errorEl=document.getElementById('login-error');
+  const spinner=document.getElementById('login-spinner');
+  const btn=document.querySelector('.login-btn');
+  errorEl.textContent='';spinner.style.display='block';btn.style.display='none';
+  try{await signInWithEmailAndPassword(auth,email,password);}
+  catch(err){
+    spinner.style.display='none';btn.style.display='block';
+    switch(err.code){
+      case 'auth/user-not-found':case'auth/wrong-password':case'auth/invalid-credential':errorEl.textContent='Email o contraseña incorrectos';break;
+      case'auth/too-many-requests':errorEl.textContent='Demasiados intentos. Intenta más tarde.';break;
+      default:errorEl.textContent='Error al iniciar sesión. Intenta de nuevo.';
     }
   }
 });
 </script>
-
-
-</body></html>
+</body>
+</html>
