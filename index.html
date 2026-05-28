@@ -230,6 +230,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
       <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
       <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
+<button class="abtn abtn-sec" onclick="zoomOut()" style="flex:0.6;font-size:10px;">🔍–</button>
     </div>
   </div>
 
@@ -378,9 +379,9 @@ function zoomToPoint(lx, ly, ns) {
 }
 
 function zoomOut() {
-  window.S.scale = 1; window.S.panX = 0; window.S.panY = 0;
+  window.S.scale=1; window.S.panX=0; window.S.panY=0;
   applyTransform(true);
-  $('zoom-hint').classList.remove('show');
+  document.getElementById('zoom-hint').classList.remove('show');
 }
 
 function cellCenter(r, c) {
