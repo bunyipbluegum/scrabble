@@ -619,12 +619,15 @@ document.addEventListener('pointermove', e => {
     if (!S.isDragging) return;
     moveGhost(e.clientX, e.clientY);
     // Zoom when entering board area
-    const wrap  = $('board-wrap');
-    const wRect = wrap.getBoundingClientRect();
-    if (e.clientX>=wRect.left && e.clientX<=wRect.right &&
-        e.clientY>=wRect.top  && e.clientY<=wRect.bottom &&
-        S.scale < ZOOM-0.1) {
-      zoomToPoint(e.clientX-wRect.left, e.clientY-wRect.top, ZOOM);
+ // Zoom in once when tile first enters board area
+ if (!S._hasZoomed && S.scale < ZOOM-0.1) {
+      const wrap  = $('board-wrap');
+      const wRect = wrap.getBoundingClientRect();
+      if (e.clientX>=wRect.left && e.clientX<=wRect.right &&
+          e.clientY>=wRect.top  && e.clientY<=wRect.bottom) {
+        S._hasZoomed = true;
+        zoomToPoint(e.clientX-wRect.left, e.clientY-wRect.top, ZOOM);
+      }
     }
     // Check if over rack
     const rackEl   = $('rack-area');
@@ -650,16 +653,9 @@ document.addEventListener('pointermove', e => {
     return;
   }
   if (S.isPanning && S.scale > 1.05) {
-    const newPanX = S.panSTX + (e.clientX-S.panSX);
-    const newPanY = S.panSTY + (e.clientY-S.panSY);
-    // Track velocity for momentum
-    S._velX = newPanX - S.panX;
-    S._velY = newPanY - S.panY;
-    S.panX = newPanX;
-    S.panY = newPanY;
+    S.panX = S.panSTX + (e.clientX-S.panSX);
+    S.panY = S.panSTY + (e.clientY-S.panSY);
     clampPan(); applyTransform(false);
-    // Redraw word outlines to follow board
-    if (typeof updatePreview === 'function') updatePreview();
   }
 });
 
@@ -709,7 +705,7 @@ document.addEventListener('pointerup', e => {
       }
       S.isDragging=false; S.snapKey=null;
     } else { handleTap(S.dragSrc); }
-    S.dragSrc=null;
+    S.dragSrc=null; S._hasZoomed=false;
     buildBoard(); buildRack(); updatePreview(); return;
   }
   if (S.isPanning) {
