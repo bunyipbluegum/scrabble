@@ -233,7 +233,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE</div>
+      <div class="heading-title">SCRABBLE <span style="font-size:9px;opacity:0.4;">v2</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="G&amp;&amp;G.newGame()">New Game</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -401,19 +401,18 @@ function applyTransform(anim){
 function clampPan(){
   const wrap=$('board-wrap');
   const ww=wrap.clientWidth, wh=wrap.clientHeight;
-  const {boardPx,scale,baseLeft,baseTop}=window.S;
+  const {boardPx,scale,baseTop}=window.S;
   const scaledBp=boardPx*scale;
-  // Pan limits: board edges must not go beyond wrap edges
-  // Left edge: baseLeft+panX >= 0  →  panX >= -baseLeft
-  // Right edge: baseLeft+panX+scaledBp <= ww  →  panX <= ww-baseLeft-scaledBp
-  const minX=Math.min(0, ww-baseLeft-scaledBp);
-  const maxX=Math.max(0,-baseLeft);
-  // Top edge: baseTop+panY >= 0  →  panY >= -baseTop
-  // Bottom edge: baseTop+panY+scaledBp <= wh  →  panY <= wh-baseTop-scaledBp
-  const minY=Math.min(0, wh-baseTop-scaledBp);
-  const maxY=Math.max(0,-baseTop);
-  window.S.panX=Math.min(maxX,Math.max(minX,window.S.panX));
-  window.S.panY=Math.min(maxY,Math.max(minY,window.S.panY));
+  if(scaledBp>ww){
+    window.S.panX=Math.min(0,Math.max(ww-scaledBp,window.S.panX));
+  } else {
+    window.S.panX=0;
+  }
+  if(scaledBp>wh-baseTop){
+    window.S.panY=Math.min(0,Math.max(wh-baseTop-scaledBp,window.S.panY));
+  } else {
+    window.S.panY=0;
+  }
 }
 
 function zoomOut(){
