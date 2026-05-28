@@ -407,7 +407,7 @@ function clientToCell(cx, cy) {
   const offY = getOffsetY();
   const pannerLeft = getPannerLeft();
   const bx = (cx - rect.left - pannerLeft - panX) / scale;
-  const by = (cy - rect.top  - offY       - panY) / scale;
+  const by = (cy - rect.top - offY - panY) / scale + 1.0;
   const cs = boardPx / GRID;
   const c = Math.floor(bx / cs), r = Math.floor(by / cs);
   if (r < 0 || r >= GRID || c < 0 || c >= GRID) return null;
