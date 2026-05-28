@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0040)file:///Users/toh/Downloads/index_8.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3040">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -215,12 +214,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
+<div id="login-screen" class="hidden">
   <div class="login-logo">SCRABBLE</div>
   <div class="login-sub">from Phil</div>
   <form class="login-form" id="login-form">
-    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required>
-    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required="">
+    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required="">
     <div class="login-error" id="login-error"></div>
     <button class="login-btn" type="submit">Entrar</button>
     <div class="login-spinner" id="login-spinner"></div>
@@ -228,18 +227,18 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 </div>
 
 <!-- GAME -->
-<div class="app" id="app" style="display:none;">
+<div class="app" id="app" style="display: flex;">
 
   <div class="heading-bar">
     <div>
       <div class="heading-title">SCRABBLE</div>
       <div style="margin-top:2px;">
-        <span class="heading-sub" onclick="G&&G.newGame()">New Game</span>
+        <span class="heading-sub" onclick="G&amp;&amp;G.newGame()">New Game</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
+      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);">phil</span>
       <div class="heading-menu" onclick="openStats()">☰</div>
     </div>
   </div>
@@ -247,21 +246,21 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   <div class="score-bar">
     <div class="sb-player">
       <span class="sb-name">Tú</span>
-      <span class="sb-score" id="my-score">0</span>
+      <span class="sb-score" id="my-score">10</span>
     </div>
     <div class="sb-middle">
-      <span class="turn-pill" id="turn-pill">–</span>
-      <span class="bag-label" id="bag-label">– fichas</span>
+      <span class="turn-pill" id="turn-pill">Tu turno</span>
+      <span class="bag-label" id="bag-label">77 fichas</span>
     </div>
     <div class="sb-player right">
       <span class="sb-name" id="opponent-name">Oponente</span>
-      <span class="sb-score" id="their-score">0</span>
+      <span class="sb-score" id="their-score">10</span>
     </div>
   </div>
 
   <div class="board-wrap" id="board-wrap">
-    <div id="board-panner">
-      <div id="board"></div>
+    <div id="board-panner" style="width: 480px; height: 480px; transition: none; left: 0px; top: 257px; transform-origin: 0px 0px; transform: translate(0px, 0px) scale(1);">
+      <div id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0"></div><div class="cell" data-r="0" data-c="1"></div><div class="cell" data-r="0" data-c="2"></div><div class="cell dl" data-r="0" data-c="3"></div><div class="cell" data-r="0" data-c="4"></div><div class="cell" data-r="0" data-c="5"></div><div class="cell" data-r="0" data-c="6"></div><div class="cell tw" data-r="0" data-c="7"></div><div class="cell" data-r="0" data-c="8"></div><div class="cell" data-r="0" data-c="9"></div><div class="cell" data-r="0" data-c="10"></div><div class="cell dl" data-r="0" data-c="11"></div><div class="cell" data-r="0" data-c="12"></div><div class="cell" data-r="0" data-c="13"></div><div class="cell tw" data-r="0" data-c="14"></div><div class="cell" data-r="1" data-c="0"></div><div class="cell dw" data-r="1" data-c="1"></div><div class="cell" data-r="1" data-c="2"></div><div class="cell" data-r="1" data-c="3"></div><div class="cell" data-r="1" data-c="4"></div><div class="cell tl" data-r="1" data-c="5"></div><div class="cell" data-r="1" data-c="6"></div><div class="cell" data-r="1" data-c="7"></div><div class="cell" data-r="1" data-c="8"></div><div class="cell tl" data-r="1" data-c="9"></div><div class="cell" data-r="1" data-c="10"></div><div class="cell" data-r="1" data-c="11"></div><div class="cell" data-r="1" data-c="12"></div><div class="cell dw" data-r="1" data-c="13"></div><div class="cell" data-r="1" data-c="14"></div><div class="cell" data-r="2" data-c="0"></div><div class="cell" data-r="2" data-c="1"></div><div class="cell dw" data-r="2" data-c="2"></div><div class="cell" data-r="2" data-c="3"></div><div class="cell" data-r="2" data-c="4"></div><div class="cell" data-r="2" data-c="5"></div><div class="cell dl" data-r="2" data-c="6"></div><div class="cell" data-r="2" data-c="7"></div><div class="cell dl" data-r="2" data-c="8"></div><div class="cell" data-r="2" data-c="9"></div><div class="cell" data-r="2" data-c="10"></div><div class="cell" data-r="2" data-c="11"></div><div class="cell dw" data-r="2" data-c="12"></div><div class="cell" data-r="2" data-c="13"></div><div class="cell" data-r="2" data-c="14"></div><div class="cell dl" data-r="3" data-c="0"></div><div class="cell" data-r="3" data-c="1"></div><div class="cell" data-r="3" data-c="2"></div><div class="cell dw" data-r="3" data-c="3"></div><div class="cell" data-r="3" data-c="4"></div><div class="cell" data-r="3" data-c="5"></div><div class="cell" data-r="3" data-c="6"></div><div class="cell dl" data-r="3" data-c="7"></div><div class="cell" data-r="3" data-c="8"></div><div class="cell" data-r="3" data-c="9"></div><div class="cell" data-r="3" data-c="10"></div><div class="cell dw" data-r="3" data-c="11"></div><div class="cell" data-r="3" data-c="12"></div><div class="cell" data-r="3" data-c="13"></div><div class="cell dl" data-r="3" data-c="14"></div><div class="cell" data-r="4" data-c="0"></div><div class="cell" data-r="4" data-c="1"></div><div class="cell" data-r="4" data-c="2"></div><div class="cell" data-r="4" data-c="3"></div><div class="cell dw" data-r="4" data-c="4"></div><div class="cell" data-r="4" data-c="5"></div><div class="cell" data-r="4" data-c="6"></div><div class="cell" data-r="4" data-c="7"></div><div class="cell" data-r="4" data-c="8"></div><div class="cell" data-r="4" data-c="9"></div><div class="cell dw" data-r="4" data-c="10"></div><div class="cell" data-r="4" data-c="11"></div><div class="cell" data-r="4" data-c="12"></div><div class="cell" data-r="4" data-c="13"></div><div class="cell" data-r="4" data-c="14"></div><div class="cell" data-r="5" data-c="0"></div><div class="cell tl" data-r="5" data-c="1"></div><div class="cell" data-r="5" data-c="2"></div><div class="cell" data-r="5" data-c="3"></div><div class="cell" data-r="5" data-c="4"></div><div class="cell tl" data-r="5" data-c="5"></div><div class="cell" data-r="5" data-c="6"></div><div class="cell" data-r="5" data-c="7"></div><div class="cell" data-r="5" data-c="8"></div><div class="cell tl" data-r="5" data-c="9"></div><div class="cell has-tile" data-r="5" data-c="10"><div class="btile"><span class="bl">G</span><span class="bv">2</span></div></div><div class="cell" data-r="5" data-c="11"></div><div class="cell" data-r="5" data-c="12"></div><div class="cell tl" data-r="5" data-c="13"></div><div class="cell" data-r="5" data-c="14"></div><div class="cell" data-r="6" data-c="0"></div><div class="cell" data-r="6" data-c="1"></div><div class="cell dl" data-r="6" data-c="2"></div><div class="cell" data-r="6" data-c="3"></div><div class="cell" data-r="6" data-c="4"></div><div class="cell" data-r="6" data-c="5"></div><div class="cell dl" data-r="6" data-c="6"></div><div class="cell" data-r="6" data-c="7"></div><div class="cell dl" data-r="6" data-c="8"></div><div class="cell" data-r="6" data-c="9"></div><div class="cell has-tile" data-r="6" data-c="10"><div class="btile"><span class="bl">U</span><span class="bv">1</span></div></div><div class="cell" data-r="6" data-c="11"></div><div class="cell dl" data-r="6" data-c="12"></div><div class="cell" data-r="6" data-c="13"></div><div class="cell" data-r="6" data-c="14"></div><div class="cell tw" data-r="7" data-c="0"></div><div class="cell" data-r="7" data-c="1"></div><div class="cell" data-r="7" data-c="2"></div><div class="cell dl" data-r="7" data-c="3"></div><div class="cell" data-r="7" data-c="4"></div><div class="cell" data-r="7" data-c="5"></div><div class="cell" data-r="7" data-c="6"></div><div class="cell has-tile" data-r="7" data-c="7"><div class="btile"><span class="bl">P</span><span class="bv">3</span></div></div><div class="cell has-tile" data-r="7" data-c="8"><div class="btile"><span class="bl">I</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="10"><div class="btile"><span class="bl">S</span><span class="bv">1</span></div></div><div class="cell dl" data-r="7" data-c="11"></div><div class="cell" data-r="7" data-c="12"></div><div class="cell" data-r="7" data-c="13"></div><div class="cell tw" data-r="7" data-c="14"></div><div class="cell" data-r="8" data-c="0"></div><div class="cell" data-r="8" data-c="1"></div><div class="cell dl" data-r="8" data-c="2"></div><div class="cell" data-r="8" data-c="3"></div><div class="cell" data-r="8" data-c="4"></div><div class="cell" data-r="8" data-c="5"></div><div class="cell dl" data-r="8" data-c="6"></div><div class="cell" data-r="8" data-c="7"></div><div class="cell dl" data-r="8" data-c="8"></div><div class="cell" data-r="8" data-c="9"></div><div class="cell" data-r="8" data-c="10"></div><div class="cell" data-r="8" data-c="11"></div><div class="cell dl" data-r="8" data-c="12"></div><div class="cell" data-r="8" data-c="13"></div><div class="cell" data-r="8" data-c="14"></div><div class="cell" data-r="9" data-c="0"></div><div class="cell tl" data-r="9" data-c="1"></div><div class="cell" data-r="9" data-c="2"></div><div class="cell" data-r="9" data-c="3"></div><div class="cell" data-r="9" data-c="4"></div><div class="cell tl" data-r="9" data-c="5"></div><div class="cell" data-r="9" data-c="6"></div><div class="cell" data-r="9" data-c="7"></div><div class="cell" data-r="9" data-c="8"></div><div class="cell tl" data-r="9" data-c="9"></div><div class="cell" data-r="9" data-c="10"></div><div class="cell" data-r="9" data-c="11"></div><div class="cell" data-r="9" data-c="12"></div><div class="cell tl" data-r="9" data-c="13"></div><div class="cell" data-r="9" data-c="14"></div><div class="cell" data-r="10" data-c="0"></div><div class="cell" data-r="10" data-c="1"></div><div class="cell" data-r="10" data-c="2"></div><div class="cell" data-r="10" data-c="3"></div><div class="cell dw" data-r="10" data-c="4"></div><div class="cell" data-r="10" data-c="5"></div><div class="cell" data-r="10" data-c="6"></div><div class="cell" data-r="10" data-c="7"></div><div class="cell" data-r="10" data-c="8"></div><div class="cell" data-r="10" data-c="9"></div><div class="cell dw" data-r="10" data-c="10"></div><div class="cell" data-r="10" data-c="11"></div><div class="cell" data-r="10" data-c="12"></div><div class="cell" data-r="10" data-c="13"></div><div class="cell" data-r="10" data-c="14"></div><div class="cell dl" data-r="11" data-c="0"></div><div class="cell" data-r="11" data-c="1"></div><div class="cell" data-r="11" data-c="2"></div><div class="cell dw" data-r="11" data-c="3"></div><div class="cell" data-r="11" data-c="4"></div><div class="cell" data-r="11" data-c="5"></div><div class="cell" data-r="11" data-c="6"></div><div class="cell dl" data-r="11" data-c="7"></div><div class="cell" data-r="11" data-c="8"></div><div class="cell" data-r="11" data-c="9"></div><div class="cell" data-r="11" data-c="10"></div><div class="cell dw" data-r="11" data-c="11"></div><div class="cell" data-r="11" data-c="12"></div><div class="cell" data-r="11" data-c="13"></div><div class="cell dl" data-r="11" data-c="14"></div><div class="cell" data-r="12" data-c="0"></div><div class="cell" data-r="12" data-c="1"></div><div class="cell dw" data-r="12" data-c="2"></div><div class="cell" data-r="12" data-c="3"></div><div class="cell" data-r="12" data-c="4"></div><div class="cell" data-r="12" data-c="5"></div><div class="cell dl" data-r="12" data-c="6"></div><div class="cell" data-r="12" data-c="7"></div><div class="cell dl" data-r="12" data-c="8"></div><div class="cell" data-r="12" data-c="9"></div><div class="cell" data-r="12" data-c="10"></div><div class="cell" data-r="12" data-c="11"></div><div class="cell dw" data-r="12" data-c="12"></div><div class="cell" data-r="12" data-c="13"></div><div class="cell" data-r="12" data-c="14"></div><div class="cell" data-r="13" data-c="0"></div><div class="cell dw" data-r="13" data-c="1"></div><div class="cell" data-r="13" data-c="2"></div><div class="cell" data-r="13" data-c="3"></div><div class="cell" data-r="13" data-c="4"></div><div class="cell tl" data-r="13" data-c="5"></div><div class="cell" data-r="13" data-c="6"></div><div class="cell" data-r="13" data-c="7"></div><div class="cell" data-r="13" data-c="8"></div><div class="cell tl" data-r="13" data-c="9"></div><div class="cell" data-r="13" data-c="10"></div><div class="cell" data-r="13" data-c="11"></div><div class="cell" data-r="13" data-c="12"></div><div class="cell dw" data-r="13" data-c="13"></div><div class="cell" data-r="13" data-c="14"></div><div class="cell tw" data-r="14" data-c="0"></div><div class="cell" data-r="14" data-c="1"></div><div class="cell" data-r="14" data-c="2"></div><div class="cell dl" data-r="14" data-c="3"></div><div class="cell" data-r="14" data-c="4"></div><div class="cell" data-r="14" data-c="5"></div><div class="cell" data-r="14" data-c="6"></div><div class="cell tw" data-r="14" data-c="7"></div><div class="cell" data-r="14" data-c="8"></div><div class="cell" data-r="14" data-c="9"></div><div class="cell" data-r="14" data-c="10"></div><div class="cell dl" data-r="14" data-c="11"></div><div class="cell" data-r="14" data-c="12"></div><div class="cell" data-r="14" data-c="13"></div><div class="cell tw" data-r="14" data-c="14"></div></div>
     </div>
     <svg id="word-outline" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;overflow:visible;"></svg>
     <div class="preview-float" id="preview-float">
@@ -276,12 +275,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   </div>
 
   <div class="rack-area" id="rack-area">
-    <div class="rack-tiles" id="rack"></div>
+    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">R</span><span class="rv">1</span></div><div class="rtile"><span class="rl">A</span><span class="rv">1</span></div><div class="rtile"><span class="rl">T</span><span class="rv">1</span></div><div class="rtile"><span class="rl">B</span><span class="rv">3</span></div></div>
     <div class="action-row">
       <button class="abtn abtn-sec" onclick="recallAll()">↩ Retira</button>
       <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ Mezclar</button>
       <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
-      <button class="abtn abtn-play" id="play-btn" disabled onclick="playWord()">Jugar</button>
+      <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
       <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
     </div>
   </div>
@@ -294,7 +293,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <div class="swap-tiles-row" id="swap-tiles-row"></div>
       <div class="swap-actions">
         <button class="swap-cancel" onclick="closeSwap()">Cancelar</button>
-        <button class="swap-confirm" id="swap-confirm-btn" disabled onclick="confirmSwap()">Selecciona fichas</button>
+        <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()">Selecciona fichas</button>
       </div>
     </div>
   </div>
@@ -306,7 +305,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🎮 More Games</button>
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">⚙️ Settings</button>
     </div>
-    <button onclick="G&&G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
+    <button onclick="G&amp;&amp;G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
     <div class="slbl">Mis estadísticas</div>
     <div class="sgrid">
       <div class="sc"><div class="sv2">–</div><div class="sl2">Ganadas</div></div>
@@ -628,7 +627,6 @@ function onTilePD(e,src){
 // Double-tap (iOS): use touchend timer
 let _lastTouch=0;
 $('board-wrap').addEventListener('touchend',e=>{
-  console.log('board pointerdown', e.pointerType, e.target.className);
   const S=window.S;
   if(S.isDragging||S.dragSrc) return;
   const now=Date.now();
@@ -636,24 +634,35 @@ $('board-wrap').addEventListener('touchend',e=>{
   _lastTouch=now;
 },{passive:false});
 
-$('board-wrap').addEventListener('pointerdown',e=>{
+// Pan handler — attached to document so it catches all touches on board area
+function startPan(e,cx,cy){
   const S=window.S;
   if(S.dragSrc) return;
+  // Check if touch is within board-wrap
+  const wrap=$('board-wrap');
+  const wr=wrap.getBoundingClientRect();
+  if(cx<wr.left||cx>wr.right||cy<wr.top||cy>wr.bottom) return;
+  // Don't pan if tapping a rack tile or new board tile
+  const target=document.elementFromPoint(cx,cy);
+  if(target&&(target.closest('.rtile')||target.closest('.btile.new'))) return;
   // tap-to-place
   if(S.tapSelected){
-    const cell=e.target.closest('.cell');
+    const cell=target&&target.closest('.cell');
     if(cell&&!cell.classList.contains('has-tile')){
       placeTileAt(parseInt(cell.dataset.r),parseInt(cell.dataset.c)); return;
     }
-    if(!e.target.closest('.btile.new')&&!e.target.closest('.rtile')){
+    if(!target?.closest('.btile.new')&&!target?.closest('.rtile')){
       S.tapSelected=null; buildBoard(); buildRack(); return;
     }
   }
-  // start pan
   S.isPanning=true;
-  S.panSX=e.clientX; S.panSY=e.clientY;
+  S.panSX=cx; S.panSY=cy;
   S.panSTX=S.panX; S.panSTY=S.panY;
   $('board-wrap').classList.add('panning');
+}
+
+$('board-wrap').addEventListener('pointerdown',e=>{
+  startPan(e,e.clientX,e.clientY);
 },{passive:false});
 
 // ── POINTERMOVE ──
@@ -1096,5 +1105,6 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
   }
 });
 </script>
-</body>
-</html>
+
+
+</body></html>
