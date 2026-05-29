@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_16.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_17.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -198,6 +198,33 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .bdgy{background:rgba(82,183,136,0.18);color:#52b788;} .bdgt{background:rgba(233,196,106,0.12);color:#e9c46a;}
 
 /* LOGIN */
+/* LOBBY BOTTOM SHEET */
+.lobby-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:70;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.lobby-overlay.open{opacity:1;pointer-events:auto;}
+.lobby-panel{position:absolute;bottom:0;left:0;right:0;background:#0d1f3c;border-radius:18px 18px 0 0;padding:14px 14px 28px;z-index:71;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto;}
+.lobby-panel.open{transform:translateY(0);}
+.lobby-handle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 14px;cursor:pointer;}
+.lobby-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;}
+.lobby-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:16px;}
+.lobby-section{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;}
+.lobby-game{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.06);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:background 0.15s;}
+.lobby-game:active{background:rgba(255,255,255,0.1);}
+.lobby-game-left{display:flex;align-items:center;gap:10px;}
+.lobby-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
+.lobby-game-name{font-size:14px;font-weight:700;color:#fff;}
+.lobby-game-sub{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px;}
+.lobby-game-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.lobby-score{font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);}
+.lobby-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;}
+.lobby-badge.myturn{background:rgba(40,196,154,0.2);color:#28c49a;}
+.lobby-badge.theirturn{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);}
+.lobby-player{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:background 0.15s;}
+.lobby-player:active{background:rgba(255,255,255,0.12);}
+.lobby-player-name{font-size:15px;font-weight:700;color:#fff;}
+.lobby-player-sub{font-size:11px;color:rgba(255,255,255,0.35);}
+.lobby-new-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:"Arial Black",Arial,sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(40,196,154,0.3);}
+.lobby-back{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;margin-bottom:14px;}
+
 #login-screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1e3040;z-index:200;padding:32px 24px;}
 #login-screen.hidden{display:none;}
 .login-logo{font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:4px;color:#fff;margin-bottom:4px;}
@@ -233,9 +260,9 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v8</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v9</span></div>
       <div style="margin-top:2px;">
-        <span class="heading-sub" onclick="G&amp;&amp;G.newGame()">New Game</span>
+        <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
       </div>
     </div>
@@ -248,21 +275,21 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   <div class="score-bar">
     <div class="sb-player">
       <span class="sb-name">Tú</span>
-      <span class="sb-score" id="my-score">10</span>
+      <span class="sb-score" id="my-score">19</span>
     </div>
     <div class="sb-middle">
       <span class="turn-pill" id="turn-pill">Tu turno</span>
-      <span class="bag-label" id="bag-label">77 fichas</span>
+      <span class="bag-label" id="bag-label">72 fichas</span>
     </div>
     <div class="sb-player right">
       <span class="sb-name" id="opponent-name">Oponente</span>
-      <span class="sb-score" id="their-score">10</span>
+      <span class="sb-score" id="their-score">34</span>
     </div>
   </div>
 
-  <div class="board-wrap panning" id="board-wrap">
+  <div class="board-wrap" id="board-wrap">
     <div id="board-panner" style="width: 480px; height: 480px; left: 0px; top: 231px; transition: none; transform: translate(0px, 0px) scale(1);">
-      <div id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0"></div><div class="cell" data-r="0" data-c="1"></div><div class="cell" data-r="0" data-c="2"></div><div class="cell dl" data-r="0" data-c="3"></div><div class="cell" data-r="0" data-c="4"></div><div class="cell" data-r="0" data-c="5"></div><div class="cell" data-r="0" data-c="6"></div><div class="cell tw" data-r="0" data-c="7"></div><div class="cell" data-r="0" data-c="8"></div><div class="cell" data-r="0" data-c="9"></div><div class="cell" data-r="0" data-c="10"></div><div class="cell dl" data-r="0" data-c="11"></div><div class="cell" data-r="0" data-c="12"></div><div class="cell" data-r="0" data-c="13"></div><div class="cell tw" data-r="0" data-c="14"></div><div class="cell" data-r="1" data-c="0"></div><div class="cell dw" data-r="1" data-c="1"></div><div class="cell" data-r="1" data-c="2"></div><div class="cell" data-r="1" data-c="3"></div><div class="cell" data-r="1" data-c="4"></div><div class="cell tl" data-r="1" data-c="5"></div><div class="cell" data-r="1" data-c="6"></div><div class="cell" data-r="1" data-c="7"></div><div class="cell" data-r="1" data-c="8"></div><div class="cell tl" data-r="1" data-c="9"></div><div class="cell" data-r="1" data-c="10"></div><div class="cell" data-r="1" data-c="11"></div><div class="cell" data-r="1" data-c="12"></div><div class="cell dw" data-r="1" data-c="13"></div><div class="cell" data-r="1" data-c="14"></div><div class="cell" data-r="2" data-c="0"></div><div class="cell" data-r="2" data-c="1"></div><div class="cell dw" data-r="2" data-c="2"></div><div class="cell" data-r="2" data-c="3"></div><div class="cell" data-r="2" data-c="4"></div><div class="cell" data-r="2" data-c="5"></div><div class="cell dl" data-r="2" data-c="6"></div><div class="cell" data-r="2" data-c="7"></div><div class="cell dl" data-r="2" data-c="8"></div><div class="cell" data-r="2" data-c="9"></div><div class="cell" data-r="2" data-c="10"></div><div class="cell" data-r="2" data-c="11"></div><div class="cell dw" data-r="2" data-c="12"></div><div class="cell" data-r="2" data-c="13"></div><div class="cell" data-r="2" data-c="14"></div><div class="cell dl" data-r="3" data-c="0"></div><div class="cell" data-r="3" data-c="1"></div><div class="cell" data-r="3" data-c="2"></div><div class="cell dw" data-r="3" data-c="3"></div><div class="cell" data-r="3" data-c="4"></div><div class="cell" data-r="3" data-c="5"></div><div class="cell" data-r="3" data-c="6"></div><div class="cell dl" data-r="3" data-c="7"></div><div class="cell" data-r="3" data-c="8"></div><div class="cell" data-r="3" data-c="9"></div><div class="cell" data-r="3" data-c="10"></div><div class="cell dw" data-r="3" data-c="11"></div><div class="cell" data-r="3" data-c="12"></div><div class="cell" data-r="3" data-c="13"></div><div class="cell dl" data-r="3" data-c="14"></div><div class="cell" data-r="4" data-c="0"></div><div class="cell" data-r="4" data-c="1"></div><div class="cell" data-r="4" data-c="2"></div><div class="cell" data-r="4" data-c="3"></div><div class="cell dw" data-r="4" data-c="4"></div><div class="cell" data-r="4" data-c="5"></div><div class="cell" data-r="4" data-c="6"></div><div class="cell" data-r="4" data-c="7"></div><div class="cell" data-r="4" data-c="8"></div><div class="cell" data-r="4" data-c="9"></div><div class="cell dw" data-r="4" data-c="10"></div><div class="cell" data-r="4" data-c="11"></div><div class="cell" data-r="4" data-c="12"></div><div class="cell" data-r="4" data-c="13"></div><div class="cell" data-r="4" data-c="14"></div><div class="cell" data-r="5" data-c="0"></div><div class="cell tl" data-r="5" data-c="1"></div><div class="cell" data-r="5" data-c="2"></div><div class="cell" data-r="5" data-c="3"></div><div class="cell" data-r="5" data-c="4"></div><div class="cell tl" data-r="5" data-c="5"></div><div class="cell" data-r="5" data-c="6"></div><div class="cell" data-r="5" data-c="7"></div><div class="cell" data-r="5" data-c="8"></div><div class="cell tl" data-r="5" data-c="9"></div><div class="cell has-tile" data-r="5" data-c="10"><div class="btile"><span class="bl">G</span><span class="bv">2</span></div></div><div class="cell" data-r="5" data-c="11"></div><div class="cell" data-r="5" data-c="12"></div><div class="cell tl" data-r="5" data-c="13"></div><div class="cell" data-r="5" data-c="14"></div><div class="cell" data-r="6" data-c="0"></div><div class="cell" data-r="6" data-c="1"></div><div class="cell dl" data-r="6" data-c="2"></div><div class="cell" data-r="6" data-c="3"></div><div class="cell" data-r="6" data-c="4"></div><div class="cell" data-r="6" data-c="5"></div><div class="cell dl" data-r="6" data-c="6"></div><div class="cell" data-r="6" data-c="7"></div><div class="cell dl" data-r="6" data-c="8"></div><div class="cell" data-r="6" data-c="9"></div><div class="cell has-tile" data-r="6" data-c="10"><div class="btile"><span class="bl">U</span><span class="bv">1</span></div></div><div class="cell" data-r="6" data-c="11"></div><div class="cell dl" data-r="6" data-c="12"></div><div class="cell" data-r="6" data-c="13"></div><div class="cell" data-r="6" data-c="14"></div><div class="cell tw" data-r="7" data-c="0"></div><div class="cell" data-r="7" data-c="1"></div><div class="cell" data-r="7" data-c="2"></div><div class="cell dl" data-r="7" data-c="3"></div><div class="cell" data-r="7" data-c="4"></div><div class="cell" data-r="7" data-c="5"></div><div class="cell" data-r="7" data-c="6"></div><div class="cell has-tile" data-r="7" data-c="7"><div class="btile"><span class="bl">P</span><span class="bv">3</span></div></div><div class="cell has-tile" data-r="7" data-c="8"><div class="btile"><span class="bl">I</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="10"><div class="btile"><span class="bl">S</span><span class="bv">1</span></div></div><div class="cell dl" data-r="7" data-c="11"></div><div class="cell" data-r="7" data-c="12"></div><div class="cell" data-r="7" data-c="13"></div><div class="cell tw" data-r="7" data-c="14"></div><div class="cell" data-r="8" data-c="0"></div><div class="cell" data-r="8" data-c="1"></div><div class="cell dl" data-r="8" data-c="2"></div><div class="cell" data-r="8" data-c="3"></div><div class="cell" data-r="8" data-c="4"></div><div class="cell" data-r="8" data-c="5"></div><div class="cell dl" data-r="8" data-c="6"></div><div class="cell" data-r="8" data-c="7"></div><div class="cell dl" data-r="8" data-c="8"></div><div class="cell" data-r="8" data-c="9"></div><div class="cell" data-r="8" data-c="10"></div><div class="cell" data-r="8" data-c="11"></div><div class="cell dl" data-r="8" data-c="12"></div><div class="cell" data-r="8" data-c="13"></div><div class="cell" data-r="8" data-c="14"></div><div class="cell" data-r="9" data-c="0"></div><div class="cell tl" data-r="9" data-c="1"></div><div class="cell" data-r="9" data-c="2"></div><div class="cell" data-r="9" data-c="3"></div><div class="cell" data-r="9" data-c="4"></div><div class="cell tl" data-r="9" data-c="5"></div><div class="cell" data-r="9" data-c="6"></div><div class="cell" data-r="9" data-c="7"></div><div class="cell" data-r="9" data-c="8"></div><div class="cell tl" data-r="9" data-c="9"></div><div class="cell" data-r="9" data-c="10"></div><div class="cell" data-r="9" data-c="11"></div><div class="cell" data-r="9" data-c="12"></div><div class="cell tl" data-r="9" data-c="13"></div><div class="cell" data-r="9" data-c="14"></div><div class="cell" data-r="10" data-c="0"></div><div class="cell" data-r="10" data-c="1"></div><div class="cell" data-r="10" data-c="2"></div><div class="cell" data-r="10" data-c="3"></div><div class="cell dw" data-r="10" data-c="4"></div><div class="cell" data-r="10" data-c="5"></div><div class="cell" data-r="10" data-c="6"></div><div class="cell" data-r="10" data-c="7"></div><div class="cell" data-r="10" data-c="8"></div><div class="cell" data-r="10" data-c="9"></div><div class="cell dw" data-r="10" data-c="10"></div><div class="cell" data-r="10" data-c="11"></div><div class="cell" data-r="10" data-c="12"></div><div class="cell" data-r="10" data-c="13"></div><div class="cell" data-r="10" data-c="14"></div><div class="cell dl" data-r="11" data-c="0"></div><div class="cell" data-r="11" data-c="1"></div><div class="cell" data-r="11" data-c="2"></div><div class="cell dw" data-r="11" data-c="3"></div><div class="cell" data-r="11" data-c="4"></div><div class="cell" data-r="11" data-c="5"></div><div class="cell" data-r="11" data-c="6"></div><div class="cell dl" data-r="11" data-c="7"></div><div class="cell" data-r="11" data-c="8"></div><div class="cell" data-r="11" data-c="9"></div><div class="cell" data-r="11" data-c="10"></div><div class="cell dw" data-r="11" data-c="11"></div><div class="cell" data-r="11" data-c="12"></div><div class="cell" data-r="11" data-c="13"></div><div class="cell dl" data-r="11" data-c="14"></div><div class="cell" data-r="12" data-c="0"></div><div class="cell" data-r="12" data-c="1"></div><div class="cell dw" data-r="12" data-c="2"></div><div class="cell" data-r="12" data-c="3"></div><div class="cell" data-r="12" data-c="4"></div><div class="cell" data-r="12" data-c="5"></div><div class="cell dl" data-r="12" data-c="6"></div><div class="cell" data-r="12" data-c="7"></div><div class="cell dl" data-r="12" data-c="8"></div><div class="cell" data-r="12" data-c="9"></div><div class="cell" data-r="12" data-c="10"></div><div class="cell" data-r="12" data-c="11"></div><div class="cell dw" data-r="12" data-c="12"></div><div class="cell" data-r="12" data-c="13"></div><div class="cell" data-r="12" data-c="14"></div><div class="cell" data-r="13" data-c="0"></div><div class="cell dw" data-r="13" data-c="1"></div><div class="cell" data-r="13" data-c="2"></div><div class="cell" data-r="13" data-c="3"></div><div class="cell" data-r="13" data-c="4"></div><div class="cell tl" data-r="13" data-c="5"></div><div class="cell" data-r="13" data-c="6"></div><div class="cell" data-r="13" data-c="7"></div><div class="cell" data-r="13" data-c="8"></div><div class="cell tl" data-r="13" data-c="9"></div><div class="cell" data-r="13" data-c="10"></div><div class="cell" data-r="13" data-c="11"></div><div class="cell" data-r="13" data-c="12"></div><div class="cell dw" data-r="13" data-c="13"></div><div class="cell" data-r="13" data-c="14"></div><div class="cell tw" data-r="14" data-c="0"></div><div class="cell" data-r="14" data-c="1"></div><div class="cell" data-r="14" data-c="2"></div><div class="cell dl" data-r="14" data-c="3"></div><div class="cell" data-r="14" data-c="4"></div><div class="cell" data-r="14" data-c="5"></div><div class="cell" data-r="14" data-c="6"></div><div class="cell tw" data-r="14" data-c="7"></div><div class="cell" data-r="14" data-c="8"></div><div class="cell" data-r="14" data-c="9"></div><div class="cell" data-r="14" data-c="10"></div><div class="cell dl" data-r="14" data-c="11"></div><div class="cell" data-r="14" data-c="12"></div><div class="cell" data-r="14" data-c="13"></div><div class="cell tw" data-r="14" data-c="14"></div></div>
+      <div id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0"></div><div class="cell" data-r="0" data-c="1"></div><div class="cell" data-r="0" data-c="2"></div><div class="cell dl" data-r="0" data-c="3"></div><div class="cell" data-r="0" data-c="4"></div><div class="cell" data-r="0" data-c="5"></div><div class="cell" data-r="0" data-c="6"></div><div class="cell tw" data-r="0" data-c="7"></div><div class="cell" data-r="0" data-c="8"></div><div class="cell" data-r="0" data-c="9"></div><div class="cell" data-r="0" data-c="10"></div><div class="cell dl" data-r="0" data-c="11"></div><div class="cell" data-r="0" data-c="12"></div><div class="cell" data-r="0" data-c="13"></div><div class="cell tw" data-r="0" data-c="14"></div><div class="cell" data-r="1" data-c="0"></div><div class="cell dw" data-r="1" data-c="1"></div><div class="cell" data-r="1" data-c="2"></div><div class="cell" data-r="1" data-c="3"></div><div class="cell" data-r="1" data-c="4"></div><div class="cell tl" data-r="1" data-c="5"></div><div class="cell" data-r="1" data-c="6"></div><div class="cell" data-r="1" data-c="7"></div><div class="cell" data-r="1" data-c="8"></div><div class="cell tl" data-r="1" data-c="9"></div><div class="cell" data-r="1" data-c="10"></div><div class="cell" data-r="1" data-c="11"></div><div class="cell" data-r="1" data-c="12"></div><div class="cell dw" data-r="1" data-c="13"></div><div class="cell" data-r="1" data-c="14"></div><div class="cell" data-r="2" data-c="0"></div><div class="cell" data-r="2" data-c="1"></div><div class="cell dw" data-r="2" data-c="2"></div><div class="cell" data-r="2" data-c="3"></div><div class="cell" data-r="2" data-c="4"></div><div class="cell" data-r="2" data-c="5"></div><div class="cell dl" data-r="2" data-c="6"></div><div class="cell" data-r="2" data-c="7"></div><div class="cell dl" data-r="2" data-c="8"></div><div class="cell" data-r="2" data-c="9"></div><div class="cell" data-r="2" data-c="10"></div><div class="cell" data-r="2" data-c="11"></div><div class="cell dw" data-r="2" data-c="12"></div><div class="cell" data-r="2" data-c="13"></div><div class="cell" data-r="2" data-c="14"></div><div class="cell dl" data-r="3" data-c="0"></div><div class="cell" data-r="3" data-c="1"></div><div class="cell" data-r="3" data-c="2"></div><div class="cell dw" data-r="3" data-c="3"></div><div class="cell" data-r="3" data-c="4"></div><div class="cell" data-r="3" data-c="5"></div><div class="cell" data-r="3" data-c="6"></div><div class="cell dl" data-r="3" data-c="7"></div><div class="cell" data-r="3" data-c="8"></div><div class="cell" data-r="3" data-c="9"></div><div class="cell" data-r="3" data-c="10"></div><div class="cell dw" data-r="3" data-c="11"></div><div class="cell" data-r="3" data-c="12"></div><div class="cell" data-r="3" data-c="13"></div><div class="cell dl" data-r="3" data-c="14"></div><div class="cell" data-r="4" data-c="0"></div><div class="cell" data-r="4" data-c="1"></div><div class="cell" data-r="4" data-c="2"></div><div class="cell" data-r="4" data-c="3"></div><div class="cell dw" data-r="4" data-c="4"></div><div class="cell" data-r="4" data-c="5"></div><div class="cell" data-r="4" data-c="6"></div><div class="cell" data-r="4" data-c="7"></div><div class="cell" data-r="4" data-c="8"></div><div class="cell" data-r="4" data-c="9"></div><div class="cell dw" data-r="4" data-c="10"></div><div class="cell" data-r="4" data-c="11"></div><div class="cell" data-r="4" data-c="12"></div><div class="cell" data-r="4" data-c="13"></div><div class="cell" data-r="4" data-c="14"></div><div class="cell" data-r="5" data-c="0"></div><div class="cell tl" data-r="5" data-c="1"></div><div class="cell" data-r="5" data-c="2"></div><div class="cell" data-r="5" data-c="3"></div><div class="cell" data-r="5" data-c="4"></div><div class="cell tl" data-r="5" data-c="5"></div><div class="cell" data-r="5" data-c="6"></div><div class="cell" data-r="5" data-c="7"></div><div class="cell" data-r="5" data-c="8"></div><div class="cell tl" data-r="5" data-c="9"></div><div class="cell has-tile" data-r="5" data-c="10"><div class="btile"><span class="bl">G</span><span class="bv">2</span></div></div><div class="cell" data-r="5" data-c="11"></div><div class="cell" data-r="5" data-c="12"></div><div class="cell tl" data-r="5" data-c="13"></div><div class="cell" data-r="5" data-c="14"></div><div class="cell" data-r="6" data-c="0"></div><div class="cell" data-r="6" data-c="1"></div><div class="cell dl" data-r="6" data-c="2"></div><div class="cell" data-r="6" data-c="3"></div><div class="cell" data-r="6" data-c="4"></div><div class="cell" data-r="6" data-c="5"></div><div class="cell dl" data-r="6" data-c="6"></div><div class="cell" data-r="6" data-c="7"></div><div class="cell has-tile" data-r="6" data-c="8"><div class="btile"><span class="bl">B</span><span class="bv">3</span></div></div><div class="cell" data-r="6" data-c="9"></div><div class="cell has-tile" data-r="6" data-c="10"><div class="btile"><span class="bl">U</span><span class="bv">1</span></div></div><div class="cell" data-r="6" data-c="11"></div><div class="cell dl" data-r="6" data-c="12"></div><div class="cell" data-r="6" data-c="13"></div><div class="cell" data-r="6" data-c="14"></div><div class="cell tw" data-r="7" data-c="0"></div><div class="cell" data-r="7" data-c="1"></div><div class="cell" data-r="7" data-c="2"></div><div class="cell dl" data-r="7" data-c="3"></div><div class="cell" data-r="7" data-c="4"></div><div class="cell" data-r="7" data-c="5"></div><div class="cell" data-r="7" data-c="6"></div><div class="cell has-tile" data-r="7" data-c="7"><div class="btile"><span class="bl">P</span><span class="bv">3</span></div></div><div class="cell has-tile" data-r="7" data-c="8"><div class="btile"><span class="bl">I</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="10"><div class="btile"><span class="bl">S</span><span class="bv">1</span></div></div><div class="cell dl" data-r="7" data-c="11"></div><div class="cell" data-r="7" data-c="12"></div><div class="cell" data-r="7" data-c="13"></div><div class="cell tw" data-r="7" data-c="14"></div><div class="cell" data-r="8" data-c="0"></div><div class="cell" data-r="8" data-c="1"></div><div class="cell dl" data-r="8" data-c="2"></div><div class="cell" data-r="8" data-c="3"></div><div class="cell" data-r="8" data-c="4"></div><div class="cell" data-r="8" data-c="5"></div><div class="cell dl" data-r="8" data-c="6"></div><div class="cell" data-r="8" data-c="7"></div><div class="cell has-tile" data-r="8" data-c="8"><div class="btile"><span class="bl">T</span><span class="bv">1</span></div></div><div class="cell" data-r="8" data-c="9"></div><div class="cell has-tile" data-r="8" data-c="10"><div class="btile"><span class="bl">C</span><span class="bv">3</span></div></div><div class="cell" data-r="8" data-c="11"></div><div class="cell dl" data-r="8" data-c="12"></div><div class="cell" data-r="8" data-c="13"></div><div class="cell" data-r="8" data-c="14"></div><div class="cell" data-r="9" data-c="0"></div><div class="cell tl" data-r="9" data-c="1"></div><div class="cell" data-r="9" data-c="2"></div><div class="cell" data-r="9" data-c="3"></div><div class="cell" data-r="9" data-c="4"></div><div class="cell tl" data-r="9" data-c="5"></div><div class="cell" data-r="9" data-c="6"></div><div class="cell" data-r="9" data-c="7"></div><div class="cell" data-r="9" data-c="8"></div><div class="cell tl" data-r="9" data-c="9"></div><div class="cell has-tile" data-r="9" data-c="10"><div class="btile"><span class="bl">U</span><span class="bv">1</span></div></div><div class="cell" data-r="9" data-c="11"></div><div class="cell" data-r="9" data-c="12"></div><div class="cell tl" data-r="9" data-c="13"></div><div class="cell" data-r="9" data-c="14"></div><div class="cell" data-r="10" data-c="0"></div><div class="cell" data-r="10" data-c="1"></div><div class="cell" data-r="10" data-c="2"></div><div class="cell" data-r="10" data-c="3"></div><div class="cell dw" data-r="10" data-c="4"></div><div class="cell" data-r="10" data-c="5"></div><div class="cell" data-r="10" data-c="6"></div><div class="cell" data-r="10" data-c="7"></div><div class="cell" data-r="10" data-c="8"></div><div class="cell" data-r="10" data-c="9"></div><div class="cell has-tile" data-r="10" data-c="10"><div class="btile"><span class="bl">F</span><span class="bv">4</span></div></div><div class="cell" data-r="10" data-c="11"></div><div class="cell" data-r="10" data-c="12"></div><div class="cell" data-r="10" data-c="13"></div><div class="cell" data-r="10" data-c="14"></div><div class="cell dl" data-r="11" data-c="0"></div><div class="cell" data-r="11" data-c="1"></div><div class="cell" data-r="11" data-c="2"></div><div class="cell dw" data-r="11" data-c="3"></div><div class="cell" data-r="11" data-c="4"></div><div class="cell" data-r="11" data-c="5"></div><div class="cell" data-r="11" data-c="6"></div><div class="cell dl" data-r="11" data-c="7"></div><div class="cell" data-r="11" data-c="8"></div><div class="cell" data-r="11" data-c="9"></div><div class="cell" data-r="11" data-c="10"></div><div class="cell dw" data-r="11" data-c="11"></div><div class="cell" data-r="11" data-c="12"></div><div class="cell" data-r="11" data-c="13"></div><div class="cell dl" data-r="11" data-c="14"></div><div class="cell" data-r="12" data-c="0"></div><div class="cell" data-r="12" data-c="1"></div><div class="cell dw" data-r="12" data-c="2"></div><div class="cell" data-r="12" data-c="3"></div><div class="cell" data-r="12" data-c="4"></div><div class="cell" data-r="12" data-c="5"></div><div class="cell dl" data-r="12" data-c="6"></div><div class="cell" data-r="12" data-c="7"></div><div class="cell dl" data-r="12" data-c="8"></div><div class="cell" data-r="12" data-c="9"></div><div class="cell" data-r="12" data-c="10"></div><div class="cell" data-r="12" data-c="11"></div><div class="cell dw" data-r="12" data-c="12"></div><div class="cell" data-r="12" data-c="13"></div><div class="cell" data-r="12" data-c="14"></div><div class="cell" data-r="13" data-c="0"></div><div class="cell dw" data-r="13" data-c="1"></div><div class="cell" data-r="13" data-c="2"></div><div class="cell" data-r="13" data-c="3"></div><div class="cell" data-r="13" data-c="4"></div><div class="cell tl" data-r="13" data-c="5"></div><div class="cell" data-r="13" data-c="6"></div><div class="cell" data-r="13" data-c="7"></div><div class="cell" data-r="13" data-c="8"></div><div class="cell tl" data-r="13" data-c="9"></div><div class="cell" data-r="13" data-c="10"></div><div class="cell" data-r="13" data-c="11"></div><div class="cell" data-r="13" data-c="12"></div><div class="cell dw" data-r="13" data-c="13"></div><div class="cell" data-r="13" data-c="14"></div><div class="cell tw" data-r="14" data-c="0"></div><div class="cell" data-r="14" data-c="1"></div><div class="cell" data-r="14" data-c="2"></div><div class="cell dl" data-r="14" data-c="3"></div><div class="cell" data-r="14" data-c="4"></div><div class="cell" data-r="14" data-c="5"></div><div class="cell" data-r="14" data-c="6"></div><div class="cell tw" data-r="14" data-c="7"></div><div class="cell" data-r="14" data-c="8"></div><div class="cell" data-r="14" data-c="9"></div><div class="cell" data-r="14" data-c="10"></div><div class="cell dl" data-r="14" data-c="11"></div><div class="cell" data-r="14" data-c="12"></div><div class="cell" data-r="14" data-c="13"></div><div class="cell tw" data-r="14" data-c="14"></div></div>
     </div>
     <svg id="word-outline" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;overflow:visible;"></svg>
     <div class="preview-float" id="preview-float">
@@ -271,13 +298,13 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
     </div>
     <div class="zoom-hint" id="zoom-hint">⊖ doble toque para alejar</div>
     <div class="toast-modal" id="toast-modal">
-      <span class="tm-text">🇲🇽 Jugaste <b id="tm-word">–</b> por <b id="tm-pts">–</b> puntos</span>
+      <span class="tm-text">🇲🇽 Jugaste <b id="tm-word">GUSCUF</b> por <b id="tm-pts">24</b> puntos</span>
       <span class="tm-gem">💎 <span id="tm-gems">5</span></span>
     </div>
   </div>
 
   <div class="rack-area" id="rack-area">
-    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">R</span><span class="rv">1</span></div><div class="rtile"><span class="rl">A</span><span class="rv">1</span></div><div class="rtile"><span class="rl">T</span><span class="rv">1</span></div><div class="rtile"><span class="rl">B</span><span class="rv">3</span></div></div>
+    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">R</span><span class="rv">1</span></div><div class="rtile"><span class="rl">A</span><span class="rv">1</span></div><div class="rtile"><span class="rl">T</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div></div>
     <div class="action-row">
       <button class="abtn abtn-sec" onclick="recallAll()">↩ Retira</button>
       <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ Mezclar</button>
@@ -297,6 +324,15 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
         <button class="swap-cancel" onclick="closeSwap()">Cancelar</button>
         <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()">Selecciona fichas</button>
       </div>
+    </div>
+  </div>
+
+  <!-- LOBBY BOTTOM SHEET -->
+  <div class="lobby-overlay" id="lobby-overlay" onclick="closeLobby()"></div>
+  <div class="lobby-panel" id="lobby-panel">
+    <div class="lobby-handle" onclick="closeLobby()"></div>
+    <div id="lobby-content">
+      <!-- filled by JS -->
     </div>
   </div>
 
@@ -982,6 +1018,98 @@ function openStats(){$('stats-panel').classList.add('open');$('stats-overlay').c
 function closeStats(){$('stats-panel').classList.remove('open');$('stats-overlay').classList.remove('open');}
 
 // ── INIT ──
+// ── KNOWN PLAYERS (hardcoded for now, will come from Firestore later) ──
+const KNOWN_PLAYERS = {
+  '2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2': { name:'Phil', color:'#e87020' },
+  'QOubuRNcm1ZqONg5qZ5Oc5kdEQn2': { name:'Nancy', color:'#2060c0' },
+};
+function playerName(uid){ return KNOWN_PLAYERS[uid]?.name || uid.slice(0,6); }
+function playerColor(uid){ return KNOWN_PLAYERS[uid]?.color || '#666'; }
+function playerInitial(uid){ return playerName(uid)[0].toUpperCase(); }
+
+function openLobby(){
+  $('lobby-overlay').classList.add('open');
+  $('lobby-panel').classList.add('open');
+  renderLobbyHome();
+}
+function closeLobby(){
+  $('lobby-overlay').classList.remove('open');
+  $('lobby-panel').classList.remove('open');
+}
+
+function renderLobbyHome(){
+  const myUid = window.S.myUid;
+  const games = window._lobbyGames || [];
+  const active = games.filter(g=>g.status==='active');
+
+  let html = `<div class="lobby-title">Partidas</div>
+    <div class="lobby-sub">Tus partidas activas y nuevos juegos</div>`;
+
+  if(active.length>0){
+    html += `<div class="lobby-section">Partidas activas</div>`;
+    active.forEach(g=>{
+      const oppUid = g.players.find(p=>p!==myUid)||'';
+      const oppName = playerName(oppUid);
+      const oppColor = playerColor(oppUid);
+      const myScore = g.scores?.[myUid]||0;
+      const oppScore = g.scores?.[oppUid]||0;
+      const isMyTurn = g.currentTurn===myUid;
+      html += `<div class="lobby-game" onclick="selectLobbyGame('${g.id}');closeLobby();">
+        <div class="lobby-game-left">
+          <div class="lobby-avatar" style="background:${oppColor}">${playerInitial(oppUid)}</div>
+          <div>
+            <div class="lobby-game-name">${oppName}</div>
+            <div class="lobby-game-sub">${myScore} – ${oppScore} · ${g.bagSize||0} fichas</div>
+          </div>
+        </div>
+        <div class="lobby-game-right">
+          <div class="lobby-badge ${isMyTurn?'myturn':'theirturn'}">${isMyTurn?'Tu turno':'Su turno'}</div>
+        </div>
+      </div>`;
+    });
+  } else {
+    html += `<div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px 0;">No tienes partidas activas</div>`;
+  }
+
+  html += `<div class="lobby-section">Nueva partida</div>`;
+  // Show all other known players
+  Object.entries(KNOWN_PLAYERS).forEach(([uid,info])=>{
+    if(uid===myUid) return;
+    html += `<div class="lobby-player" onclick="renderLobbyNewGame('${uid}')">
+      <div class="lobby-avatar" style="background:${info.color}">${info.name[0]}</div>
+      <div>
+        <div class="lobby-player-name">${info.name}</div>
+        <div class="lobby-player-sub">Iniciar nueva partida</div>
+      </div>
+    </div>`;
+  });
+
+  $('lobby-content').innerHTML = html;
+}
+
+function renderLobbyNewGame(oppUid){
+  const oppName = playerName(oppUid);
+  const oppColor = playerColor(oppUid);
+  $('lobby-content').innerHTML = `
+    <div class="lobby-back" onclick="renderLobbyHome()">← Volver</div>
+    <div class="lobby-title">Nueva partida</div>
+    <div class="lobby-sub">¿Jugar contra ${oppName}?</div>
+    <div class="lobby-player" style="cursor:default;margin-top:16px;">
+      <div class="lobby-avatar" style="background:${oppColor}">${oppName[0]}</div>
+      <div>
+        <div class="lobby-player-name">${oppName}</div>
+        <div class="lobby-player-sub">Español · Fichas estándar</div>
+      </div>
+    </div>
+    <button class="lobby-new-btn" onclick="G&&G.startGame('${oppUid}');closeLobby();">
+      ¡Jugar contra ${oppName}!
+    </button>`;
+}
+
+function selectLobbyGame(gameId){
+  if(window.G) window.G.loadGame(gameId);
+}
+
 function initGame(){
   // Use double setTimeout to ensure display:flex has taken effect
   // and the browser has calculated dimensions before we measure
@@ -1029,10 +1157,19 @@ let unsubGame=null;
 
 window.G={
   newGame:async()=>{
+    openLobby();
+  },
+  startGame:async(oppUid)=>{
     const user=auth.currentUser;if(!user){alert('Inicia sesión primero');return;}
-    const oppUid=user.uid===PHIL_UID?NANCY_UID:PHIL_UID;
-    try{const res=await fnCreate({opponentUid:oppUid,language:'es'});console.log('Game created:',res.data.gameId);subscribeToGame(res.data.gameId,user.uid);}
-    catch(err){console.error('createGame error:',err);alert('Error: '+err.message);}
+    try{
+      const res=await fnCreate({opponentUid:oppUid,language:'es'});
+      console.log('Game created:',res.data.gameId);
+      subscribeToGame(res.data.gameId,user.uid);
+    }catch(err){console.error('createGame error:',err);alert('Error: '+err.message);}
+  },
+  loadGame:(gameId)=>{
+    const user=auth.currentUser;if(!user)return;
+    subscribeToGame(gameId,user.uid);
   },
   submitPlay:async()=>{
     const S=window.S;if(!S.currentGameId){alert('No active game');return;}
@@ -1087,10 +1224,14 @@ onAuthStateChanged(auth,async user=>{
     try{
       const q=query(collection(db,'games'),where('players','array-contains',user.uid));
       const snap=await getDocs(q);
-      const active=snap.docs.filter(d=>d.data().status==='active')
-        .sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
+      const allGames=snap.docs.map(d=>({id:d.id,...d.data(),bagSize:d.data().bag?.length||0}));
+      const active=allGames.filter(g=>g.status==='active')
+        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+      window._lobbyGames=allGames;
       console.log('Active games:',active.length);
       if(active.length>0){console.log('Resuming game:',active[0].id);subscribeToGame(active[0].id,user.uid);}
+      // Show lobby if no active games
+      if(active.length===0){setTimeout(()=>openLobby(),500);}
     }catch(err){console.error('Game lookup error:',err.message);}
   }else{
     document.getElementById('login-screen').classList.remove('hidden');
