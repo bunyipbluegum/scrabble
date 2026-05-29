@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_23.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_24.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -260,7 +260,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v16</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v17</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -1113,15 +1113,49 @@ function selectLobbyGame(gameId){
   if(window.G) window.G.loadGame(gameId);
 }
 
-function enableNotifications(){
+async function enableNotifications(){
   const uid = window._pushUid || window.S.myUid;
   if(!uid){ alert('Inicia sesión primero'); return; }
-  if(typeof registerPush === 'function'){
-    registerPush(uid).then(()=>{
-      const btn = document.getElementById('notif-btn');
-      if(btn){ btn.textContent='✅ Notificaciones activadas'; btn.style.opacity='0.5'; }
-    });
+  const btn = document.getElementById('notif-btn');
+  if(btn){ btn.textContent='⏳ Activando...'; btn.disabled=true; }
+  if(!window._registerPush){
+    if(btn){ btn.textContent='❌ No disponible en este navegador'; btn.disabled=false; }
+    return;
   }
+  const result = await window._registerPush(uid);
+  if(result && result.success){
+    if(btn){ btn.textContent='✅ Notificaciones activadas'; btn.style.opacity='0.6'; }
+    window._notifEnabled = true;
+    const p = document.getElementById('notif-prompt');
+    if(p) p.remove();
+  } else {
+    const msg = result?.error || 'Error';
+    if(msg.includes('permission-blocked')||msg.includes('denied')){
+      if(btn){ btn.textContent='🚫 Bloqueado — activa en ajustes del navegador'; btn.disabled=false; }
+    } else {
+      if(btn){ btn.textContent='🔔 Activar notificaciones'; btn.disabled=false; }
+    }
+  }
+}
+
+function checkNotifPrompt(){
+  if(window._notifEnabled) return;
+  if(Notification.permission==='granted'){ window._notifEnabled=true; return; }
+  if(Notification.permission==='denied') return;
+  setTimeout(()=>{
+    if(document.getElementById('notif-prompt')) return;
+    const prompt=document.createElement('div');
+    prompt.id='notif-prompt';
+    prompt.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a2a3a;border:1px solid rgba(40,196,154,0.4);border-radius:14px;padding:14px 16px;z-index:100;max-width:320px;width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.5);';
+    prompt.innerHTML=`
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="document.getElementById('notif-prompt').remove()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
+        <button onclick="document.getElementById('notif-prompt').remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
+      </div>`;
+    document.body.appendChild(prompt);
+  },2500);
 }
 
 // ── REGISTER SERVICE WORKER ──
@@ -1186,7 +1220,7 @@ let messaging=null;
 try{ messaging=getMessaging(app); console.log('Messaging init ok'); }catch(e){ console.log('Messaging not supported:',e.message); }
 
 async function registerPush(uid){
-  if(!messaging) return;
+  if(!messaging){ return {error:'Messaging not supported'}; }
   try{
     const reg=await navigator.serviceWorker.ready;
     const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
@@ -1197,17 +1231,23 @@ async function registerPush(uid){
         lastSeen:new Date(),
       },{merge:true});
       console.log('FCM token saved');
+      return {success:true};
     }
+    return {error:'No token received'};
   }catch(err){
     console.log('Push registration failed:',err.message);
+    return {error:err.message};
   }
-  // Show in-app notification when app is in foreground
+}
+// Expose globally so non-module script can call it
+window._registerPush = registerPush;
+
+// Foreground message handler
+if(messaging){
   try{
     onMessage(messaging,payload=>{
-      const title=payload.notification?.title||'Scrabble';
       const body=payload.notification?.body||'Tu turno';
-      showToastModal(body.replace('Tu turno',''),body);
-      console.log('Foreground message:',title,body);
+      showToastModal('🔔',body);
     });
   }catch(e){}
 }
@@ -1282,6 +1322,8 @@ onAuthStateChanged(auth,async user=>{
     if(typeof initGame==='function')initGame();
     // Store uid for push registration (triggered by user gesture)
     window._pushUid = user.uid;
+    // Show notification prompt after short delay
+    setTimeout(()=>{ if(typeof checkNotifPrompt==='function') checkNotifPrompt(); },1500);
     try{
       const q=query(collection(db,'games'),where('players','array-contains',user.uid));
       const snap=await getDocs(q);
@@ -1323,4 +1365,10 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
 </script>
 
 
-</body></html>
+<div id="notif-prompt" style="position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgb(26, 42, 58); border: 1px solid rgba(40, 196, 154, 0.4); border-radius: 14px; padding: 14px 16px; z-index: 100; max-width: 320px; width: 90%; box-shadow: rgba(0, 0, 0, 0.5) 0px 8px 24px;">
+      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="document.getElementById(&#39;notif-prompt&#39;).remove()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
+        <button onclick="document.getElementById(&#39;notif-prompt&#39;).remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
+      </div></div></body></html>
