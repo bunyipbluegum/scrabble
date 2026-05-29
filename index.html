@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_19.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3040">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -243,12 +243,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
+<div id="login-screen" class="hidden">
   <div class="login-logo">SCRABBLE</div>
   <div class="login-sub">from Phil</div>
   <form class="login-form" id="login-form">
-    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required>
-    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required="">
+    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required="">
     <div class="login-error" id="login-error"></div>
     <button class="login-btn" type="submit">Entrar</button>
     <div class="login-spinner" id="login-spinner"></div>
@@ -256,18 +256,18 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 </div>
 
 <!-- GAME -->
-<div class="app" id="app" style="display:none;">
+<div class="app" id="app" style="display: flex;">
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v12</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v13</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
+      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);">phil</span>
       <div class="heading-menu" onclick="openStats()">☰</div>
     </div>
   </div>
@@ -309,7 +309,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button class="abtn abtn-sec" onclick="recallAll()">↩ Retira</button>
       <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ Mezclar</button>
       <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
-      <button class="abtn abtn-play" id="play-btn" disabled onclick="playWord()">Jugar</button>
+      <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
       <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
     </div>
   </div>
@@ -322,7 +322,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <div class="swap-tiles-row" id="swap-tiles-row"></div>
       <div class="swap-actions">
         <button class="swap-cancel" onclick="closeSwap()">Cancelar</button>
-        <button class="swap-confirm" id="swap-confirm-btn" disabled onclick="confirmSwap()">Selecciona fichas</button>
+        <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()">Selecciona fichas</button>
       </div>
     </div>
   </div>
@@ -343,7 +343,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🎮 More Games</button>
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">⚙️ Settings</button>
     </div>
-    <button onclick="G&&G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
+    <button onclick="G&amp;&amp;G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
     <div class="slbl">Mis estadísticas</div>
     <div class="sgrid">
       <div class="sc"><div class="sv2">–</div><div class="sl2">Ganadas</div></div>
@@ -1112,7 +1112,13 @@ function selectLobbyGame(gameId){
   if(window.G) window.G.loadGame(gameId);
 }
 
-function initGame(){
+// ── REGISTER SERVICE WORKER ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js')
+    .then(reg=>console.log('SW registered:',reg.scope))
+    .catch(err=>console.log('SW error:',err));
+}
+
   // Use double setTimeout to ensure display:flex has taken effect
   // and the browser has calculated dimensions before we measure
   setTimeout(()=>{
@@ -1296,5 +1302,6 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
   }
 });
 </script>
-</body>
-</html>
+
+
+</body></html>
