@@ -374,3 +374,37 @@ async function sendPushToUser(uid, title, body) {
     console.log('Push failed:', err.message);
   }
 }
+
+// ── SEND PUSH TO ALL DEVICES OF A USER ──
+async function sendPushToUser(uid, title, body) {
+  try {
+    // Get all device tokens for this user
+    const devicesSnap = await db.collection('users').doc(uid).collection('devices').get();
+    if (devicesSnap.empty) {
+      console.log('No devices for', uid);
+      return;
+    }
+    const tokens = devicesSnap.docs.map(d => d.data().fcmToken).filter(Boolean);
+    if (!tokens.length) return;
+
+    // Send to all devices
+    const results = await Promise.allSettled(tokens.map(token =>
+      admin.messaging().send({
+        token,
+        notification: { title, body },
+        webpush: {
+          notification: {
+            title, body,
+            icon: 'https://scr.reilly.mx/icon-192.png',
+            badge: 'https://scr.reilly.mx/icon-192.png',
+          },
+          fcmOptions: { link: 'https://scr.reilly.mx' }
+        }
+      })
+    ));
+    const sent = results.filter(r => r.status === 'fulfilled').length;
+    console.log(`Push sent to ${sent}/${tokens.length} devices for`, uid);
+  } catch(err) {
+    console.log('Push failed:', err.message);
+  }
+}

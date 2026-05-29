@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_27.html -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="es">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3040">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -243,12 +243,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen" class="hidden">
+<div id="login-screen">
   <div class="login-logo">SCRABBLE</div>
   <div class="login-sub">from Phil</div>
   <form class="login-form" id="login-form">
-    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required="">
-    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required="">
+    <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required>
+    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>
     <div class="login-error" id="login-error"></div>
     <button class="login-btn" type="submit">Entrar</button>
     <div class="login-spinner" id="login-spinner"></div>
@@ -256,18 +256,18 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 </div>
 
 <!-- GAME -->
-<div class="app" id="app" style="display: flex;">
+<div class="app" id="app" style="display:none;">
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v20</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v22</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);">phil</span>
+      <span id="user-display" style="font-size:10px;color:rgba(255,255,255,0.3);"></span>
       <div class="heading-menu" onclick="openStats()">☰</div>
     </div>
   </div>
@@ -275,21 +275,21 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   <div class="score-bar">
     <div class="sb-player">
       <span class="sb-name">Tú</span>
-      <span class="sb-score" id="my-score">18</span>
+      <span class="sb-score" id="my-score">0</span>
     </div>
     <div class="sb-middle">
-      <span class="turn-pill theirs" id="turn-pill">Su turno</span>
-      <span class="bag-label" id="bag-label">75 fichas</span>
+      <span class="turn-pill" id="turn-pill">–</span>
+      <span class="bag-label" id="bag-label">– fichas</span>
     </div>
     <div class="sb-player right">
       <span class="sb-name" id="opponent-name">Oponente</span>
-      <span class="sb-score" id="their-score">15</span>
+      <span class="sb-score" id="their-score">0</span>
     </div>
   </div>
 
   <div class="board-wrap" id="board-wrap">
-    <div id="board-panner" style="width: 480px; height: 480px; left: 0px; top: 231px; transition: none; transform: translate(0px, 0px) scale(1);">
-      <div id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="0" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="0" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="0" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="0" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="1" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="1" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="1" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="1" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="2" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="2" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="2" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="2" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="3" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="3" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="4" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="4" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="7" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="7" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="7" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">Z</span><span class="bv">10</span></div></div><div class="cell has-tile" data-r="7" data-c="8" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">A</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell" data-r="7" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="7" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="7" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="8" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">O</span><span class="bv">1</span></div></div><div class="cell dl" data-r="8" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="9" data-c="5" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">T</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="9" data-c="6" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">R</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="9" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">O</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="9" data-c="8" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">N</span><span class="bv">1</span></div></div><div class="cell tl" data-r="9" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="10" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="10" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="11" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="11" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="12" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="12" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="12" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="12" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="13" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="13" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="13" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="13" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="14" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="14" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="14" style="background: rgb(200, 220, 232);"></div></div>
+    <div id="board-panner">
+      <div id="board"></div>
     </div>
     <svg id="word-outline" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;overflow:visible;"></svg>
     <div class="preview-float" id="preview-float">
@@ -304,12 +304,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
   </div>
 
   <div class="rack-area" id="rack-area">
-    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">E</span><span class="rv">1</span></div><div class="rtile"><span class="rl">S</span><span class="rv">1</span></div><div class="rtile"><span class="rl"> </span><span class="rv">0</span></div><div class="rtile"><span class="rl">I</span><span class="rv">1</span></div><div class="rtile"><span class="rl">N</span><span class="rv">1</span></div><div class="rtile"><span class="rl">N</span><span class="rv">1</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div></div>
+    <div class="rack-tiles" id="rack"></div>
     <div class="action-row">
       <button class="abtn abtn-sec" onclick="recallAll()">↩ Retira</button>
       <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ Mezclar</button>
       <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
-      <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
+      <button class="abtn abtn-play" id="play-btn" disabled onclick="playWord()">Jugar</button>
       <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
     </div>
   </div>
@@ -322,7 +322,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <div class="swap-tiles-row" id="swap-tiles-row"></div>
       <div class="swap-actions">
         <button class="swap-cancel" onclick="closeSwap()">Cancelar</button>
-        <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()">Selecciona fichas</button>
+        <button class="swap-confirm" id="swap-confirm-btn" disabled onclick="confirmSwap()">Selecciona fichas</button>
       </div>
     </div>
   </div>
@@ -344,7 +344,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">⚙️ Settings</button>
     </div>
     <button id="notif-btn" onclick="enableNotifications()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(40,196,154,0.15);color:rgba(40,196,154,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">🔔 Activar notificaciones</button>
-    <button onclick="G&amp;&amp;G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
+    <button onclick="G&&G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
     <div class="slbl">Mis estadísticas</div>
     <div class="sgrid">
       <div class="sc"><div class="sv2">–</div><div class="sl2">Ganadas</div></div>
@@ -1140,36 +1140,26 @@ async function enableNotifications(){
 }
 
 function checkNotifPrompt(){
-  // Already enabled — mark and skip
-  if(localStorage.getItem('notif-enabled')==='1'){ window._notifEnabled=true; return; }
-  if(Notification.permission==='granted'){ 
-    localStorage.setItem('notif-enabled','1');
-    window._notifEnabled=true; 
-    return; 
-  }
-  if(Notification.permission==='denied') return;
-  const dismissed = localStorage.getItem('notif-dismissed');
-  if(dismissed && Date.now()-parseInt(dismissed) < 3*365*24*60*60*1000) return;
   if(window._notifEnabled) return;
-
-  setTimeout(()=>{
-    if(document.getElementById('notif-prompt')) return;
-    const prompt=document.createElement('div');
-    prompt.id='notif-prompt';
-    prompt.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a2a3a;border:1px solid rgba(40,196,154,0.4);border-radius:14px;padding:14px 16px;z-index:100;max-width:320px;width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.5);';
-    prompt.innerHTML=`
-      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
-        <button onclick="document.getElementById('notif-prompt').remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
-      </div>`;
-    document.body.appendChild(prompt);
-  },2500);
+  if(Notification.permission==='granted'){ window._notifEnabled=true; return; }
+  if(Notification.permission==='denied') return;
+  if(sessionStorage.getItem('notif-dismissed')) return;
+  if(document.getElementById('notif-prompt')) return;
+  const prompt=document.createElement('div');
+  prompt.id='notif-prompt';
+  prompt.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a2a3a;border:1px solid rgba(40,196,154,0.4);border-radius:14px;padding:14px 16px;z-index:100;max-width:320px;width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.5);';
+  prompt.innerHTML=`
+    <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
+      <button onclick="document.getElementById('notif-prompt').remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
+    </div>`;
+  document.body.appendChild(prompt);
 }
 
 function dismissNotifPrompt(){
-  localStorage.setItem('notif-dismissed', Date.now().toString());
+  sessionStorage.setItem('notif-dismissed','1');
   const p=document.getElementById('notif-prompt');
   if(p) p.remove();
 }
@@ -1235,19 +1225,35 @@ const VAPID_KEY='BMtMotEA1vYD8ZDQOVjwi1veA7dQ7av06XY9wJf9YBEWLX7wlwDQEqdk6jz2Wz3
 let messaging=null;
 try{ messaging=getMessaging(app); console.log('Messaging init ok'); }catch(e){ console.log('Messaging not supported:',e.message); }
 
+// Get or create a stable device ID stored in localStorage
+function getDeviceId(){
+  let id = localStorage.getItem('device-id');
+  if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem('device-id',id); }
+  return id;
+}
+
 async function registerPush(uid){
   if(!messaging){ return {error:'Messaging not supported'}; }
   try{
     const reg=await navigator.serviceWorker.ready;
     const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
     if(token){
+      const deviceId=getDeviceId();
       console.log('FCM token:',token.slice(0,20)+'...');
+      // Store token per device under users/{uid}/devices/{deviceId}
+      // Also store notifEnabled:true on the user doc
       await setDoc(doc(db,'users',uid),{
-        fcmToken:token,
+        notifEnabled:true,
         lastSeen:new Date(),
+        displayName: auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || uid,
       },{merge:true});
-      console.log('FCM token saved');
-      localStorage.setItem('notif-enabled','1');
+      await setDoc(doc(db,'users',uid,'devices',deviceId),{
+        fcmToken:token,
+        updatedAt:new Date(),
+        platform: navigator.userAgent.includes('iPhone')||navigator.userAgent.includes('iPad') ? 'ios' :
+                  navigator.userAgent.includes('Android') ? 'android' : 'desktop',
+      });
+      console.log('FCM token saved for device',deviceId);
       window._notifEnabled=true;
       return {success:true};
     }
@@ -1259,6 +1265,22 @@ async function registerPush(uid){
 }
 // Expose globally so non-module script can call it
 window._registerPush = registerPush;
+
+// Check Firestore for existing notif preference
+async function checkNotifPreference(uid){
+  try{
+    const userDoc=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+      .then(({getDoc})=>getDoc(doc(db,'users',uid)));
+    if(userDoc.exists() && userDoc.data().notifEnabled===true){
+      window._notifEnabled=true;
+      // Silently re-register token for this device
+      if(Notification.permission==='granted') registerPush(uid);
+      return true;
+    }
+  }catch(e){ console.log('checkNotifPreference error:',e.message); }
+  return false;
+}
+window._checkNotifPreference = checkNotifPreference;
 
 // Foreground message handler
 if(messaging){
@@ -1340,12 +1362,15 @@ onAuthStateChanged(auth,async user=>{
     if(typeof initGame==='function')initGame();
     // Store uid for push registration (triggered by user gesture)
     window._pushUid = user.uid;
-    // If previously enabled, silently re-register token
-    if(localStorage.getItem('notif-enabled')==='1' && window._registerPush){
-      setTimeout(()=>window._registerPush(user.uid), 2000);
-    }
-    // Show notification prompt after short delay
-    setTimeout(()=>{ if(typeof checkNotifPrompt==='function') checkNotifPrompt(); },1500);
+    // Check Firestore for notification preference, then show prompt if needed
+    setTimeout(async()=>{
+      if(window._checkNotifPreference){
+        const enabled = await window._checkNotifPreference(user.uid);
+        if(!enabled && typeof checkNotifPrompt==='function') checkNotifPrompt();
+      } else {
+        if(typeof checkNotifPrompt==='function') checkNotifPrompt();
+      }
+    },1500);
     try{
       const q=query(collection(db,'games'),where('players','array-contains',user.uid));
       const snap=await getDocs(q);
@@ -1385,12 +1410,5 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
   }
 });
 </script>
-
-
-<div id="notif-prompt" style="position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgb(26, 42, 58); border: 1px solid rgba(40, 196, 154, 0.4); border-radius: 14px; padding: 14px 16px; z-index: 100; max-width: 320px; width: 90%; box-shadow: rgba(0, 0, 0, 0.5) 0px 8px 24px;">
-      <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
-        <button onclick="document.getElementById(&#39;notif-prompt&#39;).remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
-      </div></div></body></html>
+</body>
+</html>
