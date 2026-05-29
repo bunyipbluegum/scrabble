@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_29.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_30.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -260,7 +260,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v23</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v24</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -1126,6 +1126,14 @@ async function enableNotifications(){
   if(!uid){ alert('Inicia sesión primero'); return; }
   const btn = document.getElementById('notif-btn');
   if(btn){ btn.textContent='⏳ Activando...'; btn.disabled=true; }
+
+  // Wait for _registerPush to be available (Firebase module loads async)
+  let attempts=0;
+  while(!window._registerPush && attempts<20){
+    await new Promise(r=>setTimeout(r,300));
+    attempts++;
+  }
+
   if(!window._registerPush){
     if(btn){ btn.textContent='❌ No disponible en este navegador'; btn.disabled=false; }
     return;
@@ -1134,16 +1142,13 @@ async function enableNotifications(){
   if(result && result.success){
     if(btn){ btn.textContent='✅ Notificaciones activadas'; btn.style.opacity='0.6'; }
     window._notifEnabled = true;
-    localStorage.setItem('notif-enabled','1');
     const p = document.getElementById('notif-prompt');
     if(p) p.remove();
   } else {
-    const msg = result?.error || 'Error';
-    if(msg.includes('permission-blocked')||msg.includes('denied')){
-      if(btn){ btn.textContent='🚫 Bloqueado — activa en ajustes del navegador'; btn.disabled=false; }
-    } else {
-      if(btn){ btn.textContent='🔔 Activar notificaciones'; btn.disabled=false; }
-    }
+    const msg = result?.error || 'Error desconocido';
+    // Show full error so we can debug
+    if(btn){ btn.textContent='❌ '+msg.slice(0,60); btn.disabled=false; btn.style.fontSize='10px'; }
+    console.log('Push error full:', msg);
   }
 }
 
