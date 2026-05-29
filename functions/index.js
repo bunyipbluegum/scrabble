@@ -25,11 +25,18 @@ const LETTER_VALUES = {
 };
 
 const PREMIUMS = {};
-[['0-0','0-7','0-14','7-0','7-14','14-0','14-7','14-14']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tw'));
-[['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1','1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
-[['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13','1-5','13-5','1-9','13-9']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
-[['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6','6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12','11-0','11-7','11-14','12-6','12-8','14-3','14-11']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
-PREMIUMS['7-7']='dw';
+[['0-0','0-7','0-14','7-0','7-14','14-0','14-7','14-14']]
+  .forEach(a=>a.forEach(k=>PREMIUMS[k]='tw'));
+[['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1',
+  '1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']]
+  .forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
+[['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13',
+  '1-5','13-5','1-9','13-9']]
+  .forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
+[['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6',
+  '6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12',
+  '11-0','11-7','11-14','12-6','12-8','14-3','14-11']]
+  .forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
 
 // ── HELPERS ──
 function shuffle(arr) {
@@ -202,10 +209,8 @@ exports.submitMove = onCall(async (request) => {
     const game = gameSnap.data();
     const rackData = rackSnap.data();
 
-    if (game.status !== 'active')
-      throw new HttpsError('failed-precondition', 'Game not active');
-    if (game.currentTurn !== uid)
-      throw new HttpsError('failed-precondition', 'Not your turn');
+    if (game.status !== 'active') throw new HttpsError('failed-precondition', 'Game not active');
+    if (game.currentTurn !== uid) throw new HttpsError('failed-precondition', 'Not your turn');
 
     // ── PASS ──
     if (action === 'pass') {
@@ -214,10 +219,8 @@ exports.submitMove = onCall(async (request) => {
       tx.update(gameRef, {
         currentTurn: nextPlayer,
         consecutivePasses: passes,
-        lastMove: {
-          playerId: uid, type: 'pass',
-          timestamp: admin.firestore.FieldValue.serverTimestamp()
-        }
+        lastMove: { playerId: uid, type: 'pass',
+          timestamp: admin.firestore.FieldValue.serverTimestamp() }
       });
       if (passes >= 4) tx.update(gameRef, { status: 'finished' });
       return { success: true };
@@ -226,10 +229,8 @@ exports.submitMove = onCall(async (request) => {
     // ── EXCHANGE ──
     if (action === 'exchange') {
       const { indices } = request.data;
-      if (!indices || !indices.length)
-        throw new HttpsError('invalid-argument', 'No tiles selected');
-      if (indices.length > game.bag.length)
-        throw new HttpsError('failed-precondition', 'Not enough tiles in bag');
+      if (!indices || !indices.length) throw new HttpsError('invalid-argument', 'No tiles selected');
+      if (indices.length > game.bag.length) throw new HttpsError('failed-precondition', 'Not enough tiles in bag');
 
       const rack = [...rackData.tiles];
       const returned = indices.map(i => rack[i]);
@@ -242,26 +243,21 @@ exports.submitMove = onCall(async (request) => {
         bag: remaining,
         currentTurn: nextPlayer,
         consecutivePasses: 0,
-        lastMove: {
-          playerId: uid, type: 'exchange',
-          timestamp: admin.firestore.FieldValue.serverTimestamp()
-        }
+        lastMove: { playerId: uid, type: 'exchange',
+          timestamp: admin.firestore.FieldValue.serverTimestamp() }
       });
       tx.update(rackRef, { tiles: rack });
       return { success: true };
     }
 
     // ── PLAY ──
-    if (!tiles || !tiles.length)
-      throw new HttpsError('invalid-argument', 'No tiles provided');
+    if (!tiles || !tiles.length) throw new HttpsError('invalid-argument', 'No tiles provided');
 
     const rack = [...rackData.tiles];
     const usedIndices = [];
     for (const tile of tiles) {
-      const idx = rack.findIndex((l, i) =>
-        l === tile.letter && !usedIndices.includes(i));
-      if (idx === -1)
-        throw new HttpsError('invalid-argument', `Tile ${tile.letter} not in rack`);
+      const idx = rack.findIndex((l, i) => l === tile.letter && !usedIndices.includes(i));
+      if (idx === -1) throw new HttpsError('invalid-argument', `Tile ${tile.letter} not in rack`);
       usedIndices.push(idx);
     }
 
@@ -276,9 +272,7 @@ exports.submitMove = onCall(async (request) => {
     const score = calcScore(words, newKeys);
 
     const { drawn, remaining: newBag } = dealTiles(game.bag, tiles.length);
-    const newRack = rack
-      .filter((_, i) => !usedIndices.includes(i))
-      .concat(drawn);
+    const newRack = rack.filter((_, i) => !usedIndices.includes(i)).concat(drawn);
 
     const nextPlayer = game.players.find(p => p !== uid);
     const newScore = (game.scores[uid] || 0) + score;
@@ -340,8 +334,7 @@ exports.getGameState = onCall(async (request) => {
   if (!gameSnap.exists) throw new HttpsError('not-found', 'Game not found');
 
   const game = gameSnap.data();
-  if (!game.players.includes(uid))
-    throw new HttpsError('permission-denied', 'Not a player in this game');
+  if (!game.players.includes(uid)) throw new HttpsError('permission-denied', 'Not a player in this game');
 
   return {
     gameId,
@@ -355,3 +348,29 @@ exports.getGameState = onCall(async (request) => {
     isMyTurn: game.currentTurn === uid,
   };
 });
+
+// ── SEND PUSH NOTIFICATION ──
+async function sendPushToUser(uid, title, body) {
+  try {
+    const userDoc = await db.collection('users').doc(uid).get();
+    if (!userDoc.exists) return;
+    const token = userDoc.data().fcmToken;
+    if (!token) return;
+    await admin.messaging().send({
+      token,
+      notification: { title, body },
+      webpush: {
+        notification: {
+          title,
+          body,
+          icon: 'https://scr.reilly.mx/icon-192.png',
+          badge: 'https://scr.reilly.mx/icon-192.png',
+        },
+        fcmOptions: { link: 'https://scr.reilly.mx' }
+      }
+    });
+    console.log('Push sent to', uid);
+  } catch(err) {
+    console.log('Push failed:', err.message);
+  }
+}
