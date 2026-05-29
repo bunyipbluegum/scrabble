@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_25.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_26.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -260,7 +260,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v18</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v19</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -1140,14 +1140,16 @@ async function enableNotifications(){
 }
 
 function checkNotifPrompt(){
-  // Don't show if already granted or denied
+  // Don't show if already granted
   if(Notification.permission==='granted'){ window._notifEnabled=true; return; }
   if(Notification.permission==='denied') return;
-  // Don't show if user dismissed within 3 years
+  // Don't show if already enabled
+  if(localStorage.getItem('notif-enabled')==='1'){ window._notifEnabled=true; return; }
+  // Don't show if dismissed recently (3 years)
   const dismissed = localStorage.getItem('notif-dismissed');
-  if(dismissed && Date.now() - parseInt(dismissed) < 3*365*24*60*60*1000) return;
-  // Don't show if already enabled this session
+  if(dismissed && Date.now()-parseInt(dismissed) < 3*365*24*60*60*1000) return;
   if(window._notifEnabled) return;
+
   setTimeout(()=>{
     if(document.getElementById('notif-prompt')) return;
     const prompt=document.createElement('div');
@@ -1157,11 +1159,17 @@ function checkNotifPrompt(){
       <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
       <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
       <div style="display:flex;gap:8px;">
-        <button onclick="localStorage.setItem('notif-dismissed','${Date.now()}');document.getElementById('notif-prompt').remove()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
+        <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
         <button onclick="document.getElementById('notif-prompt').remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
       </div>`;
     document.body.appendChild(prompt);
   },2500);
+}
+
+function dismissNotifPrompt(){
+  localStorage.setItem('notif-dismissed', Date.now().toString());
+  const p=document.getElementById('notif-prompt');
+  if(p) p.remove();
 }
 
 // ── REGISTER SERVICE WORKER ──
@@ -1379,6 +1387,6 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
       <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
       <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
       <div style="display:flex;gap:8px;">
-        <button onclick="localStorage.setItem(&#39;notif-dismissed&#39;,&#39;1780086195267&#39;);document.getElementById(&#39;notif-prompt&#39;).remove()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
+        <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
         <button onclick="document.getElementById(&#39;notif-prompt&#39;).remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
       </div></div></body></html>
