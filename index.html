@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_14.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_15.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -233,7 +233,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v6</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v7</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="G&amp;&amp;G.newGame()">New Game</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -408,6 +408,8 @@ function zoomOut(){
   applyTransform(true);
   $('zoom-hint').classList.remove('show');
   $('board-wrap').classList.remove('panning');
+  // Redraw outlines at new zoom level
+  setTimeout(()=>updatePreview(), 300);
 }
 
 function zoomToWrapPoint(wx,wy,ns){
@@ -714,6 +716,7 @@ document.addEventListener('pointermove',e=>{
     S.panY=S.panSTY+(e.clientY-S.panSY);
     clampPan();
     applyTransform(false);
+    updatePreview();
   }
 });
 
