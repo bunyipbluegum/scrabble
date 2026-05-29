@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_21.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_23.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -260,7 +260,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v15</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v16</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -343,6 +343,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🎮 More Games</button>
       <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">⚙️ Settings</button>
     </div>
+    <button id="notif-btn" onclick="enableNotifications()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(40,196,154,0.15);color:rgba(40,196,154,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">🔔 Activar notificaciones</button>
     <button onclick="G&amp;&amp;G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
     <div class="slbl">Mis estadísticas</div>
     <div class="sgrid">
@@ -1112,6 +1113,17 @@ function selectLobbyGame(gameId){
   if(window.G) window.G.loadGame(gameId);
 }
 
+function enableNotifications(){
+  const uid = window._pushUid || window.S.myUid;
+  if(!uid){ alert('Inicia sesión primero'); return; }
+  if(typeof registerPush === 'function'){
+    registerPush(uid).then(()=>{
+      const btn = document.getElementById('notif-btn');
+      if(btn){ btn.textContent='✅ Notificaciones activadas'; btn.style.opacity='0.5'; }
+    });
+  }
+}
+
 // ── REGISTER SERVICE WORKER ──
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js')
@@ -1268,8 +1280,8 @@ onAuthStateChanged(auth,async user=>{
     if(nameEl)nameEl.textContent=name;
     window.S.myUid=user.uid;
     if(typeof initGame==='function')initGame();
-    // Register for push notifications
-    registerPush(user.uid);
+    // Store uid for push registration (triggered by user gesture)
+    window._pushUid = user.uid;
     try{
       const q=query(collection(db,'games'),where('players','array-contains',user.uid));
       const snap=await getDocs(q);
