@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_26.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_27.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -260,7 +260,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v19</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v20</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -1140,12 +1140,14 @@ async function enableNotifications(){
 }
 
 function checkNotifPrompt(){
-  // Don't show if already granted
-  if(Notification.permission==='granted'){ window._notifEnabled=true; return; }
-  if(Notification.permission==='denied') return;
-  // Don't show if already enabled
+  // Already enabled — mark and skip
   if(localStorage.getItem('notif-enabled')==='1'){ window._notifEnabled=true; return; }
-  // Don't show if dismissed recently (3 years)
+  if(Notification.permission==='granted'){ 
+    localStorage.setItem('notif-enabled','1');
+    window._notifEnabled=true; 
+    return; 
+  }
+  if(Notification.permission==='denied') return;
   const dismissed = localStorage.getItem('notif-dismissed');
   if(dismissed && Date.now()-parseInt(dismissed) < 3*365*24*60*60*1000) return;
   if(window._notifEnabled) return;
@@ -1245,6 +1247,8 @@ async function registerPush(uid){
         lastSeen:new Date(),
       },{merge:true});
       console.log('FCM token saved');
+      localStorage.setItem('notif-enabled','1');
+      window._notifEnabled=true;
       return {success:true};
     }
     return {error:'No token received'};
