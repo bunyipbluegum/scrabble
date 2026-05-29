@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_20.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_21.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -260,7 +260,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v14</span></div>
+      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v15</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -1150,7 +1150,13 @@ import{getFirestore,doc,onSnapshot,collection,query,where,getDocs,setDoc}from'ht
 import{getFunctions,httpsCallable}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
 import{getMessaging,getToken,onMessage}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
 
-const firebaseConfig={apiKey:"AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",authDomain:"scrabble-reilly.firebaseapp.com",projectId:"scrabble-reilly"};
+const firebaseConfig={
+  apiKey:"AIzaSyBvEKWMCE5e5cYiibGIOHo9j2OjyXbKST0",
+  authDomain:"scrabble-reilly.firebaseapp.com",
+  projectId:"scrabble-reilly",
+  messagingSenderId:"757650941656",
+  appId:"1:757650941656:web:342f4634857efe3f4399ad"
+};
 const PHIL_UID='2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2';
 const NANCY_UID='QOubuRNcm1ZqONg5qZ5Oc5kdEQn2';
 const REGION='northamerica-northeast2';
@@ -1165,7 +1171,7 @@ const fnState=httpsCallable(fns,'getGameState');
 
 const VAPID_KEY='BMtMotEA1vYD8ZDQOVjwi1veA7dQ7av06XY9wJf9YBEWLX7wlwDQEqdk6jz2Wz3AyJdC5aNhtBUUjLm5WwNONWY';
 let messaging=null;
-try{ messaging=getMessaging(app); }catch(e){ console.log('Messaging not supported'); }
+try{ messaging=getMessaging(app); console.log('Messaging init ok'); }catch(e){ console.log('Messaging not supported:',e.message); }
 
 async function registerPush(uid){
   if(!messaging) return;
