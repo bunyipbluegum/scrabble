@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_31.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_32.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <link rel="manifest" href="manifest.json">
+
+<link rel="manifest" href="manifest.json">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3040">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Scrabble</title>
+<meta name="mobile-web-app-capable" content="yes">
+<title>Phil-a-Word</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -18,19 +20,19 @@
   --board-bg:#c8dce8; --board-line:#a8c0d0; --wrap-bg:#1e3040;
   --accent:#28c49a; --heading-bg:#1a2a3a;
 }
-html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif;color:#fff;overflow:hidden;touch-action:none;user-select:none;}
+html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-serif;color:#fff;overflow:hidden;touch-action:none;user-select:none;position:fixed;width:100%;}
 
-/* APP SHELL */
+/* ── APP SHELL ── */
 .app{display:flex;flex-direction:column;width:100%;height:100dvh;max-width:480px;margin:0 auto;background:var(--wrap-bg);position:relative;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);}
 
-/* HEADING */
+/* ── HEADING ── */
 .heading-bar{background:var(--heading-bg);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:6px 14px 5px;border-bottom:1px solid rgba(255,255,255,0.08);}
 .heading-title{font-size:13px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.55);text-transform:uppercase;}
 .heading-sub{font-size:10px;color:rgba(40,196,154,0.7);letter-spacing:0.5px;cursor:pointer;display:inline-block;margin-right:10px;}
 .heading-menu{font-size:20px;color:rgba(255,255,255,0.4);cursor:pointer;padding:0 2px;}
 
-/* SCORE BAR */
-.score-bar{background:#fff;flex-shrink:0;display:flex;align-items:center;padding:5px 14px 4px;border-bottom:2px solid #e0e0e0;position:relative;}
+/* ── SCORE BAR ── */
+.score-bar{background:#fff;flex-shrink:0;display:flex;align-items:center;padding:5px 14px 4px;border-bottom:2px solid #e0e0e0;}
 .sb-player{flex:1;display:flex;flex-direction:column;}
 .sb-player.right{align-items:flex-end;}
 .sb-name{font-size:10px;color:#aaa;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
@@ -41,46 +43,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .turn-pill.theirs{background:#aaa;}
 .bag-label{font-size:9px;color:#ccc;}
 
-/* BOARD WRAP — fills remaining flex space */
-.board-wrap{
-  flex:1;
-  min-height:0;
-  position:relative;
-  overflow:hidden;
-  background:var(--wrap-bg);
-  touch-action:none;
-}
-
-/* BOARD — absolutely positioned inside wrap, centred by JS */
-#board-panner{
-  position:absolute;
-  /* top/left set by JS to centre board; transform set by JS for pan/zoom */
-  transform-origin:top left;
-  box-shadow:0 0 0 3px #0a1820, 0 8px 32px rgba(0,0,0,0.6);
-  touch-action:none;
-}
-#board{
-  display:grid;
-  grid-template-columns:repeat(15,1fr);
-  /* width/height set by JS */
-}
-
-/* CELLS — aspect-ratio:1 keeps them square regardless of board size */
-.cell{
-  aspect-ratio:1;
-  display:flex;align-items:center;justify-content:center;
-  border:0.5px solid #a8c0d0;
-  position:relative;overflow:hidden;
-  background:#c8dce8;
-  cursor:pointer;
-  touch-action:none;
-}
-.cell::after{
-  font-family:'Arial Black',Arial,sans-serif;
-  font-weight:900;font-size:9px;
-  letter-spacing:-0.3px;line-height:1;
-  pointer-events:none;text-align:center;
-}
+/* ── BOARD ── */
+.board-wrap{flex:1;min-height:0;position:relative;overflow:hidden;background:var(--wrap-bg);touch-action:none;}
+#board-panner{position:absolute;transform-origin:top left;box-shadow:0 0 0 3px #0a1820,0 8px 32px rgba(0,0,0,0.6);touch-action:none;}
+#board{display:grid;grid-template-columns:repeat(15,1fr);}
+.cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:0.5px solid #a8c0d0;position:relative;overflow:hidden;background:#c8dce8;cursor:pointer;touch-action:none;}
+.cell::after{font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:9px;letter-spacing:-0.3px;line-height:1;pointer-events:none;text-align:center;}
 .cell.tw{background:#d93040!important;} .cell.tw::after{content:'TW';color:rgba(255,255,255,0.95);}
 .cell.dw{background:#e87020!important;} .cell.dw::after{content:'DW';color:rgba(255,255,255,0.92);}
 .cell.tl{background:#2060c0!important;} .cell.tl::after{content:'TL';color:rgba(255,255,255,0.95);}
@@ -90,38 +58,17 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .cell.snap-target::after{content:'';}
 .cell.has-tile{cursor:default;}
 
-/* BOARD TILES */
-.btile{
-  width:91%;height:91%;
-  background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));
-  border-radius:3px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border:1px solid var(--tile-border);
-  box-shadow:0 2px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.6);
-  position:relative;pointer-events:none;
-}
+/* ── TILES ── */
+.btile{width:91%;height:91%;background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--tile-border);box-shadow:0 2px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.6);position:relative;pointer-events:none;}
 .btile .bl{font-family:'Arial Black',Arial,sans-serif;font-size:13px;font-weight:900;color:var(--tile-text);line-height:1;}
 .btile .bv{font-size:5px;font-weight:800;color:#6a4000;position:absolute;bottom:1px;right:2px;}
-.btile.new{
-  background:linear-gradient(165deg,#fffcd0 55%,#f8ec50);
-  border-color:var(--accent);
-  box-shadow:0 2px 0 #157050,0 0 6px rgba(40,196,154,0.5),inset 0 1px 0 rgba(255,255,255,0.75);
-  pointer-events:auto;cursor:grab;
-}
+.btile.new{background:linear-gradient(165deg,#fffcd0 55%,#f8ec50);border-color:var(--accent);box-shadow:0 2px 0 #157050,0 0 6px rgba(40,196,154,0.5),inset 0 1px 0 rgba(255,255,255,0.75);pointer-events:auto;cursor:grab;}
 .btile.new.sel-board{border-color:#ff7700;box-shadow:0 2px 0 #b05000,0 0 8px rgba(255,120,0,0.65);}
 
-/* RACK */
+/* ── RACK ── */
 .rack-area{background:linear-gradient(180deg,var(--rack-bg),var(--rack-mid));border-top:3px solid var(--rack-border);flex-shrink:0;padding:6px 5px 5px;box-shadow:0 -4px 12px rgba(0,0,0,0.4);}
 .rack-tiles{display:flex;gap:3px;justify-content:center;margin-bottom:5px;}
-.rtile{
-  flex:1;max-width:54px;height:58px;
-  background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));
-  border-radius:7px;border:2px solid var(--tile-border);
-  box-shadow:0 4px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.5);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:relative;cursor:grab;touch-action:none;
-  transition:transform 0.1s,box-shadow 0.1s,border-color 0.1s,opacity 0.1s;
-}
+.rtile{flex:1;max-width:54px;height:58px;background:linear-gradient(165deg,var(--tile-bg) 55%,var(--tile-bg2));border-radius:7px;border:2px solid var(--tile-border);box-shadow:0 4px 0 var(--tile-shadow),inset 0 1px 0 rgba(255,255,255,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:grab;touch-action:none;transition:transform 0.1s,box-shadow 0.1s,border-color 0.1s,opacity 0.1s;}
 .rtile.sel{border-color:var(--accent);box-shadow:0 4px 0 #157050,0 0 10px rgba(40,196,154,0.6);transform:translateY(-7px);}
 .rtile.drag-src{opacity:0.25;transform:scale(0.86);}
 .rtile.empty{background:rgba(0,0,0,0.18);border:2px dashed rgba(255,255,255,0.1);box-shadow:none;cursor:default;touch-action:auto;}
@@ -129,7 +76,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .rtile .rl{font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;color:var(--tile-text);line-height:1;}
 .rtile .rv{font-size:11px;font-weight:800;color:#6a4000;position:absolute;bottom:4px;right:5px;}
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .action-row{display:flex;gap:4px;}
 .abtn{flex:1;padding:8px 2px;border-radius:8px;border:none;font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation;transition:opacity 0.1s;white-space:nowrap;}
 .abtn:active{opacity:0.7;}
@@ -139,12 +86,12 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .abtn-play:disabled{background:rgba(40,196,154,0.25);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed;}
 .abtn-pass{flex:0.8;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);font-size:11px;}
 
-/* GHOST TILE */
+/* ── GHOST ── */
 #ghost{position:fixed;pointer-events:none;z-index:999;width:54px;height:60px;background:linear-gradient(165deg,#fffcd0 55%,#f8ec50);border-radius:8px;border:2px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:4px 8px 20px rgba(0,0,0,0.6);opacity:0;transform:rotate(5deg) scale(1.12);transition:opacity 0.08s;}
 #ghost .gl{font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;color:var(--tile-text);line-height:1;}
 #ghost .gv{font-size:11px;font-weight:800;color:#6a4000;}
 
-/* OVERLAYS */
+/* ── OVERLAYS ── */
 .toast-modal{position:absolute;top:10px;left:50%;transform:translateX(-50%) translateY(-90px);background:var(--coral);border-radius:14px;padding:9px 16px;display:flex;align-items:center;gap:8px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,0.4);white-space:nowrap;transition:transform 0.38s cubic-bezier(0.34,1.4,0.64,1),opacity 0.3s;opacity:0;pointer-events:none;}
 .toast-modal.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .tm-text{font-size:13px;font-weight:700;color:#fff;} .tm-text b{color:#fff8c0;}
@@ -157,7 +104,7 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .zoom-hint{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.5);border-radius:8px;padding:3px 7px;font-size:9px;color:rgba(255,255,255,0.55);pointer-events:none;z-index:5;opacity:0;transition:opacity 0.3s;}
 .zoom-hint.show{opacity:1;}
 
-/* SWAP */
+/* ── SWAP ── */
 .swap-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:40;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.28s;}
 .swap-overlay.open{opacity:1;pointer-events:auto;}
 .swap-panel{background:#1a2a3a;border-radius:18px 18px 0 0;padding:16px 14px 20px;width:100%;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);box-shadow:0 -8px 32px rgba(0,0,0,0.5);}
@@ -175,46 +122,34 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .swap-confirm{flex:2;padding:10px;border-radius:10px;border:none;background:#ff8800;color:#fff;font-family:Arial,sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(255,136,0,0.4);}
 .swap-confirm:disabled{background:rgba(255,136,0,0.25);color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed;}
 
-/* STATS */
+/* ── STATS / MENU ── */
 .stats-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:60;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .stats-overlay.open{opacity:1;pointer-events:auto;}
-.stats-panel{position:absolute;bottom:0;left:0;right:0;background:#0d1f3c;border-radius:18px 18px 0 0;padding:14px 14px 28px;z-index:61;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);}
+.stats-panel{position:absolute;bottom:0;left:0;right:0;background:#0d1f3c;border-radius:18px 18px 0 0;padding:14px 14px 28px;z-index:61;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:90vh;overflow-y:auto;}
 .stats-panel.open{transform:translateY(0);}
 .sh{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 14px;cursor:pointer;}
-.slbl{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.slbl{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:12px;}
 .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
 .sc{background:rgba(255,255,255,0.05);border-radius:9px;padding:9px 6px;text-align:center;}
 .sv2{font-size:22px;font-weight:900;color:#e9c46a;}
 .sl2{font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;}
-.grows{display:flex;flex-direction:column;gap:5px;}
-.gr{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px;}
-.grl{display:flex;align-items:center;gap:7px;}
-.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
-.avg{background:rgba(82,183,136,0.2);color:#52b788;} .avo{background:rgba(233,196,106,0.2);color:#e9c46a;}
-.grn{font-size:13px;font-weight:600;color:#fff;} .grl2{font-size:10px;color:rgba(255,255,255,0.3);}
-.grr{display:flex;align-items:center;gap:6px;}
-.gsc{font-size:14px;font-weight:700;} .gscw{color:#52b788;} .gscl{color:rgba(255,255,255,0.4);}
-.bdg{font-size:9px;padding:2px 6px;border-radius:8px;}
-.bdgy{background:rgba(82,183,136,0.18);color:#52b788;} .bdgt{background:rgba(233,196,106,0.12);color:#e9c46a;}
+.menu-btn{width:100%;padding:12px;border-radius:10px;border:none;font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;text-align:left;}
 
-/* LOGIN */
-/* LOBBY BOTTOM SHEET */
+/* ── LOBBY ── */
 .lobby-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:70;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .lobby-overlay.open{opacity:1;pointer-events:auto;}
-.lobby-panel{position:absolute;bottom:0;left:0;right:0;background:#0d1f3c;border-radius:18px 18px 0 0;padding:14px 14px 28px;z-index:71;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:85vh;overflow-y:auto;}
+.lobby-panel{position:absolute;bottom:0;left:0;right:0;background:#0d1f3c;border-radius:18px 18px 0 0;padding:14px 14px 28px;z-index:71;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);max-height:90vh;overflow-y:auto;}
 .lobby-panel.open{transform:translateY(0);}
 .lobby-handle{width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 14px;cursor:pointer;}
-.lobby-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;}
-.lobby-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:16px;}
+.lobby-title{font-size:18px;font-weight:900;color:#fff;margin-bottom:4px;}
+.lobby-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;}
 .lobby-section{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;}
 .lobby-game{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.06);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:background 0.15s;}
 .lobby-game:active{background:rgba(255,255,255,0.1);}
 .lobby-game-left{display:flex;align-items:center;gap:10px;}
-.lobby-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
+.lobby-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;}
 .lobby-game-name{font-size:14px;font-weight:700;color:#fff;}
 .lobby-game-sub{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px;}
-.lobby-game-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
-.lobby-score{font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);}
 .lobby-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;}
 .lobby-badge.myturn{background:rgba(40,196,154,0.2);color:#28c49a;}
 .lobby-badge.theirturn{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);}
@@ -222,47 +157,209 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 .lobby-player:active{background:rgba(255,255,255,0.12);}
 .lobby-player-name{font-size:15px;font-weight:700;color:#fff;}
 .lobby-player-sub{font-size:11px;color:rgba(255,255,255,0.35);}
-.lobby-new-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:"Arial Black",Arial,sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(40,196,154,0.3);}
+.lobby-new-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:'Arial Black',Arial,sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-top:8px;box-shadow:0 4px 16px rgba(40,196,154,0.3);}
 .lobby-back{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;margin-bottom:14px;}
+.lobby-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.08);color:#fff;font-family:Arial,sans-serif;font-size:14px;outline:none;margin-bottom:8px;}
+.lobby-input::placeholder{color:rgba(255,255,255,0.3);}
+.lobby-input:focus{border-color:rgba(40,196,154,0.5);}
+.lobby-search-result{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.05);margin-bottom:6px;cursor:pointer;}
+.lobby-search-result:active{background:rgba(255,255,255,0.1);}
 
+/* ── ONBOARDING ── */
+#onboard-screen{position:fixed;inset:0;background:#1e3040;z-index:300;display:flex;flex-direction:column;overflow-y:auto;}
+#onboard-screen.hidden{display:none;}
+.ob-step{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:32px 24px;text-align:center;}
+.ob-step.active{display:flex;}
+.ob-logo{font-family:'Arial Black',Arial,sans-serif;font-size:32px;font-weight:900;letter-spacing:3px;color:#fff;margin-bottom:4px;}
+.ob-tagline{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:40px;}
+.ob-title{font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;}
+.ob-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:28px;line-height:1.5;}
+.ob-form{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;}
+.ob-input{padding:13px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);font-size:15px;background:rgba(255,255,255,0.1);color:#fff;outline:none;font-family:Arial,sans-serif;width:100%;}
+.ob-input::placeholder{color:rgba(255,255,255,0.3);}
+.ob-input:focus{border-color:rgba(40,196,154,0.5);}
+.ob-btn{padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:900;cursor:pointer;width:100%;box-shadow:0 4px 16px rgba(40,196,154,0.35);margin-top:4px;}
+.ob-btn:active{opacity:0.85;}
+.ob-btn-sec{padding:12px;border-radius:12px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;}
+.ob-error{font-size:12px;color:#ff7070;min-height:16px;text-align:center;font-family:Arial,sans-serif;}
+.ob-lang{display:flex;gap:10px;width:100%;max-width:300px;margin-bottom:8px;}
+.ob-lang-btn{flex:1;padding:14px;border-radius:12px;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-family:'Arial Black',Arial,sans-serif;font-size:15px;cursor:pointer;transition:all 0.15s;}
+.ob-lang-btn.selected{border-color:var(--accent);background:rgba(40,196,154,0.15);color:var(--accent);}
+.ob-install-box{background:rgba(255,255,255,0.06);border-radius:16px;padding:20px;width:100%;max-width:300px;margin-bottom:20px;}
+.ob-install-step{display:flex;align-items:center;gap:12px;margin-bottom:14px;text-align:left;}
+.ob-install-num{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;}
+.ob-install-text{font-size:13px;color:rgba(255,255,255,0.8);}
+.ob-tile{width:80px;height:80px;background:linear-gradient(165deg,#f4e48a 55%,#dcc848);border-radius:12px;display:flex;align-items:center;justify-content:center;border:2px solid #b89010;box-shadow:0 6px 0 #8a6800;margin-bottom:24px;}
+.ob-tile-letter{font-family:'Arial Black',Arial,sans-serif;font-size:42px;font-weight:900;color:#160a00;}
+.ob-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+.ob-link-btn{color:var(--accent);font-size:13px;cursor:pointer;background:none;border:none;text-decoration:underline;margin-top:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.lang-es .en{display:none;}
+.lang-en .es{display:none;}
+
+/* ── LOGIN (returning users) ── */
 #login-screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1e3040;z-index:200;padding:32px 24px;}
 #login-screen.hidden{display:none;}
-.login-logo{font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:4px;color:#fff;margin-bottom:4px;}
-.login-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:40px;letter-spacing:0.5px;}
-.login-form{display:flex;flex-direction:column;gap:12px;width:100%;max-width:300px;}
+.login-logo{font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;letter-spacing:3px;color:#fff;margin-bottom:4px;}
+.login-sub{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:32px;}
+.login-form{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;}
 .login-input{padding:13px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);font-size:15px;background:rgba(255,255,255,0.1);color:#fff;outline:none;font-family:Arial,sans-serif;}
 .login-input::placeholder{color:rgba(255,255,255,0.3);}
-.login-input:focus{border-color:rgba(40,196,154,0.5);background:rgba(255,255,255,0.13);}
-.login-btn{padding:14px;border-radius:12px;border:none;background:#28c49a;color:#fff;font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(40,196,154,0.35);margin-top:4px;}
+.login-input:focus{border-color:rgba(40,196,154,0.5);}
+.login-btn{padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(40,196,154,0.35);}
 .login-btn:active{opacity:0.85;}
 .login-error{font-size:12px;color:#ff7070;min-height:16px;text-align:center;font-family:Arial,sans-serif;}
-.login-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.1);border-top-color:#28c49a;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;display:none;}
-@keyframes spin{to{transform:rotate(360deg);}}
+.login-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;display:none;}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ══════════════════════════════
+     ONBOARDING (new users)
+     ══════════════════════════════ -->
+<div id="onboard-screen" class="hidden">
+
+  <!-- STEP 1: Welcome -->
+  <div class="ob-step active" id="ob-step-1">
+    <div class="ob-tile"><span class="ob-tile-letter">P</span></div>
+    <div class="ob-logo">PHIL-A-WORD</div>
+    <div class="ob-tagline es">El juego de palabras para amigos</div>
+    <div class="ob-tagline en" style="display:none;">The word game for friends</div>
+    <div class="ob-form">
+      <button class="ob-btn" onclick="showObStep(2)">
+        <span class="es">Crear cuenta</span>
+        <span class="en" style="display:none;">Create account</span>
+      </button>
+      <button class="ob-btn-sec" onclick="showLoginScreen()">
+        <span class="es">Ya tengo cuenta</span>
+        <span class="en" style="display:none;">I already have an account</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Language -->
+  <div class="ob-step" id="ob-step-2">
+    <div class="ob-title">🌍 Idioma / Language</div>
+    <div class="ob-sub">Choose your language<br>Elige tu idioma</div>
+    <div class="ob-lang">
+      <button class="ob-lang-btn selected" id="lang-es-btn" onclick="selectLang(&#39;es&#39;)">🇲🇽 Español</button>
+      <button class="ob-lang-btn" id="lang-en-btn" onclick="selectLang(&#39;en&#39;)">🇺🇸 English</button>
+    </div>
+    <div class="ob-form">
+      <button class="ob-btn" onclick="showObStep(3)">
+        <span class="es">Continuar</span>
+        <span class="en" style="display:none;">Continue</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Create account -->
+  <div class="ob-step" id="ob-step-3">
+    <div class="ob-title es">Crear cuenta</div>
+    <div class="ob-title en" style="display:none;">Create account</div>
+    <div class="ob-sub es">Elige tu nombre y crea tu cuenta</div>
+    <div class="ob-sub en" style="display:none;">Choose your name and create your account</div>
+    <div class="ob-form">
+      <input class="ob-input" id="ob-name" type="text" placeholder="Tu nombre / Your name" autocomplete="name">
+      <input class="ob-input" id="ob-email" type="email" placeholder="Email" autocomplete="email">
+      <input class="ob-input" id="ob-pass" type="password" placeholder="Contraseña / Password (8+ chars)" autocomplete="new-password">
+      <div class="ob-error" id="ob-error"></div>
+      <button class="ob-btn" onclick="registerUser()">
+        <span class="es">Crear cuenta</span>
+        <span class="en" style="display:none;">Create account</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Install PWA -->
+  <div class="ob-step" id="ob-step-4">
+    <div class="ob-title es">📱 Instalar la app</div>
+    <div class="ob-title en" style="display:none;">📱 Install the app</div>
+    <div class="ob-sub es">Agrega Phil-a-Word a tu pantalla de inicio para una mejor experiencia</div>
+    <div class="ob-sub en" style="display:none;">Add Phil-a-Word to your home screen for the best experience</div>
+    <div class="ob-install-box" id="ob-install-instructions">
+      <!-- filled by JS based on platform -->
+    </div>
+    <div class="ob-form">
+      <button class="ob-btn" id="ob-install-btn" onclick="showObStep(5)">
+        <span class="es">Ya instalé la app</span>
+        <span class="en" style="display:none;">I've installed the app</span>
+      </button>
+      <button class="ob-btn-sec" onclick="showObStep(5)">
+        <span class="es">Saltar por ahora</span>
+        <span class="en" style="display:none;">Skip for now</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Notifications -->
+  <div class="ob-step" id="ob-step-5">
+    <div style="font-size:48px;margin-bottom:16px;">🔔</div>
+    <div class="ob-title es">Activar notificaciones</div>
+    <div class="ob-title en" style="display:none;">Enable notifications</div>
+    <div class="ob-sub es">Recibe un aviso en tu teléfono cuando sea tu turno</div>
+    <div class="ob-sub en" style="display:none;">Get notified on your phone when it's your turn</div>
+    <div class="ob-form">
+      <button class="ob-btn" id="ob-notif-btn" onclick="obEnableNotifications()">
+        <span class="es">Activar notificaciones</span>
+        <span class="en" style="display:none;">Enable notifications</span>
+      </button>
+      <button class="ob-btn-sec" onclick="finishOnboarding()">
+        <span class="es">Saltar por ahora</span>
+        <span class="en" style="display:none;">Skip for now</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 6: All done -->
+  <div class="ob-step" id="ob-step-6">
+    <div style="font-size:64px;margin-bottom:16px;">🎉</div>
+    <div class="ob-title es">¡Listo!</div>
+    <div class="ob-title en" style="display:none;">All set!</div>
+    <div class="ob-sub es">Bienvenido a Phil-a-Word.<br>Espera una invitación para jugar.</div>
+    <div class="ob-sub en" style="display:none;">Welcome to Phil-a-Word.<br>Wait for an invite to play.</div>
+    <div class="ob-form">
+      <button class="ob-btn" onclick="finishOnboarding()">
+        <span class="es">Empezar a jugar</span>
+        <span class="en" style="display:none;">Start playing</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════
+     LOGIN (returning users)
+     ══════════════════════════════ -->
 <div id="login-screen" class="hidden">
-  <div class="login-logo">SCRABBLE</div>
-  <div class="login-sub">from Phil</div>
+  <div class="login-logo">PHIL-A-WORD</div>
+  <div class="login-sub" id="login-sub-text">from Phil</div>
   <form class="login-form" id="login-form">
     <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required="">
-    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required="">
+    <input class="login-input" id="login-pass" type="password" placeholder="Contraseña / Password" autocomplete="current-password" required="">
     <div class="login-error" id="login-error"></div>
-    <button class="login-btn" type="submit">Entrar</button>
+    <button class="login-btn" type="submit">
+      <span class="es">Entrar</span>
+      <span class="en" style="display:none;">Sign in</span>
+    </button>
     <div class="login-spinner" id="login-spinner"></div>
+    <button type="button" class="ob-link-btn" onclick="showOnboarding()">
+      <span class="es">¿Nuevo usuario? Crear cuenta</span>
+      <span class="en" style="display:none;">New user? Create account</span>
+    </button>
   </form>
 </div>
 
-<!-- GAME -->
+<!-- ══════════════════════════════
+     GAME
+     ══════════════════════════════ -->
 <div class="app" id="app" style="display: flex;">
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">SCRABBLE <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v25</span></div>
+      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v26</span></div>
       <div style="margin-top:2px;">
-        <span class="heading-sub" onclick="openLobby()">☰ Juegos</span>
+        <span class="heading-sub" onclick="openLobby()">☰ <span class="es">Juegos</span><span class="en" style="display:none;">Games</span></span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
       </div>
     </div>
@@ -274,104 +371,106 @@ html,body{height:100%;background:#111;font-family:'Arial Black',Arial,sans-serif
 
   <div class="score-bar">
     <div class="sb-player">
-      <span class="sb-name">Tú</span>
-      <span class="sb-score" id="my-score">0</span>
+      <span class="sb-name" id="my-name">phil</span>
+      <span class="sb-score" id="my-score">3</span>
     </div>
     <div class="sb-middle">
-      <span class="turn-pill" id="turn-pill">Tu turno</span>
-      <span class="bag-label" id="bag-label">80 fichas</span>
+      <span class="turn-pill theirs" id="turn-pill">Su turno</span>
+      <span class="bag-label" id="bag-label">78 fichas</span>
     </div>
     <div class="sb-player right">
-      <span class="sb-name" id="opponent-name">Oponente</span>
+      <span class="sb-name" id="opponent-name">pr</span>
       <span class="sb-score" id="their-score">3</span>
     </div>
   </div>
 
   <div class="board-wrap" id="board-wrap">
     <div id="board-panner" style="width: 480px; height: 480px; left: 0px; top: 231px; transition: none; transform: translate(0px, 0px) scale(1);">
-      <div id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="0" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="0" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="0" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="0" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="1" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="1" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="1" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="1" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="2" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="2" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="2" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="2" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="3" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="3" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="4" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="4" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="7" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="7" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="7" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">L</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="8" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">E</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">E</span><span class="bv">1</span></div></div><div class="cell" data-r="7" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="7" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="7" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="10" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="10" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="11" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="11" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="12" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="12" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="12" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="12" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="13" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="13" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="13" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="13" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="14" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="14" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="14" style="background: rgb(200, 220, 232);"></div></div>
+      <div id="board" style="width: 480px; height: 480px;"><div class="cell tw" data-r="0" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="0" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="0" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="0" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="0" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="0" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="1" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="1" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="1" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="1" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="1" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="2" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="2" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="2" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="2" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="2" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="3" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="3" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="3" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="3" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="4" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="4" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="4" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="5" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="5" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="6" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">A</span><span class="bv">1</span></div></div><div class="cell dl" data-r="6" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="6" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="6" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="7" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="7" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="7" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">L</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="8" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">E</span><span class="bv">1</span></div></div><div class="cell has-tile" data-r="7" data-c="9" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">E</span><span class="bv">1</span></div></div><div class="cell" data-r="7" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="7" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="7" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="7" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell has-tile" data-r="8" data-c="7" style="background: rgb(200, 220, 232);"><div class="btile"><span class="bl">E</span><span class="bv">1</span></div></div><div class="cell dl" data-r="8" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="8" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="8" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="9" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="9" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="10" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="10" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="10" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="11" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="11" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="11" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="11" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="12" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="12" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="12" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="12" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="12" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="13" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="13" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell tl" data-r="13" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell dw" data-r="13" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="13" data-c="14" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="0" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="1" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="2" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="14" data-c="3" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="4" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="5" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="6" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="7" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="8" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="9" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="10" style="background: rgb(200, 220, 232);"></div><div class="cell dl" data-r="14" data-c="11" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="12" style="background: rgb(200, 220, 232);"></div><div class="cell" data-r="14" data-c="13" style="background: rgb(200, 220, 232);"></div><div class="cell tw" data-r="14" data-c="14" style="background: rgb(200, 220, 232);"></div></div>
     </div>
     <svg id="word-outline" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8;overflow:visible;"></svg>
     <div class="preview-float" id="preview-float">
       <span class="pf-words" id="pf-words"></span>
       <span class="pf-pts" id="pf-pts"></span>
     </div>
-    <div class="zoom-hint" id="zoom-hint">⊖ doble toque para alejar</div>
+    <div class="zoom-hint" id="zoom-hint"><span class="es">Doble toque para alejar</span><span class="en" style="display:none;">Double-tap to zoom out</span></div>
     <div class="toast-modal" id="toast-modal">
-      <span class="tm-text" id="tm-text">🇲🇽 Jugó <b id="tm-word">LEE</b> por <b id="tm-pts">3</b> puntos</span>
+      <span class="tm-text" id="tm-text">🎯 <b id="tm-word">–</b> <span class="es">por</span><span class="en" style="display:none;">for</span> <b id="tm-pts">–</b> pts</span>
       <span class="tm-gem">💎 <span id="tm-gems">5</span></span>
     </div>
   </div>
 
   <div class="rack-area" id="rack-area">
-    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">A</span><span class="rv">1</span></div><div class="rtile"><span class="rl">L</span><span class="rv">1</span></div><div class="rtile"><span class="rl">E</span><span class="rv">1</span></div><div class="rtile"><span class="rl">V</span><span class="rv">4</span></div><div class="rtile"><span class="rl">N</span><span class="rv">1</span></div><div class="rtile"><span class="rl">M</span><span class="rv">3</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div></div>
+    <div class="rack-tiles" id="rack"><div class="rtile"><span class="rl">L</span><span class="rv">1</span></div><div class="rtile"><span class="rl">V</span><span class="rv">4</span></div><div class="rtile"><span class="rl">N</span><span class="rv">1</span></div><div class="rtile"><span class="rl">M</span><span class="rv">3</span></div><div class="rtile"><span class="rl">O</span><span class="rv">1</span></div><div class="rtile"><span class="rl">U</span><span class="rv">1</span></div><div class="rtile"><span class="rl">R</span><span class="rv">1</span></div></div>
     <div class="action-row">
-      <button class="abtn abtn-sec" onclick="recallAll()">↩ Retira</button>
-      <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ Mezclar</button>
-      <button class="abtn abtn-swap" onclick="openSwap()">⇌ Cambiar</button>
-      <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()">Jugar</button>
-      <button class="abtn abtn-pass" onclick="passTurn()">Pasar</button>
+      <button class="abtn abtn-sec" onclick="recallAll()">↩ <span class="es">Retira</span><span class="en" style="display:none;">Recall</span></button>
+      <button class="abtn abtn-sec" onclick="shuffleRack()">⇄ <span class="es">Mezclar</span><span class="en" style="display:none;">Shuffle</span></button>
+      <button class="abtn abtn-swap" onclick="openSwap()">⇌ <span class="es">Cambiar</span><span class="en" style="display:none;">Swap</span></button>
+      <button class="abtn abtn-play" id="play-btn" disabled="" onclick="playWord()"><span class="es">Jugar</span><span class="en" style="display:none;">Play</span></button>
+      <button class="abtn abtn-pass" onclick="passTurn()"><span class="es">Pasar</span><span class="en" style="display:none;">Pass</span></button>
     </div>
   </div>
 
   <div class="swap-overlay" id="swap-overlay">
     <div class="swap-panel">
       <div class="swap-handle" onclick="closeSwap()"></div>
-      <div class="swap-title">Cambiar fichas</div>
-      <div class="swap-subtitle">Selecciona las fichas que quieres cambiar</div>
+      <div class="swap-title"><span class="es">Cambiar fichas</span><span class="en" style="display:none;">Swap tiles</span></div>
+      <div class="swap-subtitle"><span class="es">Selecciona las fichas que quieres cambiar</span><span class="en" style="display:none;">Select tiles to swap</span></div>
       <div class="swap-tiles-row" id="swap-tiles-row"></div>
       <div class="swap-actions">
-        <button class="swap-cancel" onclick="closeSwap()">Cancelar</button>
-        <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()">Selecciona fichas</button>
+        <button class="swap-cancel" onclick="closeSwap()"><span class="es">Cancelar</span><span class="en" style="display:none;">Cancel</span></button>
+        <button class="swap-confirm" id="swap-confirm-btn" disabled="" onclick="confirmSwap()"><span class="es">Selecciona fichas</span><span class="en" style="display:none;">Select tiles</span></button>
       </div>
     </div>
   </div>
 
-  <!-- LOBBY BOTTOM SHEET -->
+  <!-- LOBBY -->
   <div class="lobby-overlay" id="lobby-overlay" onclick="closeLobby()"></div>
   <div class="lobby-panel" id="lobby-panel">
     <div class="lobby-handle" onclick="closeLobby()"></div>
-    <div id="lobby-content">
-      <!-- filled by JS -->
-    </div>
+    <div id="lobby-content"></div>
   </div>
 
+  <!-- STATS / MENU -->
   <div class="stats-overlay" id="stats-overlay" onclick="closeStats()"></div>
   <div class="stats-panel" id="stats-panel">
     <div class="sh" onclick="closeStats()"></div>
-    <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🎮 More Games</button>
-      <button onclick="closeStats()" style="flex:1;padding:11px 8px;border-radius:10px;border:none;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">⚙️ Settings</button>
+
+    <div class="slbl"><span class="es">Cuenta</span><span class="en" style="display:none;">Account</span></div>
+    <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+      <div style="font-size:14px;font-weight:700;color:#fff;" id="menu-display-name">phil</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.3);" id="menu-email">phil@reilly.mx</div>
     </div>
-    <button id="notif-btn" onclick="enableNotifications()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(40,196,154,0.15);color:rgba(40,196,154,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;">🔔 Activar notificaciones</button>
-    <button onclick="G&amp;&amp;G.signOut()" style="width:100%;padding:10px;border-radius:10px;border:none;background:rgba(255,80,80,0.15);color:rgba(255,120,120,0.9);font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;">🚪 Cerrar sesión</button>
-    <div class="slbl">Mis estadísticas</div>
+
+    <div class="slbl"><span class="es">Ajustes</span><span class="en" style="display:none;">Settings</span></div>
+    <button id="notif-btn" onclick="enableNotifications()" class="menu-btn" style="background:rgba(40,196,154,0.12);color:rgba(40,196,154,0.9);">🔔 <span class="es">Activar notificaciones</span><span class="en" style="display:none;">Enable notifications</span></button>
+    <button onclick="showInvitePanel()" class="menu-btn" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);">🔗 <span class="es">Invitar jugador</span><span class="en" style="display:none;">Invite player</span></button>
+    <button onclick="showLangSettings()" class="menu-btn" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);" id="lang-settings-btn">🌍 Idioma: Español</button>
+
+    <div class="slbl"><span class="es">Estadísticas</span><span class="en" style="display:none;">Stats</span></div>
     <div class="sgrid">
-      <div class="sc"><div class="sv2">–</div><div class="sl2">Ganadas</div></div>
-      <div class="sc"><div class="sv2">–</div><div class="sl2">Perdidas</div></div>
-      <div class="sc"><div class="sv2">–</div><div class="sl2">% Victoria</div></div>
-      <div class="sc"><div class="sv2">–</div><div class="sl2">Mejor</div></div>
-      <div class="sc"><div class="sv2">–</div><div class="sl2">Promedio</div></div>
-      <div class="sc"><div class="sv2">–</div><div class="sl2">Racha</div></div>
+      <div class="sc"><div class="sv2" id="stat-won">–</div><div class="sl2"><span class="es">Ganadas</span><span class="en" style="display:none;">Won</span></div></div>
+      <div class="sc"><div class="sv2" id="stat-lost">–</div><div class="sl2"><span class="es">Perdidas</span><span class="en" style="display:none;">Lost</span></div></div>
+      <div class="sc"><div class="sv2" id="stat-pct">–</div><div class="sl2">%</div></div>
+      <div class="sc"><div class="sv2" id="stat-best">–</div><div class="sl2"><span class="es">Mejor</span><span class="en" style="display:none;">Best</span></div></div>
+      <div class="sc"><div class="sv2" id="stat-avg">–</div><div class="sl2"><span class="es">Promedio</span><span class="en" style="display:none;">Avg</span></div></div>
+      <div class="sc"><div class="sv2" id="stat-streak">–</div><div class="sl2"><span class="es">Racha</span><span class="en" style="display:none;">Streak</span></div></div>
     </div>
-    <div class="slbl">Partidas activas</div>
-    <div class="grows" id="active-games-list">
-      <div style="color:rgba(255,255,255,0.3);font-size:12px;text-align:center;padding:8px;">Cargando...</div>
-    </div>
+
+    <button onclick="G&amp;&amp;G.signOut()" class="menu-btn" style="background:rgba(255,80,80,0.12);color:rgba(255,120,120,0.9);">🚪 <span class="es">Cerrar sesión</span><span class="en" style="display:none;">Sign out</span></button>
   </div>
+
 </div>
 
 <div id="ghost"><div class="gl" id="ghost-l"></div><div class="gv" id="ghost-v"></div></div>
 
 <script>
 // ══════════════════════════════════════
-// SHARED STATE (window.S)
+// SHARED STATE
 // ══════════════════════════════════════
 window.S = {
   boardFixed:{}, boardNew:{}, rack:[],
-  // pan & zoom: panX/panY are offsets ADDED to the base centre position
   scale:1, panX:0, panY:0,
-  // base position of panner (centres board in wrap when no pan)
   baseLeft:0, baseTop:0,
   boardPx:0, cellPx:0,
   tapSelected:null,
@@ -381,6 +480,7 @@ window.S = {
   isPanning:false, panSX:0, panSY:0, panSTX:0, panSTY:0,
   swapPicked:new Set(),
   gemCount:5, currentGameId:null, myUid:null,
+  lang:'es', // 'es' or 'en'
 };
 
 const GRID=15, ZOOM=2.2;
@@ -391,164 +491,248 @@ const PREMIUMS={};
 [['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1','1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
 [['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13','1-5','13-5','1-9','13-9']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
 [['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6','6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12','11-0','11-7','11-14','12-6','12-8','14-3','14-11']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
-PREMIUMS['7-7']='dw'; // centre star = double word score
+PREMIUMS['7-7']='dw';
 
 const ghost=document.getElementById('ghost');
 const ghostL=document.getElementById('ghost-l');
 const ghostV=document.getElementById('ghost-v');
 const $=id=>document.getElementById(id);
 
-// ── BOARD SIZING ──
-// boardPx = side length of the board in CSS px (square, = wrap width)
-// baseLeft/baseTop = where panner sits when pan=0 (centred in wrap)
-function sizeBoard(){
-  const wrap=$('board-wrap');
-  const ww=wrap.clientWidth, wh=wrap.clientHeight;
-  const bp=ww; // board fills full wrap width
-  window.S.boardPx=bp;
-  window.S.cellPx=bp/GRID;
-  window.S.baseLeft=0;
-  window.S.baseTop=Math.max(0,Math.round((wh-bp)/2));
-  const panner=$('board-panner');
-  const board=$('board');
-  panner.style.width=bp+'px';
-  panner.style.height=bp+'px';
-  panner.style.left='0px';
-  panner.style.top=window.S.baseTop+'px';
-  board.style.width=bp+'px';
-  board.style.height=bp+'px';
+// ── LANGUAGE ──
+function setLang(lang){
+  window.S.lang=lang;
+  document.querySelectorAll('.es').forEach(el=>el.style.display=lang==='es'?'':'none');
+  document.querySelectorAll('.en').forEach(el=>el.style.display=lang==='en'?'':'none');
+  const btn=$('lang-settings-btn');
+  if(btn) btn.innerHTML=lang==='es'?'🌍 Idioma: Español':'🌍 Language: English';
 }
 
-// ── TRANSFORM ──
-// The panner's CSS: position absolute, top=baseTop+panY, left=baseLeft+panX
-// Scale is applied via CSS transform from top-left origin
+// ── ONBOARDING ──
+let _obLang='es';
+function showOnboarding(step){
+  $('login-screen').classList.add('hidden');
+  $('onboard-screen').classList.remove('hidden');
+  showObStep(step||1);
+}
+function showObStep(n){
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  const step=$('ob-step-'+n);
+  if(step) step.classList.add('active');
+  if(n===4) buildInstallInstructions();
+}
+function showLoginScreen(){
+  $('onboard-screen').classList.add('hidden');
+  $('login-screen').classList.remove('hidden');
+}
+function selectLang(lang){
+  _obLang=lang;
+  setLang(lang);
+  $('lang-es-btn').classList.toggle('selected',lang==='es');
+  $('lang-en-btn').classList.toggle('selected',lang==='en');
+}
+function buildInstallInstructions(){
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  const isAndroid=/Android/.test(navigator.userAgent);
+  const isStandalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches;
+  const box=$('ob-install-instructions');
+  if(isStandalone){
+    box.innerHTML=`<div style="text-align:center;color:var(--accent);font-size:14px;font-weight:700;">✅ ${_obLang==='es'?'¡Ya instalada!':'Already installed!'}</div>`;
+    setTimeout(()=>showObStep(5),1500);
+    return;
+  }
+  if(isIOS){
+    box.innerHTML=`
+      <div class="ob-install-step"><div class="ob-install-num">1</div><div class="ob-install-text">${_obLang==='es'?'Toca el botón de compartir':'Tap the Share button'} <span style="font-size:18px">⬆️</span></div></div>
+      <div class="ob-install-step"><div class="ob-install-num">2</div><div class="ob-install-text">${_obLang==='es'?'Selecciona "Agregar a inicio"':'Select "Add to Home Screen"'}</div></div>
+      <div class="ob-install-step" style="margin-bottom:0"><div class="ob-install-num">3</div><div class="ob-install-text">${_obLang==='es'?'Toca "Agregar"':'Tap "Add"'}</div></div>`;
+  } else if(isAndroid){
+    box.innerHTML=`
+      <div class="ob-install-step"><div class="ob-install-num">1</div><div class="ob-install-text">${_obLang==='es'?'Toca el menú ⋮':'Tap the menu ⋮'}</div></div>
+      <div class="ob-install-step"><div class="ob-install-num">2</div><div class="ob-install-text">${_obLang==='es'?'Selecciona "Agregar a pantalla de inicio"':'Select "Add to Home screen"'}</div></div>
+      <div class="ob-install-step" style="margin-bottom:0"><div class="ob-install-num">3</div><div class="ob-install-text">${_obLang==='es'?'Toca "Agregar"':'Tap "Add"'}</div></div>`;
+  } else {
+    box.innerHTML=`<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;">${_obLang==='es'?'En escritorio, puedes usar la app directamente en el navegador.':'On desktop, you can use the app directly in the browser.'}</div>`;
+  }
+}
+
+async function registerUser(){
+  const name=$('ob-name').value.trim();
+  const email=$('ob-email').value.trim();
+  const pass=$('ob-pass').value;
+  const errEl=$('ob-error');
+  errEl.textContent='';
+  if(!name){errEl.textContent=_obLang==='es'?'Ingresa tu nombre':'Enter your name';return;}
+  if(!email){errEl.textContent=_obLang==='es'?'Ingresa tu email':'Enter your email';return;}
+  if(pass.length<8){errEl.textContent=_obLang==='es'?'La contraseña debe tener 8+ caracteres':'Password must be 8+ characters';return;}
+  const btn=document.querySelector('#ob-step-3 .ob-btn');
+  btn.textContent='⏳';btn.disabled=true;
+  try{
+    if(window._firebaseRegister){
+      await window._firebaseRegister(email,pass,name,_obLang);
+      showObStep(4);
+    }
+  }catch(err){
+    errEl.textContent=err.message;
+    btn.innerHTML=_obLang==='es'?'<span class="es">Crear cuenta</span>':'<span class="en">Create account</span>';
+    btn.disabled=false;
+  }
+}
+
+async function obEnableNotifications(){
+  const btn=$('ob-notif-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳';}
+  let attempts=0;
+  while(!window._registerPush&&attempts<20){await new Promise(r=>setTimeout(r,300));attempts++;}
+  if(!window._registerPush){
+    showObStep(6);return;
+  }
+  const uid=window.S.myUid||window._pushUid;
+  if(!uid){showObStep(6);return;}
+  const result=await window._registerPush(uid);
+  showObStep(6);
+}
+
+function finishOnboarding(){
+  $('onboard-screen').classList.add('hidden');
+  // Game screen shown by auth state change
+}
+
+// ── INVITE SYSTEM ──
+function showInvitePanel(){
+  closeStats();
+  const uid=window.S.myUid;
+  if(!uid) return;
+  // Generate invite code based on uid + timestamp
+  const code=btoa(uid+':'+Date.now()).replace(/[^a-zA-Z0-9]/g,'').slice(0,12);
+  const link=`${location.origin}/?invite=${code}`;
+  // Save invite to Firestore via G
+  if(window.G) window.G.createInvite(code,uid);
+  // Show share sheet or copy link
+  const panel=document.createElement('div');
+  panel.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:flex-end;';
+  panel.innerHTML=`
+    <div style="background:#0d1f3c;border-radius:18px 18px 0 0;padding:20px;width:100%;box-shadow:0 -8px 32px rgba(0,0,0,0.5);">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 16px;cursor:pointer;" onclick="this.closest('[style]').remove()"></div>
+      <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:8px;">🔗 <span class="es">Invitar jugador</span><span class="en" style="display:${window.S.lang==='en'?'':'none'}">Invite player</span></div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;"><span class="es">Comparte este enlace para invitar a un jugador</span><span class="en" style="display:${window.S.lang==='en'?'':'none'}">Share this link to invite a player</span></div>
+      <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:12px;font-size:12px;color:#28c49a;word-break:break-all;margin-bottom:16px;">${link}</div>
+      <button onclick="navigator.share?navigator.share({title:'Phil-a-Word',url:'${link}'}):navigator.clipboard.writeText('${link}').then(()=>alert('Link copied!'))" style="width:100%;padding:13px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-family:'Arial Black',Arial,sans-serif;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:8px;">
+        <span class="es">Compartir enlace</span><span class="en" style="display:${window.S.lang==='en'?'':'none'}">Share link</span>
+      </button>
+      <button onclick="this.closest('[style]').remove()" style="width:100%;padding:12px;border-radius:12px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-family:Arial,sans-serif;font-size:14px;cursor:pointer;">
+        <span class="es">Cerrar</span><span class="en" style="display:${window.S.lang==='en'?'':'none'}">Close</span>
+      </button>
+    </div>`;
+  document.body.appendChild(panel);
+}
+
+function showLangSettings(){
+  const lang=window.S.lang==='es'?'en':'es';
+  setLang(lang);
+  if(window.G) window.G.saveLang(lang);
+}
+
+// ── BOARD SIZING ──
+function sizeBoard(){
+  const wrap=$('board-wrap');
+  const ww=wrap.clientWidth,wh=wrap.clientHeight;
+  const bp=ww;
+  window.S.boardPx=bp; window.S.cellPx=bp/GRID;
+  window.S.baseLeft=0; window.S.baseTop=Math.max(0,Math.round((wh-bp)/2));
+  const panner=$('board-panner'),board=$('board');
+  panner.style.width=bp+'px'; panner.style.height=bp+'px';
+  panner.style.left='0px'; panner.style.top=window.S.baseTop+'px';
+  board.style.width=bp+'px'; board.style.height=bp+'px';
+}
 function applyTransform(anim){
   const p=$('board-panner');
-  const {panX,panY,scale}=window.S;
+  const{panX,panY,scale}=window.S;
   p.style.transition=anim?'transform 0.26s cubic-bezier(0.34,1.3,0.64,1)':'none';
   p.style.transform=`translate(${panX}px,${panY}px) scale(${scale})`;
 }
-
 function clampPan(){
   const wrap=$('board-wrap');
-  const ww=wrap.clientWidth, wh=wrap.clientHeight;
-  const {boardPx,scale,baseTop}=window.S;
-  const sW=boardPx*scale;
-  const offY=baseTop||0;
+  const ww=wrap.clientWidth,wh=wrap.clientHeight;
+  const{boardPx,scale,baseTop}=window.S;
+  const sW=boardPx*scale,offY=baseTop||0;
   window.S.panX=Math.min(0,Math.max(ww-sW,window.S.panX));
   window.S.panY=Math.min(0,Math.max(offY+(wh-(offY+sW)),window.S.panY));
 }
-
 function zoomOut(){
-  window.S.scale=1; window.S.panX=0; window.S.panY=0;
-  window.S.isPanning=false; window.S._hasZoomed=false;
+  window.S.scale=1;window.S.panX=0;window.S.panY=0;
+  window.S.isPanning=false;window.S._hasZoomed=false;
   applyTransform(true);
   $('zoom-hint').classList.remove('show');
   $('board-wrap').classList.remove('panning');
-  // Redraw outlines at new zoom level
-  setTimeout(()=>updatePreview(), 300);
+  setTimeout(()=>updatePreview(),300);
 }
-
 function zoomToWrapPoint(wx,wy,ns){
-  // wx,wy = point in wrap-local coords (relative to wrap top-left)
-  // We want that point to stay fixed as we zoom
-  const {scale,panX,panY,baseLeft,baseTop}=window.S;
-  // Current board-local coords of that point:
-  // wx = baseLeft+panX + boardLocal_x*scale
-  // boardLocal_x = (wx - baseLeft - panX) / scale
-  // After zoom: wx = baseLeft+newPanX + boardLocal_x*newScale
-  // → newPanX = wx - baseLeft - boardLocal_x*newScale
-  const boardX=(wx-baseLeft-panX)/scale;
-  const boardY=(wy-baseTop-panY)/scale;
+  const{scale,panX,panY,baseLeft,baseTop}=window.S;
+  const boardX=(wx-baseLeft-panX)/scale,boardY=(wy-baseTop-panY)/scale;
   window.S.panX=wx-baseLeft-boardX*ns;
   window.S.panY=wy-baseTop-boardY*ns;
   window.S.scale=ns;
-  clampPan();
-  applyTransform(true);
+  clampPan();applyTransform(true);
   $('zoom-hint').classList.add('show');
   clearTimeout(window._zt);
   window._zt=setTimeout(()=>$('zoom-hint').classList.remove('show'),3000);
 }
-
-// ── COORDINATE HELPERS ──
-// Convert client coords to board cell {r,c}
-function clientToCell(cx,cy){
-  const wrap=$('board-wrap');
-  const wr=wrap.getBoundingClientRect();
-  const {boardPx,scale,panX,panY,baseLeft,baseTop}=window.S;
-  const cs=boardPx/GRID;
-  // wrap-local coords
-  const wx=cx-wr.left, wy=cy-wr.top;
-  // board-local coords (undo base position, pan, and scale)
-  const bx=(wx-baseLeft-panX)/scale;
-  const by=(wy-baseTop-panY)/scale;
-  const c=Math.floor(bx/cs), r=Math.floor(by/cs);
-  if(r<0||r>=GRID||c<0||c>=GRID) return null;
-  return {r,c};
-}
-
-// Get client coords of centre of cell (r,c)
 function cellCenter(r,c){
   const wrap=$('board-wrap');
   const wr=wrap.getBoundingClientRect();
-  const {boardPx,scale,panX,panY,baseLeft,baseTop}=window.S;
+  const{boardPx,scale,panX,panY,baseLeft,baseTop}=window.S;
   const cs=boardPx/GRID;
-  return {
-    x: wr.left + baseLeft + panX + (c+0.5)*cs*scale,
-    y: wr.top  + baseTop  + panY + (r+0.5)*cs*scale,
-  };
+  return{x:wr.left+baseLeft+panX+(c+0.5)*cs*scale,y:wr.top+baseTop+panY+(r+0.5)*cs*scale};
+}
+function clientToCell(cx,cy){
+  const wrap=$('board-wrap');
+  const wr=wrap.getBoundingClientRect();
+  const{boardPx,scale,panX,panY,baseLeft,baseTop}=window.S;
+  const cs=boardPx/GRID;
+  const bx=(cx-wr.left-baseLeft-panX)/scale,by=(cy-wr.top-baseTop-panY)/scale;
+  const c=Math.floor(bx/cs),r=Math.floor(by/cs);
+  if(r<0||r>=GRID||c<0||c>=GRID)return null;
+  return{r,c};
 }
 
 // ── SMART SNAP ──
 function getSnapTarget(cx,cy){
-  const {boardPx,scale,boardFixed,boardNew}=window.S;
+  const{boardPx,scale,boardFixed,boardNew}=window.S;
   const cs=(boardPx/GRID)*scale;
   const placed=Object.keys(boardNew);
   const all={...boardFixed,...boardNew};
-  const SNAP_R=cs*1.5; // snap radius = 1.5 cells in screen px
-
-  // 1: continue established direction
+  const SNAP_R=cs*1.5;
   if(placed.length>0){
     const dir=getDir();
     if(dir==='H'){
       const row=+placed[0].split('-')[0];
       const cols=placed.map(k=>+k.split('-')[1]).sort((a,b)=>a-b);
-      for(const nc of [cols[cols.length-1]+1,cols[0]-1]){
-        let cc=nc;
-        // skip over occupied
-        const step=nc>cols[cols.length-1]?1:-1;
-        while(cc>=0&&cc<GRID&&all[`${row}-${cc}`]) cc+=step;
-        if(cc<0||cc>=GRID) continue;
-        const k=`${row}-${cc}`;
-        if(boardFixed[k]||boardNew[k]) continue;
-        const ctr=cellCenter(row,cc);
-        if(Math.hypot(cx-ctr.x,cy-ctr.y)<SNAP_R*2) return k;
+      for(const nc of[cols[cols.length-1]+1,cols[0]-1]){
+        let cc=nc;const step=nc>cols[cols.length-1]?1:-1;
+        while(cc>=0&&cc<GRID&&all[`${row}-${cc}`])cc+=step;
+        if(cc<0||cc>=GRID)continue;
+        const k=`${row}-${cc}`;if(boardFixed[k]||boardNew[k])continue;
+        const ctr=cellCenter(row,cc);if(Math.hypot(cx-ctr.x,cy-ctr.y)<SNAP_R*2)return k;
       }
-    } else if(dir==='V'){
+    }else if(dir==='V'){
       const col=+placed[0].split('-')[1];
       const rows=placed.map(k=>+k.split('-')[0]).sort((a,b)=>a-b);
-      for(const nr of [rows[rows.length-1]+1,rows[0]-1]){
-        let rr=nr;
-        const step=nr>rows[rows.length-1]?1:-1;
-        while(rr>=0&&rr<GRID&&all[`${rr}-${col}`]) rr+=step;
-        if(rr<0||rr>=GRID) continue;
-        const k=`${rr}-${col}`;
-        if(boardFixed[k]||boardNew[k]) continue;
-        const ctr=cellCenter(rr,col);
-        if(Math.hypot(cx-ctr.x,cy-ctr.y)<SNAP_R*2) return k;
+      for(const nr of[rows[rows.length-1]+1,rows[0]-1]){
+        let rr=nr;const step=nr>rows[rows.length-1]?1:-1;
+        while(rr>=0&&rr<GRID&&all[`${rr}-${col}`])rr+=step;
+        if(rr<0||rr>=GRID)continue;
+        const k=`${rr}-${col}`;if(boardFixed[k]||boardNew[k])continue;
+        const ctr=cellCenter(rr,col);if(Math.hypot(cx-ctr.x,cy-ctr.y)<SNAP_R*2)return k;
       }
     }
   }
-
-  // 2: adjacent to any existing tile — prefer word ends
   const cands=[];
-  for(const key of [...Object.keys(boardFixed),...Object.keys(boardNew)]){
+  for(const key of[...Object.keys(boardFixed),...Object.keys(boardNew)]){
     const[fr,fc]=key.split('-').map(Number);
-    for(const[dr,dc] of [[-1,0],[1,0],[0,-1],[0,1]]){
+    for(const[dr,dc]of[[-1,0],[1,0],[0,-1],[0,1]]){
       const nr=fr+dr,nc=fc+dc;
-      if(nr<0||nr>=GRID||nc<0||nc>=GRID) continue;
-      const k=`${nr}-${nc}`;
-      if(all[k]) continue;
+      if(nr<0||nr>=GRID||nc<0||nc>=GRID)continue;
+      const k=`${nr}-${nc}`;if(all[k])continue;
       const ctr=cellCenter(nr,nc);
       const dist=Math.hypot(cx-ctr.x,cy-ctr.y);
       const isEnd=!all[`${nr-dr}-${nc-dc}`];
@@ -556,75 +740,63 @@ function getSnapTarget(cx,cy){
     }
   }
   cands.sort((a,b)=>a.isEnd===b.isEnd?a.dist-b.dist:(a.isEnd?-1:1));
-  for(const cd of cands){
-    if(cd.dist<SNAP_R&&!boardFixed[cd.k]&&!boardNew[cd.k]) return cd.k;
-  }
-
-  // 3: exact cell under finger
+  for(const cd of cands){if(cd.dist<SNAP_R&&!boardFixed[cd.k]&&!boardNew[cd.k])return cd.k;}
   const ex=clientToCell(cx,cy);
   if(ex){const k=`${ex.r}-${ex.c}`;if(!boardFixed[k]&&!boardNew[k])return k;}
-
   return null;
 }
-
 function getDir(){
   const placed=Object.keys(window.S.boardNew);
-  if(placed.length<=1) return window.S.lastPlacedDir||null;
-  const rows=placed.map(k=>+k.split('-')[0]);
-  const cols=placed.map(k=>+k.split('-')[1]);
-  if(rows.every(r=>r===rows[0])) return 'H';
-  if(cols.every(c=>c===cols[0])) return 'V';
+  if(placed.length<=1)return window.S.lastPlacedDir||null;
+  const rows=placed.map(k=>+k.split('-')[0]),cols=placed.map(k=>+k.split('-')[1]);
+  if(rows.every(r=>r===rows[0]))return'H';
+  if(cols.every(c=>c===cols[0]))return'V';
   return null;
 }
-
 function highlightSnap(key){
   document.querySelectorAll('.cell.snap-target').forEach(c=>c.classList.remove('snap-target'));
-  if(!key) return;
+  if(!key)return;
   const[r,c]=key.split('-');
   const cell=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-  if(cell&&!cell.classList.contains('has-tile')) cell.classList.add('snap-target');
+  if(cell&&!cell.classList.contains('has-tile'))cell.classList.add('snap-target');
 }
 
 // ── BUILD BOARD ──
 function buildBoard(){
   const{boardFixed,boardNew,tapSelected,snapKey}=window.S;
-  const board=$('board');
-  board.innerHTML='';
+  const board=$('board');board.innerHTML='';
   for(let r=0;r<GRID;r++){
     for(let c=0;c<GRID;c++){
       const key=`${r}-${c}`;
       const cell=document.createElement('div');
-      cell.className='cell'; cell.dataset.r=r; cell.dataset.c=c;
-      cell.style.background='#c8dce8'; // explicit — Safari ignores CSS vars on dynamic elements
+      cell.className='cell';cell.dataset.r=r;cell.dataset.c=c;
+      cell.style.background='#c8dce8';
       if(boardFixed[key]){
         cell.classList.add('has-tile');
-        const bt=document.createElement('div');
-        bt.className='btile';
+        const bt=document.createElement('div');bt.className='btile';
         bt.innerHTML=`<span class="bl">${boardFixed[key]}</span><span class="bv">${lv(boardFixed[key])}</span>`;
         cell.appendChild(bt);
-      } else if(boardNew[key]){
+      }else if(boardNew[key]){
         cell.classList.add('has-tile');
         const isSel=tapSelected&&tapSelected.type==='board'&&tapSelected.key===key;
-        const bt=document.createElement('div');
-        bt.className='btile new'+(isSel?' sel-board':'');
+        const bt=document.createElement('div');bt.className='btile new'+(isSel?' sel-board':'');
         bt.innerHTML=`<span class="bl">${boardNew[key]}</span><span class="bv">${lv(boardNew[key])}</span>`;
         bt.addEventListener('pointerdown',e=>{e.stopPropagation();onTilePD(e,{type:'board',key,letter:boardNew[key]});});
         cell.appendChild(bt);
-      } else {
-        if(r===7&&c===7) cell.classList.add('center');
-        else { const p=PREMIUMS[key]; if(p) cell.classList.add(p); }
+      }else{
+        if(r===7&&c===7)cell.classList.add('center');
+        else{const p=PREMIUMS[key];if(p)cell.classList.add(p);}
       }
       board.appendChild(cell);
     }
   }
-  if(snapKey) highlightSnap(snapKey);
+  if(snapKey)highlightSnap(snapKey);
 }
 
 // ── BUILD RACK ──
 function buildRack(){
   const{rack,tapSelected}=window.S;
-  const rackEl=$('rack');
-  rackEl.innerHTML='';
+  const rackEl=$('rack');rackEl.innerHTML='';
   rack.forEach((l,i)=>{
     const isSel=tapSelected&&tapSelected.type==='rack'&&tapSelected.idx===i;
     const tile=document.createElement('div');
@@ -639,144 +811,102 @@ function buildRack(){
 
 // ── POINTER DOWN ON TILE ──
 function onTilePD(e,src){
-  e.preventDefault(); e.stopPropagation();
+  e.preventDefault();e.stopPropagation();
   const S=window.S;
-  S.pSX=e.clientX; S.pSY=e.clientY;
-  S.dragSrc=src; S.isDragging=false; S.dragMoved=false; S.snapKey=null;
-  ghostL.textContent=src.letter; ghostV.textContent=lv(src.letter);
+  S.pSX=e.clientX;S.pSY=e.clientY;
+  S.dragSrc=src;S.isDragging=false;S.dragMoved=false;S.snapKey=null;
+  ghostL.textContent=src.letter;ghostV.textContent=lv(src.letter);
   moveGhost(e.clientX,e.clientY);
   if(src.type==='rack'){
     const tiles=document.querySelectorAll('.rtile');
-    if(tiles[src.idx]) tiles[src.idx].classList.add('drag-src');
+    if(tiles[src.idx])tiles[src.idx].classList.add('drag-src');
   }
 }
 
-// ── BOARD BACKGROUND ──
-// Double-tap to zoom out — use touchend timer for iOS
+// ── TOUCH / POINTER EVENTS ──
 let _lastTouch=0;
 $('board-wrap').addEventListener('touchend',e=>{
   const S=window.S;
-  if(S.isDragging||S.dragSrc) return;
+  if(S.isDragging||S.dragSrc)return;
   const now=Date.now();
   if(now-_lastTouch<350){e.preventDefault();zoomOut();_lastTouch=0;return;}
   _lastTouch=now;
 },{passive:false});
-
-// Double-click to zoom out on desktop
-$('board-wrap').addEventListener('dblclick',e=>{
-  zoomOut();
-});
+$('board-wrap').addEventListener('dblclick',()=>zoomOut());
 
 $('board-wrap').addEventListener('pointerdown',e=>{
   const S=window.S;
-  if(S.dragSrc) return;
-  // tap-to-place
+  if(S.dragSrc)return;
   if(S.tapSelected){
     const cell=e.target.closest('.cell');
-    if(cell&&!cell.classList.contains('has-tile')){
-      placeTileAt(parseInt(cell.dataset.r),parseInt(cell.dataset.c)); return;
-    }
-    if(!e.target.closest('.btile.new')&&!e.target.closest('.rtile')){
-      S.tapSelected=null; buildBoard(); buildRack(); return;
-    }
+    if(cell&&!cell.classList.contains('has-tile')){placeTileAt(parseInt(cell.dataset.r),parseInt(cell.dataset.c));return;}
+    if(!e.target.closest('.btile.new')&&!e.target.closest('.rtile')){S.tapSelected=null;buildBoard();buildRack();return;}
   }
-  // start pan
   S.isPanning=true;
-  S.panSX=e.clientX; S.panSY=e.clientY;
-  S.panSTX=S.panX; S.panSTY=S.panY;
+  S.panSX=e.clientX;S.panSY=e.clientY;S.panSTX=S.panX;S.panSTY=S.panY;
   $('board-wrap').classList.add('panning');
 },{passive:false});
 
-// ── POINTERMOVE ──
 document.addEventListener('pointermove',e=>{
   const S=window.S;
   if(S.dragSrc){
     const dd=Math.hypot(e.clientX-S.pSX,e.clientY-S.pSY);
-    if(!S.dragMoved&&dd>8){
-      S.dragMoved=true; S.isDragging=true;
-      ghost.style.opacity='1'; S.tapSelected=null;
-    }
-    if(!S.isDragging) return;
+    if(!S.dragMoved&&dd>8){S.dragMoved=true;S.isDragging=true;ghost.style.opacity='1';S.tapSelected=null;}
+    if(!S.isDragging)return;
     moveGhost(e.clientX,e.clientY);
-    // Redraw word outline to follow board during drag
-    if(Object.keys(S.boardNew).length>0) updatePreview();
-
-    // Zoom in ONCE when tile first enters board area
+    if(Object.keys(S.boardNew).length>0)updatePreview();
     if(!S._hasZoomed&&S.scale<ZOOM-0.1){
-      const wrap=$('board-wrap');
-      const wr=wrap.getBoundingClientRect();
+      const wrap=$('board-wrap'),wr=wrap.getBoundingClientRect();
       if(e.clientX>=wr.left&&e.clientX<=wr.right&&e.clientY>=wr.top&&e.clientY<=wr.bottom){
-        S._hasZoomed=true;
-        zoomToWrapPoint(e.clientX-wr.left,e.clientY-wr.top,ZOOM);
+        S._hasZoomed=true;zoomToWrapPoint(e.clientX-wr.left,e.clientY-wr.top,ZOOM);
       }
     }
-
-    // Edge-pan: when dragging tile near board edges, pan the board
     if(S.scale>1.05){
-      const wrap=$('board-wrap');
-      const wr=wrap.getBoundingClientRect();
-      const edge=50, speed=6;
-      let dx=0, dy=0;
-      if(e.clientX>wr.left&&e.clientX<wr.left+edge) dx=speed;
-      if(e.clientX<wr.right&&e.clientX>wr.right-edge) dx=-speed;
-      if(e.clientY>wr.top&&e.clientY<wr.top+edge) dy=speed;
-      if(e.clientY<wr.bottom&&e.clientY>wr.bottom-edge) dy=-speed;
-      if(dx||dy){
-        S.panX+=dx; S.panY+=dy;
-        clampPan(); applyTransform(false);
-      }
+      const wrap=$('board-wrap'),wr=wrap.getBoundingClientRect();
+      const edge=50,speed=6;let dx=0,dy=0;
+      if(e.clientX>wr.left&&e.clientX<wr.left+edge)dx=speed;
+      if(e.clientX<wr.right&&e.clientX>wr.right-edge)dx=-speed;
+      if(e.clientY>wr.top&&e.clientY<wr.top+edge)dy=speed;
+      if(e.clientY<wr.bottom&&e.clientY>wr.bottom-edge)dy=-speed;
+      if(dx||dy){S.panX+=dx;S.panY+=dy;clampPan();applyTransform(false);}
     }
-
-    // Check if over rack
-    const rackEl=$('rack-area');
-    const rr=rackEl.getBoundingClientRect();
+    const rackEl=$('rack-area'),rr=rackEl.getBoundingClientRect();
     const overRack=e.clientX>=rr.left&&e.clientX<=rr.right&&e.clientY>=rr.top&&e.clientY<=rr.bottom;
     if(overRack){
       highlightSnap(null);
       document.querySelectorAll('.rtile').forEach(rt=>rt.classList.remove('drop-rack'));
       let bestIdx=-1,bestDist=Infinity;
       document.querySelectorAll('.rtile').forEach((rt,i)=>{
-        if(S.rack[i]!==null) return;
+        if(S.rack[i]!==null)return;
         const r=rt.getBoundingClientRect();
         const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
         if(d<bestDist){bestDist=d;bestIdx=i;}
       });
-      if(bestIdx>=0) document.querySelectorAll('.rtile')[bestIdx]?.classList.add('drop-rack');
-    } else {
+      if(bestIdx>=0)document.querySelectorAll('.rtile')[bestIdx]?.classList.add('drop-rack');
+    }else{
       document.querySelectorAll('.rtile.drop-rack').forEach(t=>t.classList.remove('drop-rack'));
       const ns=getSnapTarget(e.clientX,e.clientY);
       if(ns!==S.snapKey){S.snapKey=ns;highlightSnap(ns);}
     }
     return;
   }
-
-  // Panning
   if(S.isPanning){
-    S.panX=S.panSTX+(e.clientX-S.panSX);
-    S.panY=S.panSTY+(e.clientY-S.panSY);
-    clampPan();
-    applyTransform(false);
-    updatePreview();
+    S.panX=S.panSTX+(e.clientX-S.panSX);S.panY=S.panSTY+(e.clientY-S.panSY);
+    clampPan();applyTransform(false);updatePreview();
   }
 });
 
-// ── POINTERUP ──
 document.addEventListener('pointerup',e=>{
   const S=window.S;
   $('board-wrap').classList.remove('panning');
-
   if(S.dragSrc){
     ghost.style.opacity='0';
     document.querySelectorAll('.rtile.drag-src').forEach(t=>t.classList.remove('drag-src'));
     highlightSnap(null);
-
     if(S.isDragging){
-      const rackEl=$('rack-area');
-      const rr=rackEl.getBoundingClientRect();
+      const rackEl=$('rack-area'),rr=rackEl.getBoundingClientRect();
       const overRack=e.clientX>=rr.left&&e.clientX<=rr.right&&e.clientY>=rr.top&&e.clientY<=rr.bottom;
-
       if(overRack){
-        // Drop back to rack
         if(S.dragSrc.type==='board'&&S.boardNew[S.dragSrc.key]){
           let tIdx=-1,bDist=Infinity;
           document.querySelectorAll('.rtile').forEach((rt,i)=>{
@@ -784,50 +914,45 @@ document.addEventListener('pointerup',e=>{
             const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
             if(d<bDist&&S.rack[i]===null){bDist=d;tIdx=i;}
           });
-          if(tIdx===-1) tIdx=S.rack.indexOf(null);
+          if(tIdx===-1)tIdx=S.rack.indexOf(null);
           if(tIdx>=0){S.rack[tIdx]=S.dragSrc.letter;delete S.boardNew[S.dragSrc.key];S.lastPlacedDir=getDir();}
-        } else if(S.dragSrc.type==='rack'){
+        }else if(S.dragSrc.type==='rack'){
           let tIdx=-1,bDist=Infinity;
           document.querySelectorAll('.rtile').forEach((rt,i)=>{
-            if(i===S.dragSrc.idx) return;
+            if(i===S.dragSrc.idx)return;
             const r=rt.getBoundingClientRect();
             const d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
             if(d<bDist&&S.rack[i]===null){bDist=d;tIdx=i;}
           });
           if(tIdx>=0){S.rack[tIdx]=S.rack[S.dragSrc.idx];S.rack[S.dragSrc.idx]=null;}
         }
-      } else if(S.snapKey&&!S.boardFixed[S.snapKey]){
-        if(!S.boardNew[S.snapKey]) commitDragTo(S.snapKey);
-        else if(!(S.dragSrc.type==='board'&&S.dragSrc.key===S.snapKey)) swapWith(S.snapKey);
+      }else if(S.snapKey&&!S.boardFixed[S.snapKey]){
+        if(!S.boardNew[S.snapKey])commitDragTo(S.snapKey);
+        else if(!(S.dragSrc.type==='board'&&S.dragSrc.key===S.snapKey))swapWith(S.snapKey);
         S.lastPlacedDir=getDir();
       }
-      S.isDragging=false; S.snapKey=null;
-    } else {
-      handleTap(S.dragSrc);
-    }
-    S.dragSrc=null; S._hasZoomed=false;
-    buildBoard(); buildRack(); updatePreview();
-    return;
+      S.isDragging=false;S.snapKey=null;
+    }else{handleTap(S.dragSrc);}
+    S.dragSrc=null;S._hasZoomed=false;
+    buildBoard();buildRack();updatePreview();return;
   }
-
-  if(S.isPanning) S.isPanning=false;
+  if(S.isPanning)S.isPanning=false;
 });
 
 document.addEventListener('pointercancel',()=>{
   const S=window.S;
-  ghost.style.opacity='0'; highlightSnap(null);
+  ghost.style.opacity='0';highlightSnap(null);
   document.querySelectorAll('.rtile.drag-src').forEach(t=>t.classList.remove('drag-src'));
   document.querySelectorAll('.rtile.drop-rack').forEach(t=>t.classList.remove('drop-rack'));
   $('board-wrap').classList.remove('panning');
-  S.dragSrc=null; S.isDragging=false; S.isPanning=false; S._hasZoomed=false;
-  buildBoard(); buildRack();
+  S.dragSrc=null;S.isDragging=false;S.isPanning=false;S._hasZoomed=false;
+  buildBoard();buildRack();
 });
 
 function moveGhost(x,y){ghost.style.left=(x-27)+'px';ghost.style.top=(y-66)+'px';}
 function commitDragTo(k){const S=window.S;if(S.dragSrc.type==='rack'){S.boardNew[k]=S.dragSrc.letter;S.rack[S.dragSrc.idx]=null;}else{delete S.boardNew[S.dragSrc.key];S.boardNew[k]=S.dragSrc.letter;}}
 function swapWith(k){const S=window.S;const dl=S.boardNew[k];if(S.dragSrc.type==='rack'){S.boardNew[k]=S.dragSrc.letter;S.rack[S.dragSrc.idx]=dl;}else{S.boardNew[k]=S.dragSrc.letter;S.boardNew[S.dragSrc.key]=dl;}}
 
-// ── TAP ──
 function handleTap(src){
   const S=window.S;
   if(S.tapSelected){
@@ -855,19 +980,15 @@ function handleTap(src){
   if(src.type==='rack'&&S.rack[src.idx]!==null){S.tapSelected=src;buildRack();}
   else if(src.type==='board'&&S.boardNew[src.key]){S.tapSelected=src;buildBoard();}
 }
-
 function placeTileAt(r,c){
-  const S=window.S;
-  const key=`${r}-${c}`;
-  if(S.boardFixed[key]||S.boardNew[key]||!S.tapSelected) return;
+  const S=window.S;const key=`${r}-${c}`;
+  if(S.boardFixed[key]||S.boardNew[key]||!S.tapSelected)return;
   if(S.tapSelected.type==='rack'){S.boardNew[key]=S.rack[S.tapSelected.idx];S.rack[S.tapSelected.idx]=null;}
   else{S.boardNew[key]=S.boardNew[S.tapSelected.key];delete S.boardNew[S.tapSelected.key];}
-  S.lastPlacedDir=getDir(); S.tapSelected=null;
-  // Zoom to placed cell
+  S.lastPlacedDir=getDir();S.tapSelected=null;
   const ctr=cellCenter(r,c);
-  const wrap=$('board-wrap');
-  const wr=wrap.getBoundingClientRect();
-  if(S.scale<ZOOM-0.1) zoomToWrapPoint(ctr.x-wr.left,ctr.y-wr.top,ZOOM);
+  const wrap=$('board-wrap');const wr=wrap.getBoundingClientRect();
+  if(S.scale<ZOOM-0.1)zoomToWrapPoint(ctr.x-wr.left,ctr.y-wr.top,ZOOM);
   buildBoard();buildRack();updatePreview();
 }
 
@@ -879,7 +1000,7 @@ function recallAll(){
   clearWordOutlines();zoomOut();buildBoard();buildRack();updatePreview();
 }
 function shuffleRack(){
-  const S=window.S; S.tapSelected=null;
+  const S=window.S;S.tapSelected=null;
   const idxs=S.rack.map((l,i)=>l!==null?i:-1).filter(i=>i>=0);
   const letters=idxs.map(i=>S.rack[i]);
   for(let i=letters.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[letters[i],letters[j]]=[letters[j],letters[i]];}
@@ -890,15 +1011,14 @@ function shuffleRack(){
 // ── SWAP ──
 function openSwap(){
   const S=window.S;
-  if(Object.keys(S.boardNew).length>0){alert('Retira tus fichas del tablero antes de cambiar.');return;}
+  if(Object.keys(S.boardNew).length>0){alert(S.lang==='es'?'Retira tus fichas del tablero antes de cambiar.':'Recall your tiles before swapping.');return;}
   S.swapPicked.clear();buildSwapPanel();$('swap-overlay').classList.add('open');
 }
 function closeSwap(){window.S.swapPicked.clear();$('swap-overlay').classList.remove('open');}
 function buildSwapPanel(){
-  const S=window.S,row=$('swap-tiles-row');
-  row.innerHTML='';
+  const S=window.S,row=$('swap-tiles-row');row.innerHTML='';
   S.rack.forEach((l,i)=>{
-    if(l===null) return;
+    if(l===null)return;
     const tile=document.createElement('div');
     tile.className='swap-tile'+(S.swapPicked.has(i)?' picked':'');
     tile.innerHTML=`<span class="sl">${l}</span><span class="sv">${lv(l)}</span>`;
@@ -907,15 +1027,14 @@ function buildSwapPanel(){
   });
   const btn=$('swap-confirm-btn'),n=S.swapPicked.size;
   btn.disabled=n===0;
-  btn.textContent=n>0?`Cambiar ${n} ficha${n>1?'s':''}`:' Selecciona fichas';
+  btn.textContent=n>0?`${S.lang==='es'?'Cambiar':'Swap'} ${n} ${S.lang==='es'?'ficha':'tile'}${n>1?'s':''}`:S.lang==='es'?'Selecciona fichas':'Select tiles';
 }
 function confirmSwap(){
-  const S=window.S;
-  if(S.swapPicked.size===0) return;
+  const S=window.S;if(S.swapPicked.size===0)return;
   if(S.currentGameId&&window.G){
     window.G.submitMove({gameId:S.currentGameId,action:'exchange',indices:Array.from(S.swapPicked)})
       .then(()=>closeSwap()).catch(err=>alert('Error: '+err.message));
-  } else {closeSwap();}
+  }else{closeSwap();}
 }
 
 // ── WORD LOGIC ──
@@ -938,58 +1057,36 @@ function calcScore(words){
   if(Object.keys(window.S.boardNew).length===7)total+=50;
   return total;
 }
-
-// ── WORD OUTLINES ──
-// Uses cellCenter() which is always accurate regardless of pan/zoom
 function drawWordOutlines(words,score){
   const svg=$('word-outline');svg.innerHTML='';
-  if(!words||!words.length) return;
+  if(!words||!words.length)return;
   const{boardPx,scale}=window.S;
-  const cs=(boardPx/GRID)*scale;
-  const PAD=3*scale,R=7;
-  const wrap=$('board-wrap');
-  const wr=wrap.getBoundingClientRect();
-
+  const cs=(boardPx/GRID)*scale,PAD=3*scale,R=7;
+  const wrap=$('board-wrap'),wr=wrap.getBoundingClientRect();
   words.forEach((tiles,wi)=>{
-    if(tiles.length<2) return;
+    if(tiles.length<2)return;
     const rows=tiles.map(t=>t.r),cols=tiles.map(t=>t.c);
-    const rMin=Math.min(...rows),rMax=Math.max(...rows);
-    const cMin=Math.min(...cols),cMax=Math.max(...cols);
-    // Use cellCenter for top-left and bottom-right corners
-    const tl=cellCenter(rMin,cMin);
-    const br=cellCenter(rMax,cMax);
-    const x0=tl.x-wr.left-cs/2-PAD;
-    const y0=tl.y-wr.top-cs/2-PAD;
-    const w=(br.x-wr.left+cs/2+PAD)-(x0);
-    const h=(br.y-wr.top+cs/2+PAD)-(y0);
-
+    const tl=cellCenter(Math.min(...rows),Math.min(...cols));
+    const br=cellCenter(Math.max(...rows),Math.max(...cols));
+    const x0=tl.x-wr.left-cs/2-PAD,y0=tl.y-wr.top-cs/2-PAD;
+    const w=(br.x-wr.left+cs/2+PAD)-x0,h=(br.y-wr.top+cs/2+PAD)-y0;
     const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
-    rect.setAttribute('x',x0);rect.setAttribute('y',y0);
-    rect.setAttribute('width',w);rect.setAttribute('height',h);
-    rect.setAttribute('rx',R);rect.setAttribute('ry',R);
-    rect.setAttribute('fill','none');rect.setAttribute('stroke','#22dd88');rect.setAttribute('stroke-width','4');
+    rect.setAttribute('x',x0);rect.setAttribute('y',y0);rect.setAttribute('width',w);rect.setAttribute('height',h);
+    rect.setAttribute('rx',R);rect.setAttribute('ry',R);rect.setAttribute('fill','none');rect.setAttribute('stroke','#22dd88');rect.setAttribute('stroke-width','4');
     svg.appendChild(rect);
-
     if(wi===words.length-1&&score>0){
-      const bx=x0+w, by=y0+h+2;
-      const bw=score>=100?40:34,bh=20;
+      const bx=x0+w,by=y0+h+2,bw=score>=100?40:34,bh=20;
       const badge=document.createElementNS('http://www.w3.org/2000/svg','rect');
-      badge.setAttribute('x',bx-bw/2);badge.setAttribute('y',by-bh/2);
-      badge.setAttribute('width',bw);badge.setAttribute('height',bh);
-      badge.setAttribute('rx',10);badge.setAttribute('ry',10);badge.setAttribute('fill','#22dd88');
+      badge.setAttribute('x',bx-bw/2);badge.setAttribute('y',by-bh/2);badge.setAttribute('width',bw);badge.setAttribute('height',bh);badge.setAttribute('rx',10);badge.setAttribute('ry',10);badge.setAttribute('fill','#22dd88');
       svg.appendChild(badge);
       const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
-      txt.setAttribute('x',bx);txt.setAttribute('y',by+1);
-      txt.setAttribute('text-anchor','middle');txt.setAttribute('dominant-baseline','middle');
-      txt.setAttribute('font-family','Arial Black,Arial,sans-serif');
-      txt.setAttribute('font-size','11');txt.setAttribute('font-weight','900');txt.setAttribute('fill','#fff');
+      txt.setAttribute('x',bx);txt.setAttribute('y',by+1);txt.setAttribute('text-anchor','middle');txt.setAttribute('dominant-baseline','middle');
+      txt.setAttribute('font-family','Arial Black,Arial,sans-serif');txt.setAttribute('font-size','11');txt.setAttribute('font-weight','900');txt.setAttribute('fill','#fff');
       txt.textContent=score;svg.appendChild(txt);
     }
   });
 }
 function clearWordOutlines(){const s=$('word-outline');if(s)s.innerHTML='';}
-
-// ── PREVIEW ──
 function updatePreview(){
   const pf=$('preview-float'),btn=$('play-btn');
   const placed=Object.keys(window.S.boardNew);
@@ -1001,42 +1098,28 @@ function updatePreview(){
     $('pf-pts').innerHTML=`+${score}`+(placed.length===7?'<span class="pf-bingo"> ★BINGO</span>':'');
     pf.classList.add('show');btn.disabled=false;
     drawWordOutlines(words.filter(w=>w.length>1),score);
-  } else {
-    $('pf-words').textContent=placed.length+' ficha'+(placed.length>1?'s':'')+' colocada'+(placed.length>1?'s':'');
+  }else{
+    $('pf-words').textContent=placed.length+' '+(window.S.lang==='es'?'ficha':'tile')+(placed.length>1?'s':'')+' '+(window.S.lang==='es'?'colocada':'placed')+(placed.length>1?'s':'');
     $('pf-pts').textContent='';pf.classList.add('show');btn.disabled=true;clearWordOutlines();
   }
 }
-
 let _toastTimer=null;
 function showToastModal(word,pts,isOpponent){
-  $('tm-word').textContent=word;
-  $('tm-pts').textContent=pts;
-  $('tm-gems').textContent=window.S.gemCount;
   const textEl=$('tm-text');
   if(textEl){
-    textEl.innerHTML=isOpponent
-      ? `🇲🇽 Jugó <b id="tm-word">${word}</b> por <b id="tm-pts">${pts}</b> puntos`
-      : `🇲🇽 Jugaste <b id="tm-word">${word}</b> por <b id="tm-pts">${pts}</b> puntos`;
+    const verb=isOpponent?(window.S.lang==='es'?'Jugó':'Played'):(window.S.lang==='es'?'Jugaste':'You played');
+    const forStr=window.S.lang==='es'?'por':'for';
+    textEl.innerHTML=`🎯 ${verb} <b>${word}</b> ${forStr} <b>${pts}</b> pts`;
   }
   const tm=$('toast-modal');tm.classList.add('show');
   clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>tm.classList.remove('show'),3200);
 }
-
-function playWord(){const S=window.S;if(S.currentGameId&&window.G){window.G.submitPlay();return;}alert('Crea una partida primero tocando "New Game"');}
+function playWord(){const S=window.S;if(S.currentGameId&&window.G){window.G.submitPlay();return;}alert(S.lang==='es'?'Crea una partida primero':'Create a game first');}
 function passTurn(){const S=window.S;if(S.currentGameId&&window.G){window.G.pass();}}
 function openStats(){$('stats-panel').classList.add('open');$('stats-overlay').classList.add('open');}
 function closeStats(){$('stats-panel').classList.remove('open');$('stats-overlay').classList.remove('open');}
 
-// ── INIT ──
-// ── KNOWN PLAYERS (hardcoded for now, will come from Firestore later) ──
-const KNOWN_PLAYERS = {
-  '2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2': { name:'Phil', color:'#e87020' },
-  'QOubuRNcm1ZqONg5qZ5Oc5kdEQn2': { name:'Nancy', color:'#2060c0' },
-};
-function playerName(uid){ return KNOWN_PLAYERS[uid]?.name || uid.slice(0,6); }
-function playerColor(uid){ return KNOWN_PLAYERS[uid]?.color || '#666'; }
-function playerInitial(uid){ return playerName(uid)[0].toUpperCase(); }
-
+// ── LOBBY ──
 function openLobby(){
   $('lobby-overlay').classList.add('open');
   $('lobby-panel').classList.add('open');
@@ -1046,163 +1129,152 @@ function closeLobby(){
   $('lobby-overlay').classList.remove('open');
   $('lobby-panel').classList.remove('open');
 }
-
+function playerName(uid){return window._players?.[uid]?.displayName||uid.slice(0,6);}
+function playerColor(uid){
+  const colors=['#e87020','#2060c0','#28c49a','#d93040','#9b59b6','#e67e22'];
+  let hash=0;for(let i=0;i<uid.length;i++)hash=(hash<<5)-hash+uid.charCodeAt(i);
+  return colors[Math.abs(hash)%colors.length];
+}
 function renderLobbyHome(){
-  const myUid = window.S.myUid;
-  const games = window._lobbyGames || [];
-  const active = games.filter(g=>g.status==='active');
-
-  let html = `<div class="lobby-title">Partidas</div>
-    <div class="lobby-sub">Tus partidas activas y nuevos juegos</div>`;
-
+  const myUid=window.S.myUid;
+  const games=window._lobbyGames||[];
+  const active=games.filter(g=>g.status==='active');
+  const lang=window.S.lang;
+  let html=`<div class="lobby-title">${lang==='es'?'Partidas':'Games'}</div>
+    <div class="lobby-sub">${lang==='es'?'Tus partidas activas y nuevos juegos':'Your active games and new games'}</div>`;
   if(active.length>0){
-    html += `<div class="lobby-section">Partidas activas</div>`;
+    html+=`<div class="lobby-section">${lang==='es'?'Partidas activas':'Active games'}</div>`;
     active.forEach(g=>{
-      const oppUid = g.players.find(p=>p!==myUid)||'';
-      const oppName = playerName(oppUid);
-      const oppColor = playerColor(oppUid);
-      const myScore = g.scores?.[myUid]||0;
-      const oppScore = g.scores?.[oppUid]||0;
-      const isMyTurn = g.currentTurn===myUid;
-      html += `<div class="lobby-game" onclick="selectLobbyGame('${g.id}');closeLobby();">
+      const oppUid=g.players.find(p=>p!==myUid)||'';
+      const oppName=playerName(oppUid);
+      const oppColor=playerColor(oppUid);
+      const myScore=g.scores?.[myUid]||0,oppScore=g.scores?.[oppUid]||0;
+      const isMyTurn=g.currentTurn===myUid;
+      html+=`<div class="lobby-game" onclick="selectLobbyGame('${g.id}');closeLobby();">
         <div class="lobby-game-left">
-          <div class="lobby-avatar" style="background:${oppColor}">${playerInitial(oppUid)}</div>
+          <div class="lobby-avatar" style="background:${oppColor}">${oppName[0]?.toUpperCase()}</div>
           <div>
             <div class="lobby-game-name">${oppName}</div>
-            <div class="lobby-game-sub">${myScore} – ${oppScore} · ${g.bagSize||0} fichas</div>
+            <div class="lobby-game-sub">${myScore} – ${oppScore} · ${g.bagSize||0} ${lang==='es'?'fichas':'tiles'}</div>
           </div>
         </div>
-        <div class="lobby-game-right">
-          <div class="lobby-badge ${isMyTurn?'myturn':'theirturn'}">${isMyTurn?'Tu turno':'Su turno'}</div>
+        <div class="lobby-badge ${isMyTurn?'myturn':'theirturn'}">${isMyTurn?(lang==='es'?'Tu turno':'Your turn'):(lang==='es'?'Su turno':'Their turn')}</div>
+      </div>`;
+    });
+  }else{
+    html+=`<div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px 0;">${lang==='es'?'No tienes partidas activas':'No active games'}</div>`;
+  }
+  html+=`<div class="lobby-section">${lang==='es'?'Nueva partida':'New game'}</div>`;
+  html+=`<div style="margin-bottom:8px;"><input class="lobby-input" id="lobby-search" placeholder="${lang==='es'?'Buscar jugador por nombre o email':'Search player by name or email'}" oninput="searchPlayers(this.value)"></div>`;
+  html+=`<div id="lobby-search-results"></div>`;
+  $('lobby-content').innerHTML=html;
+}
+
+function searchPlayers(q){
+  if(!q||q.length<2){$('lobby-search-results').innerHTML='';return;}
+  if(!window.G||!window.G.searchPlayers)return;
+  window.G.searchPlayers(q).then(results=>{
+    const lang=window.S.lang;
+    const myUid=window.S.myUid;
+    let html='';
+    results.filter(p=>p.uid!==myUid).forEach(p=>{
+      const color=playerColor(p.uid);
+      html+=`<div class="lobby-search-result" onclick="confirmNewGame('${p.uid}','${p.displayName}')">
+        <div class="lobby-avatar" style="background:${color};width:36px;height:36px;">${p.displayName[0]?.toUpperCase()}</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">${p.displayName}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.35);">${p.email}</div>
         </div>
       </div>`;
     });
-  } else {
-    html += `<div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px 0;">No tienes partidas activas</div>`;
-  }
-
-  html += `<div class="lobby-section">Nueva partida</div>`;
-  // Show all other known players
-  const myUid2 = window.S.myUid || myUid;
-  Object.entries(KNOWN_PLAYERS).forEach(([uid,info])=>{
-    if(uid===myUid2) return;
-    html += `<div class="lobby-player" onclick="renderLobbyNewGame('${uid}')">
-      <div class="lobby-avatar" style="background:${info.color}">${info.name[0]}</div>
-      <div>
-        <div class="lobby-player-name">${info.name}</div>
-        <div class="lobby-player-sub">Iniciar nueva partida</div>
-      </div>
-    </div>`;
+    if(!html)html=`<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:10px 0;">${lang==='es'?'No se encontraron jugadores':'No players found'}</div>`;
+    $('lobby-search-results').innerHTML=html;
   });
-
-  $('lobby-content').innerHTML = html;
 }
 
-function renderLobbyNewGame(oppUid){
-  const oppName = playerName(oppUid);
-  const oppColor = playerColor(oppUid);
-  $('lobby-content').innerHTML = `
-    <div class="lobby-back" onclick="renderLobbyHome()">← Volver</div>
-    <div class="lobby-title">Nueva partida</div>
-    <div class="lobby-sub">¿Jugar contra ${oppName}?</div>
+function confirmNewGame(oppUid,oppName){
+  const lang=window.S.lang;
+  const color=playerColor(oppUid);
+  $('lobby-content').innerHTML=`
+    <div class="lobby-back" onclick="renderLobbyHome()">← ${lang==='es'?'Volver':'Back'}</div>
+    <div class="lobby-title">${lang==='es'?'Nueva partida':'New game'}</div>
+    <div class="lobby-sub">${lang==='es'?'¿Jugar contra':'Play against'} ${oppName}?</div>
     <div class="lobby-player" style="cursor:default;margin-top:16px;">
-      <div class="lobby-avatar" style="background:${oppColor}">${oppName[0]}</div>
+      <div class="lobby-avatar" style="background:${color}">${oppName[0]?.toUpperCase()}</div>
       <div>
         <div class="lobby-player-name">${oppName}</div>
-        <div class="lobby-player-sub">Español · Fichas estándar</div>
+        <div class="lobby-player-sub">${lang==='es'?'Español · Fichas estándar':'Spanish · Standard tiles'}</div>
       </div>
     </div>
     <button class="lobby-new-btn" onclick="G&&G.startGame('${oppUid}');closeLobby();">
-      ¡Jugar contra ${oppName}!
+      ${lang==='es'?`¡Jugar contra ${oppName}!`:`Play against ${oppName}!`}
     </button>`;
 }
 
-function selectLobbyGame(gameId){
-  if(window.G) window.G.loadGame(gameId);
-}
+function selectLobbyGame(gameId){if(window.G)window.G.loadGame(gameId);}
 
+// ── NOTIFICATIONS ──
 async function enableNotifications(){
-  const uid = window._pushUid || window.S.myUid;
-  if(!uid){ alert('Inicia sesión primero'); return; }
-  const btn = document.getElementById('notif-btn');
-  if(btn){ btn.textContent='⏳ Activando...'; btn.disabled=true; }
-
-  // Wait for _registerPush to be available (Firebase module loads async)
+  const uid=window._pushUid||window.S.myUid;
+  if(!uid){alert(window.S.lang==='es'?'Inicia sesión primero':'Sign in first');return;}
+  const btn=$('notif-btn');
+  if(btn){btn.textContent='⏳';btn.disabled=true;}
   let attempts=0;
-  while(!window._registerPush && attempts<20){
-    await new Promise(r=>setTimeout(r,300));
-    attempts++;
-  }
-
+  while(!window._registerPush&&attempts<20){await new Promise(r=>setTimeout(r,300));attempts++;}
   if(!window._registerPush){
-    if(btn){ btn.textContent='❌ No disponible en este navegador'; btn.disabled=false; }
+    if(btn){btn.innerHTML='🔔 <span class="es">No disponible</span><span class="en" style="display:'+( window.S.lang==='en'?'':'none')+'">Not available</span>';btn.disabled=false;}
     return;
   }
-  const result = await window._registerPush(uid);
-  if(result && result.success){
-    if(btn){ btn.textContent='✅ Notificaciones activadas'; btn.style.opacity='0.6'; }
-    window._notifEnabled = true;
-    const p = document.getElementById('notif-prompt');
-    if(p) p.remove();
-  } else {
-    const msg = result?.error || 'Error desconocido';
-    // Show full error so we can debug
-    if(btn){ btn.textContent='❌ '+msg.slice(0,60); btn.disabled=false; btn.style.fontSize='10px'; }
-    console.log('Push error full:', msg);
+  const result=await window._registerPush(uid);
+  if(result&&result.success){
+    if(btn){btn.innerHTML='✅ <span class="es">Notificaciones activadas</span><span class="en" style="display:'+(window.S.lang==='en'?'':'none')+'">Notifications enabled</span>';btn.style.opacity='0.6';}
+  }else{
+    const msg=result?.error||'Error';
+    if(btn){btn.innerHTML=`🔔 <span>${msg.slice(0,50)}</span>`;btn.disabled=false;}
   }
 }
 
 function checkNotifPrompt(){
-  if(window._notifEnabled) return;
-  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){ window._notifEnabled=true; return; }
-  if(typeof Notification!=='undefined'&&Notification.permission==='denied') return;
-  if(sessionStorage.getItem('notif-dismissed')) return;
-  if(document.getElementById('notif-prompt')) return;
+  if(window._notifEnabled)return;
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted'){window._notifEnabled=true;return;}
+  if(typeof Notification!=='undefined'&&Notification.permission==='denied')return;
+  if(sessionStorage.getItem('notif-dismissed'))return;
+  if(document.getElementById('notif-prompt'))return;
+  const lang=window.S.lang;
   const prompt=document.createElement('div');
   prompt.id='notif-prompt';
   prompt.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a2a3a;border:1px solid rgba(40,196,154,0.4);border-radius:14px;padding:14px 16px;z-index:100;max-width:320px;width:90%;box-shadow:0 8px 24px rgba(0,0,0,0.5);';
   prompt.innerHTML=`
-    <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 Activar notificaciones</div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">Recibe un aviso cuando sea tu turno</div>
+    <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">🔔 ${lang==='es'?'Activar notificaciones':'Enable notifications'}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;">${lang==='es'?'Recibe un aviso cuando sea tu turno':'Get notified when it\'s your turn'}</div>
     <div style="display:flex;gap:8px;">
-      <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">Ahora no</button>
-      <button onclick="document.getElementById('notif-prompt').remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">Activar</button>
+      <button onclick="dismissNotifPrompt()" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;cursor:pointer;">${lang==='es'?'Ahora no':'Not now'}</button>
+      <button onclick="document.getElementById('notif-prompt').remove();enableNotifications();" style="flex:2;padding:8px;border-radius:8px;border:none;background:#28c49a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">${lang==='es'?'Activar':'Enable'}</button>
     </div>`;
   document.body.appendChild(prompt);
 }
+function dismissNotifPrompt(){sessionStorage.setItem('notif-dismissed','1');const p=$('notif-prompt');if(p)p.remove();}
 
-function dismissNotifPrompt(){
-  sessionStorage.setItem('notif-dismissed','1');
-  const p=document.getElementById('notif-prompt');
-  if(p) p.remove();
+// ── INIT ──
+function initGame(){
+  setTimeout(()=>{
+    setTimeout(()=>{
+      sizeBoard();
+      window.S.boardFixed={};window.S.boardNew={};window.S.rack=[];
+      window.S.panX=0;window.S.panY=0;window.S.scale=1;
+      applyTransform(false);buildBoard();buildRack();
+    },50);
+  },50);
 }
 
-// ── REGISTER SERVICE WORKER ──
+// ── SERVICE WORKER ──
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js')
     .then(reg=>console.log('SW registered:',reg.scope))
     .catch(err=>console.log('SW error:',err));
 }
 
-function initGame(){
-  // Use double setTimeout to ensure display:flex has taken effect
-  // and the browser has calculated dimensions before we measure
-  setTimeout(()=>{
-    setTimeout(()=>{
-      sizeBoard();
-      window.S.boardFixed={};window.S.boardNew={};window.S.rack=[];
-      window.S.panX=0;window.S.panY=0;window.S.scale=1;
-      applyTransform(false);
-      buildBoard();buildRack();
-    },50);
-  },50);
-}
-window.addEventListener('resize',()=>{
-  sizeBoard();
-  window.S.panX=0;window.S.panY=0;
-  applyTransform(false);
-  buildBoard();
-});
+window.addEventListener('resize',()=>{sizeBoard();window.S.panX=0;window.S.panY=0;applyTransform(false);buildBoard();});
 </script>
 
 <!-- ══════════════════════════════════════════
@@ -1210,8 +1282,8 @@ window.addEventListener('resize',()=>{
      ══════════════════════════════════════════ -->
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import{getFirestore,doc,onSnapshot,collection,query,where,getDocs,setDoc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,updateProfile,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import{getFirestore,doc,onSnapshot,collection,query,where,getDocs,setDoc,addDoc,getDoc,serverTimestamp,orderBy,limit}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import{getFunctions,httpsCallable}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
 import{getMessaging,getToken,onMessage}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
 
@@ -1222,9 +1294,8 @@ const firebaseConfig={
   messagingSenderId:"757650941656",
   appId:"1:757650941656:web:342f4634857efe3f4399ad"
 };
-const PHIL_UID='2aYGgtOh9AQ8t0Sxc0WrxzmtIpf2';
-const NANCY_UID='QOubuRNcm1ZqONg5qZ5Oc5kdEQn2';
 const REGION='northamerica-northeast2';
+const VAPID_KEY='BMtMotEA1vYD8ZDQOVjwi1veA7dQ7av06XY9wJf9YBEWLX7wlwDQEqdk6jz2Wz3AyJdC5aNhtBUUjLm5WwNONWY';
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
@@ -1233,112 +1304,115 @@ const fns=getFunctions(app,REGION);
 const fnCreate=httpsCallable(fns,'createGame');
 const fnSubmit=httpsCallable(fns,'submitMove');
 const fnState=httpsCallable(fns,'getGameState');
+const fnCreateInvite=httpsCallable(fns,'createInvite');
 
-const VAPID_KEY='BMtMotEA1vYD8ZDQOVjwi1veA7dQ7av06XY9wJf9YBEWLX7wlwDQEqdk6jz2Wz3AyJdC5aNhtBUUjLm5WwNONWY';
 let messaging=null;
-try{ messaging=getMessaging(app); console.log('Messaging init ok'); }catch(e){ console.log('Messaging not supported:',e.message); }
+try{messaging=getMessaging(app);console.log('Messaging ok');}catch(e){console.log('Messaging not supported:',e.message);}
 
-// Get or create a stable device ID stored in localStorage
+// ── DEVICE ID ──
 function getDeviceId(){
-  let id = localStorage.getItem('device-id');
-  if(!id){ id = Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem('device-id',id); }
+  let id=localStorage.getItem('device-id');
+  if(!id){id=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('device-id',id);}
   return id;
 }
 
+// ── PUSH REGISTRATION ──
 async function registerPush(uid){
-  if(typeof Notification==='undefined'){ return {error:'Notifications not supported on this device/browser'}; }
-  if(!messaging){ return {error:'Messaging not supported'}; }
+  if(typeof Notification==='undefined')return{error:'Notifications not supported'};
+  if(!messaging)return{error:'Messaging not supported'};
   try{
     const reg=await navigator.serviceWorker.ready;
     const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
     if(token){
       const deviceId=getDeviceId();
-      console.log('FCM token:',token.slice(0,20)+'...');
-      // Store token per device under users/{uid}/devices/{deviceId}
-      // Also store notifEnabled:true on the user doc
-      await setDoc(doc(db,'users',uid),{
-        notifEnabled:true,
-        lastSeen:new Date(),
-        displayName: auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || uid,
-      },{merge:true});
+      await setDoc(doc(db,'users',uid),{notifEnabled:true,lastSeen:new Date()},{merge:true});
       await setDoc(doc(db,'users',uid,'devices',deviceId),{
-        fcmToken:token,
-        updatedAt:new Date(),
-        platform: navigator.userAgent.includes('iPhone')||navigator.userAgent.includes('iPad') ? 'ios' :
-                  navigator.userAgent.includes('Android') ? 'android' : 'desktop',
+        fcmToken:token,updatedAt:new Date(),
+        platform:/iPhone|iPad/.test(navigator.userAgent)?'ios':/Android/.test(navigator.userAgent)?'android':'desktop'
       });
-      console.log('FCM token saved for device',deviceId);
-      window._notifEnabled=true;
-      return {success:true};
+      console.log('FCM token saved');window._notifEnabled=true;
+      return{success:true};
     }
-    return {error:'No token received'};
-  }catch(err){
-    console.log('Push registration failed:',err.message);
-    return {error:err.message};
-  }
+    return{error:'No token received'};
+  }catch(err){console.log('Push failed:',err.message);return{error:err.message};}
 }
-// Expose globally so non-module script can call it
-window._registerPush = registerPush;
+window._registerPush=registerPush;
+if(messaging){try{onMessage(messaging,payload=>{showToastModal(payload.notification?.body||'',0,true);});}catch(e){}}
 
-// Check Firestore for existing notif preference
-async function checkNotifPreference(uid){
-  try{
-    const userDoc=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
-      .then(({getDoc})=>getDoc(doc(db,'users',uid)));
-    if(userDoc.exists() && userDoc.data().notifEnabled===true){
-      window._notifEnabled=true;
-      // Silently re-register token for this device
-      if(typeof Notification!=='undefined'&&Notification.permission==='granted') registerPush(uid);
-      return true;
-    }
-  }catch(e){ console.log('checkNotifPreference error:',e.message); }
-  return false;
-}
-window._checkNotifPreference = checkNotifPreference;
-
-// Foreground message handler
-if(messaging){
-  try{
-    onMessage(messaging,payload=>{
-      const body=payload.notification?.body||'Tu turno';
-      showToastModal('🔔',body);
-    });
-  }catch(e){}
-}
+// ── REGISTER NEW USER ──
+window._firebaseRegister=async(email,pass,name,lang)=>{
+  const cred=await createUserWithEmailAndPassword(auth,email,pass);
+  await updateProfile(cred.user,{displayName:name});
+  await setDoc(doc(db,'users',cred.user.uid),{
+    displayName:name,email,lang,
+    createdAt:serverTimestamp(),lastSeen:new Date(),notifEnabled:false
+  });
+};
 
 let unsubGame=null;
+let _players={};
 
+// ── EXPOSE GAME API ──
 window.G={
-  newGame:async()=>{
-    openLobby();
-  },
+  newGame:()=>openLobby(),
   startGame:async(oppUid)=>{
-    const user=auth.currentUser;if(!user){alert('Inicia sesión primero');return;}
+    const user=auth.currentUser;if(!user)return;
     try{
-      const res=await fnCreate({opponentUid:oppUid,language:'es'});
+      const res=await fnCreate({opponentUid:oppUid,language:window.S.lang==='en'?'en':'es'});
       console.log('Game created:',res.data.gameId);
       subscribeToGame(res.data.gameId,user.uid);
-    }catch(err){console.error('createGame error:',err);alert('Error: '+err.message);}
+    }catch(err){console.error('createGame:',err);alert('Error: '+err.message);}
   },
-  loadGame:(gameId)=>{
-    const user=auth.currentUser;if(!user)return;
-    subscribeToGame(gameId,user.uid);
-  },
+  loadGame:(gameId)=>{const user=auth.currentUser;if(user)subscribeToGame(gameId,user.uid);},
   submitPlay:async()=>{
-    const S=window.S;if(!S.currentGameId){alert('No active game');return;}
+    const S=window.S;if(!S.currentGameId)return;
     const placed=Object.keys(S.boardNew);if(!placed.length)return;
     const tiles=placed.map(key=>{const[r,c]=key.split('-').map(Number);return{r,c,letter:S.boardNew[key]};});
     try{
       const res=await fnSubmit({gameId:S.currentGameId,tiles,action:'play'});
-      console.log('Move result:',res.data);
+      console.log('Move:',res.data);
       S.boardNew={};clearWordOutlines();buildBoard();updatePreview();
-    }catch(err){console.error('submitMove error:',err);alert('Error: '+err.message);}
+      showToastModal(res.data.words?.[0]||'?',res.data.score,false);
+    }catch(err){console.error('submitMove:',err);alert('Error: '+err.message);}
   },
   pass:async()=>{const S=window.S;if(!S.currentGameId)return;try{await fnSubmit({gameId:S.currentGameId,action:'pass'});}catch(err){alert('Error: '+err.message);}},
   submitMove:(data)=>fnSubmit(data),
-  signOut:async()=>{if(unsubGame){unsubGame();unsubGame=null;}window.S.currentGameId=null;window.S.myUid=null;await signOut(auth);closeStats();},
+  signOut:async()=>{
+    if(unsubGame){unsubGame();unsubGame=null;}
+    window.S.currentGameId=null;window.S.myUid=null;
+    await signOut(auth);closeStats();
+  },
+  saveLang:async(lang)=>{
+    const user=auth.currentUser;if(!user)return;
+    await setDoc(doc(db,'users',user.uid),{lang},{merge:true});
+  },
+  createInvite:async(code,uid)=>{
+    try{
+      await setDoc(doc(db,'invites',code),{
+        createdBy:uid,createdAt:serverTimestamp(),
+        expiresAt:new Date(Date.now()+30*24*60*60*1000),
+        used:false
+      });
+    }catch(e){console.log('Invite create failed:',e.message);}
+  },
+  searchPlayers:async(q)=>{
+    // Search by displayName or email prefix
+    try{
+      const results=[];
+      const snap=await getDocs(collection(db,'users'));
+      const ql=q.toLowerCase();
+      snap.docs.forEach(d=>{
+        const data=d.data();
+        if((data.displayName||'').toLowerCase().includes(ql)||(data.email||'').toLowerCase().includes(ql)){
+          results.push({uid:d.id,...data});
+        }
+      });
+      return results.slice(0,10);
+    }catch(e){console.log('Search failed:',e.message);return[];}
+  },
 };
 
+// ── SUBSCRIBE TO GAME ──
 function subscribeToGame(gameId,uid){
   if(unsubGame)unsubGame();
   window.S.currentGameId=gameId;window.S.myUid=uid;
@@ -1348,43 +1422,92 @@ function subscribeToGame(gameId,uid){
     const game=snap.data();
     const myUid=window.S.myUid||uid;
     const oppUid=game.players.find(p=>p!==myUid);
+
+    // Load opponent info
+    if(oppUid&&!_players[oppUid]){
+      try{
+        const oppDoc=await getDoc(doc(db,'users',oppUid));
+        if(oppDoc.exists()){_players[oppUid]=oppDoc.data();window._players=_players;}
+      }catch(e){}
+    }
+    const oppName=_players[oppUid]?.displayName||oppUid?.slice(0,6)||'?';
+    const myName=_players[myUid]?.displayName||auth.currentUser?.displayName||'?';
+
     document.getElementById('my-score').textContent=game.scores?.[myUid]||0;
     document.getElementById('their-score').textContent=game.scores?.[oppUid]||0;
+    document.getElementById('opponent-name').textContent=oppName;
+    document.getElementById('my-name').textContent=myName;
+
     const pill=document.getElementById('turn-pill');
+    const lang=window.S.lang;
     const isMyTurn=game.currentTurn===myUid;
-    pill.textContent=isMyTurn?'Tu turno':'Su turno';
+    pill.textContent=isMyTurn?(lang==='es'?'Tu turno':'Your turn'):(lang==='es'?'Su turno':'Their turn');
     pill.className='turn-pill'+(isMyTurn?'':' theirs');
-    document.getElementById('bag-label').textContent=(game.bag?.length||0)+' fichas';
+    document.getElementById('bag-label').textContent=(game.bag?.length||0)+(lang==='es'?' fichas':' tiles');
+
     window.S.boardFixed=game.board||{};window.S.boardNew={};
     buildBoard();
+
     try{const res=await fnState({gameId});window.S.rack=res.data.myRack||[];buildRack();}
     catch(e){console.error('getGameState:',e.message);}
+
     if(game.lastMove?.type==='play'&&game.lastMove.playerId!==myUid){
       showToastModal(game.lastMove.words?.[0]||'?',game.lastMove.score,true);
     }
-  },err=>console.error('onSnapshot error:',err));
+  },err=>console.error('onSnapshot:',err));
 }
 
+// ── CHECK INVITE IN URL ──
+function checkInviteUrl(){
+  const params=new URLSearchParams(location.search);
+  const invite=params.get('invite');
+  if(invite){
+    sessionStorage.setItem('pending-invite',invite);
+    // Clean URL
+    history.replaceState({},'','/');
+  }
+}
+
+// ── AUTH STATE ──
 onAuthStateChanged(auth,async user=>{
   if(user){
     document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('onboard-screen').classList.add('hidden');
     document.getElementById('app').style.display='flex';
-    const name=user.displayName||user.email.split('@')[0];
+
+    // Set language from Firestore
+    try{
+      const userDoc=await getDoc(doc(db,'users',user.uid));
+      if(userDoc.exists()){
+        const data=userDoc.data();
+        const lang=data.lang||'es';
+        setLang(lang);window.S.lang=lang;
+        if(data.notifEnabled){window._notifEnabled=true;}
+      }
+    }catch(e){}
+
+    const name=user.displayName||user.email?.split('@')[0]||'?';
     const nameEl=document.getElementById('user-display');
     if(nameEl)nameEl.textContent=name;
-    window.S.myUid=user.uid;
+    const menuName=document.getElementById('menu-display-name');
+    if(menuName)menuName.textContent=name;
+    const menuEmail=document.getElementById('menu-email');
+    if(menuEmail)menuEmail.textContent=user.email;
+
+    window.S.myUid=user.uid;window._pushUid=user.uid;
+    _players[user.uid]={displayName:name,email:user.email};
+    window._players=_players;
+
     if(typeof initGame==='function')initGame();
-    // Store uid for push registration (triggered by user gesture)
-    window._pushUid = user.uid;
-    // Check Firestore for notification preference, then show prompt if needed
-    setTimeout(async()=>{
-      if(window._checkNotifPreference){
-        const enabled = await window._checkNotifPreference(user.uid);
-        if(!enabled && typeof checkNotifPrompt==='function') checkNotifPrompt();
-      } else {
-        if(typeof checkNotifPrompt==='function') checkNotifPrompt();
-      }
-    },1500);
+
+    // Auto-register push if previously enabled
+    if(window._notifEnabled){
+      setTimeout(()=>registerPush(user.uid),2000);
+    }else{
+      setTimeout(()=>{if(typeof checkNotifPrompt==='function')checkNotifPrompt();},2000);
+    }
+
+    // Load games
     try{
       const q=query(collection(db,'games'),where('players','array-contains',user.uid));
       const snap=await getDocs(q);
@@ -1393,18 +1516,43 @@ onAuthStateChanged(auth,async user=>{
         .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
       window._lobbyGames=allGames;
       console.log('Active games:',active.length);
-      if(active.length>0){console.log('Resuming game:',active[0].id);subscribeToGame(active[0].id,user.uid);}
-      // Show lobby if no active games
-      if(active.length===0){setTimeout(()=>openLobby(),500);}
-    }catch(err){console.error('Game lookup error:',err.message);}
+
+      // Check for pending invite
+      const pendingInvite=sessionStorage.getItem('pending-invite');
+      if(pendingInvite){
+        sessionStorage.removeItem('pending-invite');
+        // Handle invite - open lobby
+        openLobby();
+      }else if(active.length>0){
+        console.log('Resuming game:',active[0].id);
+        subscribeToGame(active[0].id,user.uid);
+      }else{
+        setTimeout(()=>openLobby(),600);
+      }
+    }catch(err){console.error('Games load:',err.message);}
+
   }else{
-    document.getElementById('login-screen').classList.remove('hidden');
+    // Not logged in — check if first time or returning user
     document.getElementById('app').style.display='none';
     if(unsubGame){unsubGame();unsubGame=null;}
     window.S.currentGameId=null;
+
+    // Check URL for invite
+    checkInviteUrl();
+
+    const isFirstTime=!localStorage.getItem('has-visited');
+    if(isFirstTime){
+      localStorage.setItem('has-visited','1');
+      document.getElementById('onboard-screen').classList.remove('hidden');
+      document.getElementById('login-screen').classList.add('hidden');
+    }else{
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('onboard-screen').classList.add('hidden');
+    }
   }
 });
 
+// ── LOGIN FORM ──
 document.getElementById('login-form').addEventListener('submit',async e=>{
   e.preventDefault();
   const email=document.getElementById('login-email').value.trim();
@@ -1416,10 +1564,13 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
   try{await signInWithEmailAndPassword(auth,email,password);}
   catch(err){
     spinner.style.display='none';btn.style.display='block';
+    const lang=window.S.lang;
     switch(err.code){
-      case 'auth/user-not-found':case'auth/wrong-password':case'auth/invalid-credential':errorEl.textContent='Email o contraseña incorrectos';break;
-      case'auth/too-many-requests':errorEl.textContent='Demasiados intentos. Intenta más tarde.';break;
-      default:errorEl.textContent='Error al iniciar sesión. Intenta de nuevo.';
+      case'auth/user-not-found':case'auth/wrong-password':case'auth/invalid-credential':
+        errorEl.textContent=lang==='es'?'Email o contraseña incorrectos':'Incorrect email or password';break;
+      case'auth/too-many-requests':
+        errorEl.textContent=lang==='es'?'Demasiados intentos':'Too many attempts';break;
+      default:errorEl.textContent=lang==='es'?'Error al iniciar sesión':'Sign in error';
     }
   }
 });

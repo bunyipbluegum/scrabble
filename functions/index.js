@@ -408,3 +408,42 @@ async function sendPushToUser(uid, title, body) {
     console.log('Push failed:', err.message);
   }
 }
+
+// ── CREATE INVITE ──
+exports.createInvite = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
+  const { code } = request.data;
+  const uid = request.auth.uid;
+  await db.collection('invites').doc(code).set({
+    createdBy: uid,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    expiresAt: new Date(Date.now() + 30*24*60*60*1000),
+    used: false,
+  });
+  return { success: true };
+});
+
+// ── SEND PUSH TO ALL DEVICES ──
+async function sendPushToUser(uid, title, body) {
+  try {
+    const tokens = [];
+    // Check devices subcollection (new)
+    const devSnap = await db.collection('users').doc(uid).collection('devices').get();
+    devSnap.docs.forEach(d => { if(d.data().fcmToken) tokens.push(d.data().fcmToken); });
+    // Also check main doc (old)
+    const userDoc = await db.collection('users').doc(uid).get();
+    if (userDoc.exists && userDoc.data().fcmToken) tokens.push(userDoc.data().fcmToken);
+    if (!tokens.length) { console.log('No tokens for', uid); return; }
+    const results = await Promise.allSettled(tokens.map(token =>
+      admin.messaging().send({
+        token,
+        notification: { title, body },
+        webpush: {
+          notification: { title, body, icon: 'https://scr.reilly.mx/icon-192.png', badge: 'https://scr.reilly.mx/icon-192.png' },
+          fcmOptions: { link: 'https://scr.reilly.mx' }
+        }
+      })
+    ));
+    console.log(`Push: ${results.filter(r=>r.status==='fulfilled').length}/${tokens.length} sent to`, uid);
+  } catch(err) { console.log('Push failed:', err.message); }
+}
