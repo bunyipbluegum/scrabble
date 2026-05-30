@@ -6,7 +6,6 @@ const db = admin.firestore();
 
 setGlobalOptions({ region: 'northamerica-northeast2' });
 
-// ── SPANISH TILE BAG ──
 const TILE_BAG = [
   ...Array(12).fill('A'),...Array(2).fill('B'),...Array(4).fill('C'),
   ...Array(5).fill('D'),...Array(12).fill('E'),...Array(1).fill('F'),
@@ -25,20 +24,12 @@ const LETTER_VALUES = {
 };
 
 const PREMIUMS = {};
-[['0-0','0-7','0-14','7-0','7-14','14-0','14-7','14-14']]
-  .forEach(a=>a.forEach(k=>PREMIUMS[k]='tw'));
-[['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1',
-  '1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']]
-  .forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
-[['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13',
-  '1-5','13-5','1-9','13-9']]
-  .forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
-[['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6',
-  '6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12',
-  '11-0','11-7','11-14','12-6','12-8','14-3','14-11']]
-  .forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
+[['0-0','0-7','0-14','7-0','7-14','14-0','14-7','14-14']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tw'));
+[['1-1','2-2','3-3','4-4','10-4','11-3','12-2','13-1','1-13','2-12','3-11','4-10','10-10','11-11','12-12','13-13']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dw'));
+[['5-1','5-5','5-9','5-13','9-1','9-5','9-9','9-13','1-5','13-5','1-9','13-9']].forEach(a=>a.forEach(k=>PREMIUMS[k]='tl'));
+[['0-3','0-11','2-6','2-8','3-0','3-7','3-14','6-2','6-6','6-8','6-12','7-3','7-11','8-2','8-6','8-8','8-12','11-0','11-7','11-14','12-6','12-8','14-3','14-11']].forEach(a=>a.forEach(k=>PREMIUMS[k]='dl'));
+PREMIUMS['7-7'] = 'dw';
 
-// ── HELPERS ──
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -71,12 +62,9 @@ function extractWords(board, newTiles) {
   const cols = newTiles.map(t => t.c);
   const sameRow = rows.every(r => r === rows[0]);
   const sameCol = cols.every(c => c === cols[0]);
-
   const add = tiles => {
-    if (tiles.length > 1 && tiles.some(t => newKeys.has(`${t.r}-${t.c}`)))
-      words.push(tiles);
+    if (tiles.length > 1 && tiles.some(t => newKeys.has(`${t.r}-${t.c}`))) words.push(tiles);
   };
-
   if (newTiles.length === 1) {
     const h = traceWord(board, rows[0], cols[0], 0, 1);
     const v = traceWord(board, rows[0], cols[0], 1, 0);
@@ -115,17 +103,13 @@ function calcScore(words, newKeys) {
 
 function validatePlacement(board, newTiles) {
   if (!newTiles || newTiles.length === 0) return 'No tiles placed';
-
   const rows = newTiles.map(t => t.r);
   const cols = newTiles.map(t => t.c);
   const sameRow = rows.every(r => r === rows[0]);
   const sameCol = cols.every(c => c === cols[0]);
-
   if (!sameRow && !sameCol) return 'Tiles must be in a straight line';
-
   const allBoard = { ...board };
   newTiles.forEach(t => allBoard[`${t.r}-${t.c}`] = t.letter);
-
   if (sameRow) {
     const row = rows[0];
     const minC = Math.min(...cols), maxC = Math.max(...cols);
@@ -139,7 +123,6 @@ function validatePlacement(board, newTiles) {
       if (!allBoard[`${r}-${col}`]) return 'Tiles cannot have gaps';
     }
   }
-
   const boardIsEmpty = Object.keys(board).length === 0;
   if (boardIsEmpty) {
     if (!newTiles.some(t => t.r === 7 && t.c === 7))
@@ -154,247 +137,23 @@ function validatePlacement(board, newTiles) {
   return null;
 }
 
-// ── CREATE GAME ──
-exports.createGame = onCall(async (request) => {
-  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
-
-  const { opponentUid, language = 'es' } = request.data;
-  const myUid = request.auth.uid;
-
-  if (!opponentUid) throw new HttpsError('invalid-argument', 'opponentUid required');
-
-  const bag = shuffle([...TILE_BAG]);
-  const { drawn: rack1, remaining: bag1 } = dealTiles(bag, 7);
-  const { drawn: rack2, remaining: bag2 } = dealTiles(bag1, 7);
-
-  const gameRef = db.collection('games').doc();
-
-  await gameRef.set({
-    players: [myUid, opponentUid],
-    currentTurn: myUid,
-    scores: { [myUid]: 0, [opponentUid]: 0 },
-    board: {},
-    bag: bag2,
-    language,
-    status: 'active',
-    consecutivePasses: 0,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    lastMove: null,
-  });
-
-  await gameRef.collection('racks').doc(myUid).set({ tiles: rack1 });
-  await gameRef.collection('racks').doc(opponentUid).set({ tiles: rack2 });
-
-  return { gameId: gameRef.id };
-});
-
-// ── SUBMIT MOVE ──
-exports.submitMove = onCall(async (request) => {
-  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
-
-  const { gameId, tiles, action = 'play' } = request.data;
-  const uid = request.auth.uid;
-
-  return db.runTransaction(async tx => {
-    const gameRef = db.collection('games').doc(gameId);
-    const rackRef = gameRef.collection('racks').doc(uid);
-
-    const [gameSnap, rackSnap] = await Promise.all([
-      tx.get(gameRef),
-      tx.get(rackRef)
-    ]);
-
-    if (!gameSnap.exists) throw new HttpsError('not-found', 'Game not found');
-
-    const game = gameSnap.data();
-    const rackData = rackSnap.data();
-
-    if (game.status !== 'active') throw new HttpsError('failed-precondition', 'Game not active');
-    if (game.currentTurn !== uid) throw new HttpsError('failed-precondition', 'Not your turn');
-
-    // ── PASS ──
-    if (action === 'pass') {
-      const passes = (game.consecutivePasses || 0) + 1;
-      const nextPlayer = game.players.find(p => p !== uid);
-      tx.update(gameRef, {
-        currentTurn: nextPlayer,
-        consecutivePasses: passes,
-        lastMove: { playerId: uid, type: 'pass',
-          timestamp: admin.firestore.FieldValue.serverTimestamp() }
-      });
-      if (passes >= 4) tx.update(gameRef, { status: 'finished' });
-      return { success: true };
-    }
-
-    // ── EXCHANGE ──
-    if (action === 'exchange') {
-      const { indices } = request.data;
-      if (!indices || !indices.length) throw new HttpsError('invalid-argument', 'No tiles selected');
-      if (indices.length > game.bag.length) throw new HttpsError('failed-precondition', 'Not enough tiles in bag');
-
-      const rack = [...rackData.tiles];
-      const returned = indices.map(i => rack[i]);
-      const newBag = shuffle([...game.bag, ...returned]);
-      const { drawn, remaining } = dealTiles(newBag, returned.length);
-      indices.forEach((i, j) => rack[i] = drawn[j]);
-      const nextPlayer = game.players.find(p => p !== uid);
-
-      tx.update(gameRef, {
-        bag: remaining,
-        currentTurn: nextPlayer,
-        consecutivePasses: 0,
-        lastMove: { playerId: uid, type: 'exchange',
-          timestamp: admin.firestore.FieldValue.serverTimestamp() }
-      });
-      tx.update(rackRef, { tiles: rack });
-      return { success: true };
-    }
-
-    // ── PLAY ──
-    if (!tiles || !tiles.length) throw new HttpsError('invalid-argument', 'No tiles provided');
-
-    const rack = [...rackData.tiles];
-    const usedIndices = [];
-    for (const tile of tiles) {
-      const idx = rack.findIndex((l, i) => l === tile.letter && !usedIndices.includes(i));
-      if (idx === -1) throw new HttpsError('invalid-argument', `Tile ${tile.letter} not in rack`);
-      usedIndices.push(idx);
-    }
-
-    const placementError = validatePlacement(game.board, tiles);
-    if (placementError) throw new HttpsError('invalid-argument', placementError);
-
-    const newBoard = { ...game.board };
-    tiles.forEach(t => newBoard[`${t.r}-${t.c}`] = t.letter);
-
-    const newKeys = new Set(tiles.map(t => `${t.r}-${t.c}`));
-    const words = extractWords(newBoard, tiles);
-    const score = calcScore(words, newKeys);
-
-    const { drawn, remaining: newBag } = dealTiles(game.bag, tiles.length);
-    const newRack = rack.filter((_, i) => !usedIndices.includes(i)).concat(drawn);
-
-    const nextPlayer = game.players.find(p => p !== uid);
-    const newScore = (game.scores[uid] || 0) + score;
-
-    tx.update(gameRef, {
-      board: newBoard,
-      bag: newBag,
-      [`scores.${uid}`]: newScore,
-      currentTurn: nextPlayer,
-      consecutivePasses: 0,
-      lastMove: {
-        playerId: uid,
-        type: 'play',
-        words: words.map(w => w.map(t => t.letter).join('')),
-        score,
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
-      }
-    });
-    tx.update(rackRef, { tiles: newRack });
-
-    const moveRef = gameRef.collection('moves').doc();
-    tx.set(moveRef, {
-      playerId: uid,
-      type: 'play',
-      tiles,
-      words: words.map(w => w.map(t => t.letter).join('')),
-      score,
-      rackAfter: newRack,
-      bagSize: newBag.length,
-      timestamp: admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    if (newRack.length === 0 && newBag.length === 0) {
-      tx.update(gameRef, { status: 'finished' });
-    }
-
-    return {
-      success: true,
-      score,
-      words: words.map(w => w.map(t => t.letter).join('')),
-      newTiles: drawn
-    };
-  });
-});
-
-// ── GET GAME STATE ──
-exports.getGameState = onCall(async (request) => {
-  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
-
-  const { gameId } = request.data;
-  const uid = request.auth.uid;
-
-  const gameRef = db.collection('games').doc(gameId);
-  const [gameSnap, rackSnap] = await Promise.all([
-    gameRef.get(),
-    gameRef.collection('racks').doc(uid).get()
-  ]);
-
-  if (!gameSnap.exists) throw new HttpsError('not-found', 'Game not found');
-
-  const game = gameSnap.data();
-  if (!game.players.includes(uid)) throw new HttpsError('permission-denied', 'Not a player in this game');
-
-  return {
-    gameId,
-    board: game.board,
-    scores: game.scores,
-    currentTurn: game.currentTurn,
-    bagSize: game.bag.length,
-    status: game.status,
-    lastMove: game.lastMove,
-    myRack: rackSnap.exists ? rackSnap.data().tiles : [],
-    isMyTurn: game.currentTurn === uid,
-  };
-});
-
-// ── SEND PUSH NOTIFICATION ──
-async function sendPushToUser(uid, title, body) {
-  try {
-    const userDoc = await db.collection('users').doc(uid).get();
-    if (!userDoc.exists) return;
-    const token = userDoc.data().fcmToken;
-    if (!token) return;
-    await admin.messaging().send({
-      token,
-      notification: { title, body },
-      webpush: {
-        notification: {
-          title,
-          body,
-          icon: 'https://scr.reilly.mx/icon-192.png',
-          badge: 'https://scr.reilly.mx/icon-192.png',
-        },
-        fcmOptions: { link: 'https://scr.reilly.mx' }
-      }
-    });
-    console.log('Push sent to', uid);
-  } catch(err) {
-    console.log('Push failed:', err.message);
-  }
-}
-
 // ── SEND PUSH TO ALL DEVICES OF A USER ──
 async function sendPushToUser(uid, title, body) {
   try {
-    // Get all device tokens for this user
-    const devicesSnap = await db.collection('users').doc(uid).collection('devices').get();
-    if (devicesSnap.empty) {
-      console.log('No devices for', uid);
-      return;
-    }
-    const tokens = devicesSnap.docs.map(d => d.data().fcmToken).filter(Boolean);
-    if (!tokens.length) return;
-
-    // Send to all devices
+    const tokens = [];
+    // Check devices subcollection
+    const devSnap = await db.collection('users').doc(uid).collection('devices').get();
+    devSnap.docs.forEach(d => { if(d.data().fcmToken) tokens.push(d.data().fcmToken); });
+    // Also check main doc (legacy)
+    const userDoc = await db.collection('users').doc(uid).get();
+    if (userDoc.exists && userDoc.data().fcmToken) tokens.push(userDoc.data().fcmToken);
+    if (!tokens.length) { console.log('No push tokens for', uid); return; }
     const results = await Promise.allSettled(tokens.map(token =>
       admin.messaging().send({
         token,
         notification: { title, body },
         webpush: {
-          notification: {
-            title, body,
+          notification: { title, body,
             icon: 'https://scr.reilly.mx/icon-192.png',
             badge: 'https://scr.reilly.mx/icon-192.png',
           },
@@ -402,12 +161,180 @@ async function sendPushToUser(uid, title, body) {
         }
       })
     ));
-    const sent = results.filter(r => r.status === 'fulfilled').length;
-    console.log(`Push sent to ${sent}/${tokens.length} devices for`, uid);
+    console.log(`Push: ${results.filter(r=>r.status==='fulfilled').length}/${tokens.length} sent to ${uid}`);
   } catch(err) {
     console.log('Push failed:', err.message);
   }
 }
+
+// ── CREATE GAME ──
+exports.createGame = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
+  const { opponentUid, language = 'es' } = request.data;
+  const myUid = request.auth.uid;
+  if (!opponentUid) throw new HttpsError('invalid-argument', 'opponentUid required');
+  const bag = shuffle([...TILE_BAG]);
+  const { drawn: rack1, remaining: bag1 } = dealTiles(bag, 7);
+  const { drawn: rack2, remaining: bag2 } = dealTiles(bag1, 7);
+  const gameRef = db.collection('games').doc();
+  await gameRef.set({
+    players: [myUid, opponentUid],
+    currentTurn: myUid,
+    scores: { [myUid]: 0, [opponentUid]: 0 },
+    board: {}, bag: bag2, language,
+    status: 'active', consecutivePasses: 0,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    lastMove: null,
+  });
+  await gameRef.collection('racks').doc(myUid).set({ tiles: rack1 });
+  await gameRef.collection('racks').doc(opponentUid).set({ tiles: rack2 });
+  return { gameId: gameRef.id };
+});
+
+// ── SUBMIT MOVE ──
+exports.submitMove = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
+  const { gameId, tiles, action = 'play' } = request.data;
+  const uid = request.auth.uid;
+
+  const result = await db.runTransaction(async tx => {
+    const gameRef = db.collection('games').doc(gameId);
+    const rackRef = gameRef.collection('racks').doc(uid);
+    const [gameSnap, rackSnap] = await Promise.all([tx.get(gameRef), tx.get(rackRef)]);
+    if (!gameSnap.exists) throw new HttpsError('not-found', 'Game not found');
+    const game = gameSnap.data();
+    const rackData = rackSnap.data();
+    if (game.status !== 'active') throw new HttpsError('failed-precondition', 'Game not active');
+    if (game.currentTurn !== uid) throw new HttpsError('failed-precondition', 'Not your turn');
+
+    // PASS
+    if (action === 'pass') {
+      const passes = (game.consecutivePasses || 0) + 1;
+      const nextPlayer = game.players.find(p => p !== uid);
+      tx.update(gameRef, {
+        currentTurn: nextPlayer, consecutivePasses: passes,
+        lastMove: { playerId: uid, type: 'pass', timestamp: admin.firestore.FieldValue.serverTimestamp() }
+      });
+      if (passes >= 4) tx.update(gameRef, { status: 'finished' });
+      return { success: true, nextPlayer, action: 'pass' };
+    }
+
+    // EXCHANGE
+    if (action === 'exchange') {
+      const { indices } = request.data;
+      if (!indices || !indices.length) throw new HttpsError('invalid-argument', 'No tiles selected');
+      if (indices.length > game.bag.length) throw new HttpsError('failed-precondition', 'Not enough tiles');
+      const rack = [...rackData.tiles];
+      const returned = indices.map(i => rack[i]);
+      const newBag = shuffle([...game.bag, ...returned]);
+      const { drawn, remaining } = dealTiles(newBag, returned.length);
+      indices.forEach((i, j) => rack[i] = drawn[j]);
+      const nextPlayer = game.players.find(p => p !== uid);
+      tx.update(gameRef, {
+        bag: remaining, currentTurn: nextPlayer, consecutivePasses: 0,
+        lastMove: { playerId: uid, type: 'exchange', timestamp: admin.firestore.FieldValue.serverTimestamp() }
+      });
+      tx.update(rackRef, { tiles: rack });
+      return { success: true, nextPlayer, action: 'exchange' };
+    }
+
+    // PLAY
+    if (!tiles || !tiles.length) throw new HttpsError('invalid-argument', 'No tiles provided');
+    const rack = [...rackData.tiles];
+    const usedIndices = [];
+    for (const tile of tiles) {
+      const idx = rack.findIndex((l, i) => l === tile.letter && !usedIndices.includes(i));
+      if (idx === -1) throw new HttpsError('invalid-argument', `Tile ${tile.letter} not in rack`);
+      usedIndices.push(idx);
+    }
+    const placementError = validatePlacement(game.board, tiles);
+    if (placementError) throw new HttpsError('invalid-argument', placementError);
+    const newBoard = { ...game.board };
+    tiles.forEach(t => newBoard[`${t.r}-${t.c}`] = t.letter);
+    const newKeys = new Set(tiles.map(t => `${t.r}-${t.c}`));
+    const words = extractWords(newBoard, tiles);
+    const score = calcScore(words, newKeys);
+    const { drawn, remaining: newBag } = dealTiles(game.bag, tiles.length);
+    const newRack = rack.filter((_, i) => !usedIndices.includes(i)).concat(drawn);
+    const nextPlayer = game.players.find(p => p !== uid);
+    const newScore = (game.scores[uid] || 0) + score;
+    tx.update(gameRef, {
+      board: newBoard, bag: newBag,
+      [`scores.${uid}`]: newScore,
+      currentTurn: nextPlayer, consecutivePasses: 0,
+      lastMove: {
+        playerId: uid, type: 'play',
+        words: words.map(w => w.map(t => t.letter).join('')),
+        score, timestamp: admin.firestore.FieldValue.serverTimestamp()
+      }
+    });
+    tx.update(rackRef, { tiles: newRack });
+    const moveRef = gameRef.collection('moves').doc();
+    tx.set(moveRef, {
+      playerId: uid, type: 'play', tiles,
+      words: words.map(w => w.map(t => t.letter).join('')),
+      score, rackAfter: newRack, bagSize: newBag.length,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+    if (newRack.length === 0 && newBag.length === 0) {
+      tx.update(gameRef, { status: 'finished' });
+    }
+    return {
+      success: true, score, nextPlayer, action: 'play',
+      words: words.map(w => w.map(t => t.letter).join('')),
+      newTiles: drawn
+    };
+  });
+
+  // ── SEND PUSH AFTER TRANSACTION ──
+  if (result && result.nextPlayer) {
+    const wordStr = result.words ? result.words.join(', ') : '';
+    const title = 'Phil-a-Word';
+    const body = result.action === 'play'
+      ? `Tu turno — ${wordStr} (${result.score} pts)`
+      : 'Tu turno';
+
+    // Only push if next player has been inactive for 5+ minutes
+    try {
+      const userDoc = await db.collection('users').doc(result.nextPlayer).get();
+      const lastSeen = userDoc.exists ? userDoc.data().lastSeen : null;
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+      const lastSeenMs = lastSeen ? lastSeen.toMillis() : 0;
+      if (lastSeenMs < fiveMinutesAgo) {
+        await sendPushToUser(result.nextPlayer, title, body);
+      } else {
+        console.log('Skipping push — user active recently:', result.nextPlayer);
+      }
+    } catch(e) {
+      // If we can't check, send anyway
+      await sendPushToUser(result.nextPlayer, title, body);
+    }
+  }
+
+  return result;
+});
+
+// ── GET GAME STATE ──
+exports.getGameState = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in');
+  const { gameId } = request.data;
+  const uid = request.auth.uid;
+  const gameRef = db.collection('games').doc(gameId);
+  const [gameSnap, rackSnap] = await Promise.all([
+    gameRef.get(),
+    gameRef.collection('racks').doc(uid).get()
+  ]);
+  if (!gameSnap.exists) throw new HttpsError('not-found', 'Game not found');
+  const game = gameSnap.data();
+  if (!game.players.includes(uid)) throw new HttpsError('permission-denied', 'Not a player');
+  return {
+    gameId, board: game.board, scores: game.scores,
+    currentTurn: game.currentTurn, bagSize: game.bag.length,
+    status: game.status, lastMove: game.lastMove,
+    myRack: rackSnap.exists ? rackSnap.data().tiles : [],
+    isMyTurn: game.currentTurn === uid,
+  };
+});
 
 // ── CREATE INVITE ──
 exports.createInvite = onCall(async (request) => {
@@ -422,28 +349,3 @@ exports.createInvite = onCall(async (request) => {
   });
   return { success: true };
 });
-
-// ── SEND PUSH TO ALL DEVICES ──
-async function sendPushToUser(uid, title, body) {
-  try {
-    const tokens = [];
-    // Check devices subcollection (new)
-    const devSnap = await db.collection('users').doc(uid).collection('devices').get();
-    devSnap.docs.forEach(d => { if(d.data().fcmToken) tokens.push(d.data().fcmToken); });
-    // Also check main doc (old)
-    const userDoc = await db.collection('users').doc(uid).get();
-    if (userDoc.exists && userDoc.data().fcmToken) tokens.push(userDoc.data().fcmToken);
-    if (!tokens.length) { console.log('No tokens for', uid); return; }
-    const results = await Promise.allSettled(tokens.map(token =>
-      admin.messaging().send({
-        token,
-        notification: { title, body },
-        webpush: {
-          notification: { title, body, icon: 'https://scr.reilly.mx/icon-192.png', badge: 'https://scr.reilly.mx/icon-192.png' },
-          fcmOptions: { link: 'https://scr.reilly.mx' }
-        }
-      })
-    ));
-    console.log(`Push: ${results.filter(r=>r.status==='fulfilled').length}/${tokens.length} sent to`, uid);
-  } catch(err) { console.log('Push failed:', err.message); }
-}
