@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!-- saved from url=(0041)file:///Users/toh/Downloads/index_32.html -->
+<!-- saved from url=(0041)file:///Users/toh/Downloads/index_33.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="file:///Users/toh/Downloads/manifest.json">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#1e3040">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -357,7 +357,7 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v26</span></div>
+      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v27</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ <span class="es">Juegos</span><span class="en" style="display:none;">Games</span></span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -568,6 +568,7 @@ async function registerUser(){
   btn.textContent='⏳';btn.disabled=true;
   try{
     if(window._firebaseRegister){
+      window._onboarding=true; // prevent auth from skipping to game
       await window._firebaseRegister(email,pass,name,_obLang);
       showObStep(4);
     }
@@ -593,8 +594,14 @@ async function obEnableNotifications(){
 }
 
 function finishOnboarding(){
+  window._onboarding=false;
   $('onboard-screen').classList.add('hidden');
-  // Game screen shown by auth state change
+  // If already logged in, show the game
+  if(window.S.myUid){
+    document.getElementById('app').style.display='flex';
+    if(typeof initGame==='function') initGame();
+    setTimeout(()=>openLobby(),800);
+  }
 }
 
 // ── INVITE SYSTEM ──
@@ -1471,6 +1478,11 @@ function checkInviteUrl(){
 // ── AUTH STATE ──
 onAuthStateChanged(auth,async user=>{
   if(user){
+    // If still in onboarding flow, don't take over the screen
+    if(window._onboarding){
+      window.S.myUid=user.uid;window._pushUid=user.uid;
+      return;
+    }
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('onboard-screen').classList.add('hidden');
     document.getElementById('app').style.display='flex';
