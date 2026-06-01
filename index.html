@@ -1,4 +1,4 @@
-<!-- Phil-a-Word v41 | cache-bust:20260531-001 -->
+<!-- Phil-a-Word v42 | cache-bust:20260531-001 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Phil-a-Word v41</title>
+<title>Phil-a-Word v42</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -260,8 +260,8 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
   <div class="ob-step active" id="ob-step-1">
     <div class="ob-tile"><span class="ob-tile-letter">P</span></div>
     <div class="ob-logo">PHIL-A-WORD</div>
-    <div class="ob-tagline es">v41 · El juego de palabras para amigos</div>
-    <div class="ob-tagline en" style="display:none;">v41 · The word game for friends</div>
+    <div class="ob-tagline es">v42 · El juego de palabras para amigos</div>
+    <div class="ob-tagline en" style="display:none;">v42 · The word game for friends</div>
     <div class="ob-form">
       <button class="ob-btn" onclick="showObStep(2)">
         <span class="es">Crear cuenta</span>
@@ -370,7 +370,7 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
      ══════════════════════════════ -->
 <div id="login-screen">
   <div class="login-logo">PHIL-A-WORD</div>
-  <div class="login-sub" id="login-sub-text">v41</div>
+  <div class="login-sub" id="login-sub-text">v42</div>
   <form class="login-form" id="login-form">
     <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required>
     <input class="login-input" id="login-pass" type="password" placeholder="Contraseña / Password" autocomplete="current-password" required>
@@ -394,7 +394,7 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v41</span></div>
+      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v42</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ <span class="es">Juegos</span><span class="en" style="display:none;">Games</span></span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -817,13 +817,11 @@ function clampPan(){
   const wrap=$('board-wrap');
   const ww=wrap.clientWidth,wh=wrap.clientHeight;
   const{boardPx,scale,baseTop}=window.S;
-  const sW=boardPx*scale,offY=baseTop||0;
-  const MARGIN=40; // px of board visible beyond wrap edge
-  // Horizontal: allow MARGIN px of board to go off-screen each side
+  const sW=boardPx*scale;
+  const MARGIN=44; // px margin beyond wrap edge
+  // Allow panning so any part of board is reachable
   window.S.panX=Math.min(MARGIN,Math.max(ww-sW-MARGIN,window.S.panX));
-  // Vertical: always allow scrolling to bottom row, with small margin
-  const minY=Math.min(0,wh-offY-sW-MARGIN);
-  window.S.panY=Math.min(MARGIN,Math.max(minY,window.S.panY));
+  window.S.panY=Math.min(MARGIN,Math.max(wh-sW-MARGIN,window.S.panY));
 }
 function zoomOut(){
   window.S.scale=1;window.S.panX=0;window.S.panY=0;
