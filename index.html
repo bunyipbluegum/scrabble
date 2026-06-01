@@ -165,6 +165,31 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
 .lobby-search-result{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.05);margin-bottom:6px;cursor:pointer;}
 .lobby-search-result:active{background:rgba(255,255,255,0.1);}
 
+/* ── GAME OVER ── */
+#gameover-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1f3c 0%,#1a3a2a 100%);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;overflow:hidden;}
+#gameover-screen.show{display:flex;}
+.go-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.go-confetti-piece{position:absolute;width:10px;height:10px;border-radius:2px;animation:confetti-fall linear forwards;}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+.go-title{font-size:42px;font-weight:900;color:#fff;margin-bottom:4px;letter-spacing:2px;text-shadow:0 4px 20px rgba(0,0,0,0.4);}
+.go-subtitle{font-size:16px;color:rgba(255,255,255,0.6);margin-bottom:32px;}
+.go-scores{display:flex;gap:16px;margin-bottom:28px;width:100%;max-width:320px;}
+.go-score-card{flex:1;background:rgba(255,255,255,0.08);border-radius:16px;padding:16px 12px;border:2px solid transparent;transition:border-color 0.3s;}
+.go-score-card.winner{border-color:var(--accent);background:rgba(40,196,154,0.12);}
+.go-score-name{font-size:12px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.go-score-pts{font-size:42px;font-weight:900;color:#fff;line-height:1;}
+.go-score-pts.winner{color:var(--accent);}
+.go-score-adj{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;}
+.go-best{background:rgba(255,255,255,0.06);border-radius:14px;padding:14px 18px;margin-bottom:28px;width:100%;max-width:320px;}
+.go-best-label{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.go-best-word{font-size:22px;font-weight:900;color:#e9c46a;letter-spacing:3px;}
+.go-best-pts{font-size:13px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.go-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;}
+.go-btn-primary{padding:15px;border-radius:14px;border:none;background:var(--accent);color:#fff;font-family:"Arial Black",Arial,sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 20px rgba(40,196,154,0.4);}
+.go-btn-secondary{padding:13px;border-radius:14px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.go-trophy{font-size:72px;margin-bottom:12px;animation:trophy-bounce 0.6s cubic-bezier(0.34,1.6,0.64,1) forwards;}
+@keyframes trophy-bounce{0%{transform:scale(0) rotate(-20deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
+
 /* ── BLANK PICKER ── */
 .blank-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:flex;align-items:center;justify-content:center;}
 .blank-panel{background:#1a2a3a;border-radius:18px;padding:18px;width:92%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.6);}
@@ -234,8 +259,8 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
   <div class="ob-step active" id="ob-step-1">
     <div class="ob-tile"><span class="ob-tile-letter">P</span></div>
     <div class="ob-logo">PHIL-A-WORD</div>
-    <div class="ob-tagline es">v36 · El juego de palabras para amigos</div>
-    <div class="ob-tagline en" style="display:none;">v36 · The word game for friends</div>
+    <div class="ob-tagline es">v37 · El juego de palabras para amigos</div>
+    <div class="ob-tagline en" style="display:none;">v37 · The word game for friends</div>
     <div class="ob-form">
       <button class="ob-btn" onclick="showObStep(2)">
         <span class="es">Crear cuenta</span>
@@ -475,6 +500,28 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
 </div>
 
 <div id="ghost"><div class="gl" id="ghost-l"></div><div class="gv" id="ghost-v"></div></div>
+
+<!-- GAME OVER SCREEN -->
+<div id="gameover-screen">
+  <div class="go-confetti" id="go-confetti"></div>
+  <div class="go-trophy" id="go-trophy">🏆</div>
+  <div class="go-title" id="go-title">¡Ganaste!</div>
+  <div class="go-subtitle" id="go-subtitle">Partida terminada</div>
+  <div class="go-scores" id="go-scores"></div>
+  <div class="go-best" id="go-best" style="display:none;">
+    <div class="go-best-label">⭐ Mejor palabra</div>
+    <div class="go-best-word" id="go-best-word"></div>
+    <div class="go-best-pts" id="go-best-pts"></div>
+  </div>
+  <div class="go-btns">
+    <button class="go-btn-primary" onclick="closeGameOver();openLobby();">
+      <span class="es">Nueva partida</span><span class="en" style="display:none;">New game</span>
+    </button>
+    <button class="go-btn-secondary" onclick="closeGameOver();">
+      <span class="es">Ver tablero</span><span class="en" style="display:none;">View board</span>
+    </button>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════
@@ -1437,6 +1484,91 @@ function initGame(){
   },50);
 }
 
+// ── GAME OVER ──
+function showGameOver(data){
+  const lang = window.S.lang;
+  const screen = document.getElementById('gameover-screen');
+  const myUid = window.S.myUid;
+
+  // Determine winner
+  const myScore = data.scores[myUid] || 0;
+  const oppUid = Object.keys(data.scores).find(u => u !== myUid);
+  const oppScore = data.scores[oppUid] || 0;
+  const myName = data.names[myUid] || 'Tú';
+  const oppName = data.names[oppUid] || 'Oponente';
+  const iWon = myScore > oppScore;
+  const isDraw = myScore === oppScore;
+
+  // Trophy and title
+  const trophy = document.getElementById('go-trophy');
+  const title = document.getElementById('go-title');
+  const subtitle = document.getElementById('go-subtitle');
+  if(isDraw){
+    trophy.textContent = '🤝';
+    title.textContent = lang==='es' ? '¡Empate!' : 'It's a draw!';
+  } else if(iWon){
+    trophy.textContent = '🏆';
+    title.textContent = lang==='es' ? '¡Ganaste!' : 'You won!';
+  } else {
+    trophy.textContent = '😔';
+    title.textContent = lang==='es' ? 'Perdiste' : 'You lost';
+    title.style.fontSize = '32px';
+  }
+  subtitle.textContent = lang==='es' ? 'Partida terminada' : 'Game over';
+
+  // Score cards
+  const scoresEl = document.getElementById('go-scores');
+  scoresEl.innerHTML = `
+    <div class="go-score-card ${iWon||isDraw?'winner':''}">
+      <div class="go-score-name">${myName}</div>
+      <div class="go-score-pts ${iWon||isDraw?'winner':''}">${myScore}</div>
+      ${data.adjustments?.[myUid] ? `<div class="go-score-adj">${data.adjustments[myUid]>0?'+':''}${data.adjustments[myUid]} ajuste</div>` : ''}
+    </div>
+    <div class="go-score-card ${!iWon&&!isDraw?'winner':''}">
+      <div class="go-score-name">${oppName}</div>
+      <div class="go-score-pts ${!iWon&&!isDraw?'winner':''}">${oppScore}</div>
+      ${data.adjustments?.[oppUid] ? `<div class="go-score-adj">${data.adjustments[oppUid]>0?'+':''}${data.adjustments[oppUid]} ajuste</div>` : ''}
+    </div>`;
+
+  // Best word
+  if(data.bestWord){
+    document.getElementById('go-best').style.display = 'block';
+    document.getElementById('go-best-word').textContent = data.bestWord.word;
+    document.getElementById('go-best-pts').textContent = `${data.bestWord.score} pts — ${data.bestWord.playerName}`;
+    document.getElementById('go-best-label').textContent = lang==='es'?'⭐ Mejor palabra':'⭐ Best word';
+  }
+
+  // Show screen
+  screen.classList.add('show');
+
+  // Confetti
+  if(iWon || isDraw) launchConfetti();
+}
+
+function launchConfetti(){
+  const container = document.getElementById('go-confetti');
+  container.innerHTML = '';
+  const colors = ['#28c49a','#e87020','#e9c46a','#d93040','#2060c0','#fff'];
+  for(let i = 0; i < 80; i++){
+    const piece = document.createElement('div');
+    piece.className = 'go-confetti-piece';
+    piece.style.cssText = `
+      left: ${Math.random()*100}%;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+      animation-duration: ${2+Math.random()*3}s;
+      animation-delay: ${Math.random()*2}s;
+      border-radius: ${Math.random()>0.5?'50%':'2px'};
+    `;
+    container.appendChild(piece);
+  }
+}
+
+function closeGameOver(){
+  document.getElementById('gameover-screen').classList.remove('show');
+}
+
 // ── SERVICE WORKER ──
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/sw.js')
@@ -1638,6 +1770,34 @@ function subscribeToGame(gameId,uid){
     if(game.lastMove?.type==='play'&&game.lastMove.playerId!==myUid){
       showToastModal(game.lastMove.words?.[0]||'?',game.lastMove.score,true);
     }
+
+    // Check for game over
+    if(game.status==='finished' && !window._gameOverShown){
+      window._gameOverShown=true;
+      // Load move history to find best word
+      try{
+        const movesSnap=await getDocs(query(collection(db,'games',gameId,'moves'),orderBy('score','desc'),limit(1)));
+        let bestWord=null;
+        if(!movesSnap.empty){
+          const best=movesSnap.docs[0].data();
+          const playerName=_players[best.playerId]?.displayName||best.playerId.slice(0,6);
+          bestWord={word:best.words?.[0]||'?',score:best.score,playerName};
+        }
+        const names={};
+        game.players.forEach(uid=>{names[uid]=_players[uid]?.displayName||uid.slice(0,6);});
+        setTimeout(()=>showGameOver({
+          scores:game.scores,
+          names,
+          adjustments:game.scoreAdjustments||null,
+          bestWord,
+        }),800);
+      }catch(e){
+        const names={};
+        game.players.forEach(uid=>{names[uid]=_players[uid]?.displayName||uid.slice(0,6);});
+        setTimeout(()=>showGameOver({scores:game.scores,names,bestWord:null}),800);
+      }
+    }
+    if(game.status!=='finished') window._gameOverShown=false;
   },err=>console.error('onSnapshot:',err));
 }
 

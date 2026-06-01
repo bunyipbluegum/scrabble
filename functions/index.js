@@ -215,7 +215,23 @@ exports.submitMove = onCall(async (request) => {
         currentTurn: nextPlayer, consecutivePasses: passes,
         lastMove: { playerId: uid, type: 'pass', timestamp: admin.firestore.FieldValue.serverTimestamp() }
       });
-      if (passes >= 4) tx.update(gameRef, { status: 'finished' });
+    if (passes >= 4) {
+      // Both players deduct their remaining tile values
+      const myRackSnap = await db.collection('games').doc(gameId)
+        .collection('racks').doc(uid).get();
+      const myRack = myRackSnap.exists ? myRackSnap.data().tiles : [];
+      const myTileSum = myRack.reduce((sum,l)=>sum+(LETTER_VALUES[l]||0),0);
+      const oppRackSnap = await db.collection('games').doc(gameId)
+        .collection('racks').doc(nextPlayer).get();
+      const oppRack = oppRackSnap.exists ? oppRackSnap.data().tiles : [];
+      const oppTileSum = oppRack.reduce((sum,l)=>sum+(LETTER_VALUES[l]||0),0);
+      tx.update(gameRef, {
+        status: 'finished',
+        [`scores.${uid}`]: Math.max(0,(game.scores[uid]||0)-myTileSum),
+        [`scores.${nextPlayer}`]: Math.max(0,(game.scores[nextPlayer]||0)-oppTileSum),
+        scoreAdjustments: { [uid]: -myTileSum, [nextPlayer]: -oppTileSum },
+      });
+    }
       return { success: true, nextPlayer, action: 'pass' };
     }
 
@@ -283,7 +299,27 @@ exports.submitMove = onCall(async (request) => {
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
     if (newRack.length === 0 && newBag.length === 0) {
-      tx.update(gameRef, { status: 'finished' });
+      // Standard Scrabble end-game scoring adjustment
+      // Winner gets opponent's remaining tile values added
+      // Opponent loses those tile values
+      const oppUid = game.players.find(p => p !== uid);
+      const oppRackSnap = await db.collection('games').doc(gameId)
+        .collection('racks').doc(oppUid).get();
+      const oppRack = oppRackSnap.exists ? oppRackSnap.data().tiles : [];
+      const oppTileSum = oppRack.reduce((sum, l) => sum + (LETTER_VALUES[l] || 0), 0);
+
+      const adjustments = {};
+      if(oppTileSum > 0){
+        adjustments[uid] = oppTileSum;      // winner gains
+        adjustments[oppUid] = -oppTileSum;  // loser deducts
+      }
+
+      tx.update(gameRef, {
+        status: 'finished',
+        [`scores.${uid}`]: newScore + oppTileSum,
+        [`scores.${oppUid}`]: (game.scores[oppUid] || 0) - oppTileSum,
+        scoreAdjustments: adjustments,
+      });
     }
     return {
       success: true, score, nextPlayer, action: 'play',
