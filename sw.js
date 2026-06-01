@@ -11,45 +11,26 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ── CACHE: always fetch index.html from network, cache everything else ──
-// This means new versions of index.html are always loaded immediately
-const STATIC_CACHE = 'philaword-static-v1'; // only bump this for sw.js changes
-const STATIC_ASSETS = ['/icon-192.png', '/icon-512.png', '/manifest.json'];
-
+// Never cache anything — always fetch fresh
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(STATIC_CACHE).then(c => c.addAll(STATIC_ASSETS))
-  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
+  // Delete ALL caches on activate
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== STATIC_CACHE).map(k => caches.delete(k)))
-    )
+    caches.keys().then(keys => {
+      console.log('SW: clearing caches:', keys);
+      return Promise.all(keys.map(k => caches.delete(k)));
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-  
-  // Always fetch index.html fresh from network — never cache it
-  if(url.pathname === '/' || url.pathname === '/index.html') {
-    e.respondWith(
-      fetch(e.request).catch(() => caches.match('/index.html'))
-    );
-    return;
-  }
-  
-  // For static assets, use cache first
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-  );
+  // Always go to network — never serve from cache
+  e.respondWith(fetch(e.request).catch(() => new Response('Offline')));
 });
 
-// ── PUSH NOTIFICATIONS ──
 messaging.onBackgroundMessage(payload => {
   const { title, body } = payload.notification || {};
   self.registration.showNotification(title || 'Phil-a-Word', {
