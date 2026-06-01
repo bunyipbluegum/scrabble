@@ -81,13 +81,13 @@ function extractWords(board, newTiles) {
   return words;
 }
 
-function calcScore(words, newKeys) {
+function calcScore(words, newKeys, blankKeys = new Set()) {
   let total = 0;
   words.forEach(tiles => {
     let ws = 0, wm = 1;
     tiles.forEach(({ r, c, letter }) => {
       const key = `${r}-${c}`;
-      const v = LETTER_VALUES[letter] || 0;
+      const v = blankKeys.has(key) ? 0 : (LETTER_VALUES[letter] || 0);
       const p = newKeys.has(key) ? PREMIUMS[key] : null;
       if (p === 'tl') ws += v * 3;
       else if (p === 'dl') ws += v * 2;
@@ -243,17 +243,23 @@ exports.submitMove = onCall(async (request) => {
     const rack = [...rackData.tiles];
     const usedIndices = [];
     for (const tile of tiles) {
-      const idx = rack.findIndex((l, i) => l === tile.letter && !usedIndices.includes(i));
+      // Blank tiles are stored as ' ' in rack
+      const rackLetter = tile.isBlank ? ' ' : tile.letter;
+      const idx = rack.findIndex((l, i) => l === rackLetter && !usedIndices.includes(i));
       if (idx === -1) throw new HttpsError('invalid-argument', `Tile ${tile.letter} not in rack`);
       usedIndices.push(idx);
     }
     const placementError = validatePlacement(game.board, tiles);
     if (placementError) throw new HttpsError('invalid-argument', placementError);
     const newBoard = { ...game.board };
-    tiles.forEach(t => newBoard[`${t.r}-${t.c}`] = t.letter);
+    tiles.forEach(t => {
+      // Store the chosen letter on the board, but track blanks
+      newBoard[`${t.r}-${t.c}`] = t.letter;
+    });
     const newKeys = new Set(tiles.map(t => `${t.r}-${t.c}`));
+    const blankKeys = new Set(tiles.filter(t=>t.isBlank).map(t=>`${t.r}-${t.c}`));
     const words = extractWords(newBoard, tiles);
-    const score = calcScore(words, newKeys);
+    const score = calcScore(words, newKeys, blankKeys);
     const { drawn, remaining: newBag } = dealTiles(game.bag, tiles.length);
     const newRack = rack.filter((_, i) => !usedIndices.includes(i)).concat(drawn);
     const nextPlayer = game.players.find(p => p !== uid);
