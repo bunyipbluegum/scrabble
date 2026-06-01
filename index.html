@@ -1,4 +1,4 @@
-<!-- Phil-a-Word v39 -->
+<!-- Phil-a-Word v40 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Phil-a-Word v39</title>
+<title>Phil-a-Word v40</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -260,8 +260,8 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
   <div class="ob-step active" id="ob-step-1">
     <div class="ob-tile"><span class="ob-tile-letter">P</span></div>
     <div class="ob-logo">PHIL-A-WORD</div>
-    <div class="ob-tagline es">v39 · El juego de palabras para amigos</div>
-    <div class="ob-tagline en" style="display:none;">v39 · The word game for friends</div>
+    <div class="ob-tagline es">v40 · El juego de palabras para amigos</div>
+    <div class="ob-tagline en" style="display:none;">v40 · The word game for friends</div>
     <div class="ob-form">
       <button class="ob-btn" onclick="showObStep(2)">
         <span class="es">Crear cuenta</span>
@@ -370,7 +370,7 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
      ══════════════════════════════ -->
 <div id="login-screen">
   <div class="login-logo">PHIL-A-WORD</div>
-  <div class="login-sub" id="login-sub-text">v39</div>
+  <div class="login-sub" id="login-sub-text">v40</div>
   <form class="login-form" id="login-form">
     <input class="login-input" id="login-email" type="email" placeholder="Email" autocomplete="email" required>
     <input class="login-input" id="login-pass" type="password" placeholder="Contraseña / Password" autocomplete="current-password" required>
@@ -394,7 +394,7 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
 
   <div class="heading-bar">
     <div>
-      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v39</span></div>
+      <div class="heading-title">PHIL-A-WORD <span style="font-size:13px;opacity:0.6;letter-spacing:2px;">v40</span></div>
       <div style="margin-top:2px;">
         <span class="heading-sub" onclick="openLobby()">☰ <span class="es">Juegos</span><span class="en" style="display:none;">Games</span></span>
         <span class="heading-sub" onclick="zoomOut()" style="color:rgba(255,255,255,0.3);">⊖ Zoom</span>
@@ -1350,6 +1350,7 @@ function openLobby(){
 function closeLobby(){
   $('lobby-overlay').classList.remove('open');
   $('lobby-panel').classList.remove('open');
+  if(_unsubWaiting){_unsubWaiting();_unsubWaiting=null;}
 }
 function playerName(uid){return window._players?.[uid]?.displayName||uid.slice(0,6);}
 function playerColor(uid){
@@ -1386,10 +1387,13 @@ function renderLobbyHome(){
   }else{
     html+=`<div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px 0;">${lang==='es'?'No tienes partidas activas':'No active games'}</div>`;
   }
+  html+=`<div class="lobby-section" id="waiting-section" style="display:none;">${lang==='es'?'Esperando oponente':'Waiting for opponent'}</div>`;
+  html+=`<div id="waiting-list"></div>`;
   html+=`<div class="lobby-section">${lang==='es'?'Nueva partida':'New game'}</div>`;
   html+=`<div style="margin-bottom:8px;"><input class="lobby-input" id="lobby-search" placeholder="${lang==='es'?'Buscar jugador por nombre o email':'Search player by name or email'}" oninput="searchPlayers(this.value)"></div>`;
   html+=`<div id="lobby-search-results"></div>`;
   $('lobby-content').innerHTML=html;
+  subscribeToWaiting();
 }
 
 function searchPlayers(q){
@@ -1434,6 +1438,52 @@ function confirmNewGame(oppUid,oppName){
 }
 
 function selectLobbyGame(gameId){if(window.G)window.G.loadGame(gameId);}
+
+let _unsubWaiting=null;
+function subscribeToWaiting(){
+  if(_unsubWaiting){_unsubWaiting();_unsubWaiting=null;}
+  if(!window._firestoreWaiting) return;
+  _unsubWaiting=window._firestoreWaiting(snap=>{
+    const myUid=window.S.myUid;
+    const lang=window.S.lang;
+    const waitingList=document.getElementById('waiting-list');
+    const waitingSection=document.getElementById('waiting-section');
+    if(!waitingList) return;
+    const docs=snap.docs.filter(d=>d.data().createdBy!==myUid);
+    if(docs.length===0){
+      waitingList.innerHTML='';
+      if(waitingSection) waitingSection.style.display='none';
+      return;
+    }
+    if(waitingSection) waitingSection.style.display='';
+    let html='';
+    docs.forEach(d=>{
+      const data=d.data();
+      const name=data.displayName||'?';
+      const color=playerColor(data.createdBy);
+      html+=`<div class="lobby-waiting">
+        <div class="lobby-waiting-left">
+          <div class="lobby-waiting-pulse"></div>
+          <div class="lobby-avatar" style="background:${color};width:32px;height:32px;font-size:12px;">${name[0]?.toUpperCase()}</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fff;">${name}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.35);">${lang==='es'?'Esperando...':'Waiting...'}</div>
+          </div>
+        </div>
+        <button class="lobby-join-btn" onclick="joinWaitingGame('${d.id}','${data.createdBy}')">
+          ${lang==='es'?'Unirse':'Join'}
+        </button>
+      </div>`;
+    });
+    waitingList.innerHTML=html;
+  });
+}
+
+async function joinWaitingGame(gameId,hostUid){
+  closeLobby();
+  if(window.G) window.G.loadGame(gameId);
+  if(window._deleteWaiting) window._deleteWaiting(gameId);
+}
 
 // ── NOTIFICATIONS ──
 async function enableNotifications(){
@@ -1593,7 +1643,7 @@ window.addEventListener('resize',()=>{sizeBoard();window.S.panX=0;window.S.panY=
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,updateProfile,onAuthStateChanged,signOut}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import{getFirestore,doc,onSnapshot,collection,query,where,getDocs,setDoc,addDoc,getDoc,serverTimestamp,orderBy,limit}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFirestore,doc,onSnapshot,collection,query,where,getDocs,setDoc,addDoc,getDoc,serverTimestamp,orderBy,limit,deleteDoc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import{getFunctions,httpsCallable}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js';
 import{getMessaging,getToken,onMessage}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
 
@@ -1662,6 +1712,18 @@ window._firebaseRegister=async(email,pass,name,lang)=>{
 let unsubGame=null;
 let _players={};
 
+// ── WAITING ROOM ──
+window._firestoreWaiting=(callback)=>{
+  const q=query(collection(db,'waiting'),where('expiresAt','>',new Date()));
+  return onSnapshot(q,callback);
+};
+window._deleteWaiting=async(gameId)=>{
+  try{
+    const {deleteDoc}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await deleteDoc(doc(db,'waiting',gameId));
+  }catch(e){console.log('deleteWaiting error:',e.message);}
+};
+
 // ── EXPOSE GAME API ──
 window.G={
   newGame:()=>openLobby(),
@@ -1670,10 +1732,25 @@ window.G={
     try{
       const res=await fnCreate({opponentUid:oppUid,language:window.S.lang==='en'?'en':'es'});
       console.log('Game created:',res.data.gameId);
+      // Add to waiting room so opponent can see and join
+      const displayName=user.displayName||user.email?.split('@')[0]||'?';
+      await setDoc(doc(db,'waiting',res.data.gameId),{
+        createdBy:user.uid,
+        displayName,
+        gameId:res.data.gameId,
+        createdAt:serverTimestamp(),
+        expiresAt:new Date(Date.now()+30*60*1000), // 30 min expiry
+      });
       subscribeToGame(res.data.gameId,user.uid);
     }catch(err){console.error('createGame:',err);alert('Error: '+err.message);}
   },
-  loadGame:(gameId)=>{const user=auth.currentUser;if(user)subscribeToGame(gameId,user.uid);},
+  loadGame:(gameId)=>{
+    const user=auth.currentUser;if(user){
+      // Remove from waiting room when someone joins
+      deleteDoc(doc(db,'waiting',gameId)).catch(()=>{});
+      subscribeToGame(gameId,user.uid);
+    }
+  },
   submitPlay:async()=>{
     const S=window.S;if(!S.currentGameId)return;
     const placed=Object.keys(S.boardNew);if(!placed.length)return;
