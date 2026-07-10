@@ -388,7 +388,9 @@ exports.submitMove = onCall(async (request) => {
     return {
       success: true, score, nextPlayer, action: 'play',
       words: words.map(w => w.map(t => t.letter).join('')),
-      newTiles: drawn
+      newTiles: drawn,
+      invalidWords: invalidWords || [],
+      validationMode: VALIDATION_MODE,
     };
   });
 
