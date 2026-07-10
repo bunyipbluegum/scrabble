@@ -525,10 +525,22 @@ html,body{height:100%;background:#1e3040;font-family:'Arial Black',Arial,sans-se
 </div>
 
 <script>
-// ── FORCE KILL OLD SERVICE WORKER ──
+// ── FORCE KILL OLD SERVICE WORKER & ALWAYS GET FRESH SW ──
 if('serviceWorker' in navigator){
+  // Unregister ALL old service workers first
   navigator.serviceWorker.getRegistrations().then(regs=>{
-    regs.forEach(reg=>reg.unregister());
+    const kills=regs.map(r=>r.unregister());
+    if(kills.length>0){
+      Promise.all(kills).then(()=>{
+        caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>{
+          // Only reload if we actually killed something
+          if(kills.length>0 && !sessionStorage.getItem('sw-cleared')){
+            sessionStorage.setItem('sw-cleared','1');
+            location.reload();
+          }
+        });
+      });
+    }
   });
   caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))));
 }
@@ -1631,8 +1643,11 @@ function closeGameOver(){
 
 // ── SERVICE WORKER ──
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js')
-    .then(reg=>console.log('SW registered:',reg.scope))
+  navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})
+    .then(reg=>{
+      console.log('SW registered:',reg.scope);
+      reg.update(); // force check for updates every load
+    })
     .catch(err=>console.log('SW error:',err));
 }
 

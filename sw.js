@@ -1,4 +1,4 @@
-// Phil-a-Word SW v43 | 20260710
+// Phils-a-Word SW v43 | 20260710
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
