@@ -1,10 +1,59 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const admin = require('firebase-admin');
+const fs = require('fs');
+const path = require('path');
 admin.initializeApp();
 const db = admin.firestore();
 
 setGlobalOptions({ region: 'northamerica-northeast2' });
+
+// ── DICTIONARY ──
+// Validation mode: 'relaxed' = warn only, 'strict' = reject invalid words
+const VALIDATION_MODE = 'relaxed'; // Change to 'strict' when ready
+
+// Spanish dictionary — loaded once on cold start
+let ES_WORDS = null;
+function getEsWords() {
+  if (!ES_WORDS) {
+    try {
+      const dictPath = path.join(__dirname, 'es_words.txt');
+      const raw = fs.readFileSync(dictPath, 'utf8');
+      ES_WORDS = new Set(raw.split('\n').map(w => w.trim()).filter(Boolean));
+      console.log(`Dictionary loaded: ${ES_WORDS.size} Spanish words`);
+    } catch(e) {
+      console.log('Dictionary load failed:', e.message);
+      ES_WORDS = new Set(); // empty set = no validation
+    }
+  }
+  return ES_WORDS;
+}
+
+// English dictionary placeholder — to be added later
+// let EN_WORDS = null;
+// function getEnWords() { ... }
+
+function validateWords(words, language = 'es') {
+  // If no dictionary loaded, skip validation
+  const dict = language === 'es' ? getEsWords() : getEsWords(); // EN placeholder
+  if (!dict || dict.size === 0) return null; // no validation
+
+  const invalidWords = [];
+  for (const tiles of words) {
+    if (tiles.length < 2) continue; // single letters always ok
+    const word = tiles.map(t => t.letter).join('');
+    // Normalize: remove accents for lookup (dictionary is accent-stripped)
+    const normalized = word
+      .toUpperCase()
+      .replace(/[ÁÀÂÄ]/g,'A').replace(/[ÉÈÊË]/g,'E')
+      .replace(/[ÍÌÎÏ]/g,'I').replace(/[ÓÒÔÖ]/g,'O')
+      .replace(/[ÚÙÛÜ]/g,'U');
+    if (!dict.has(normalized)) {
+      invalidWords.push(word);
+    }
+  }
+  return invalidWords.length > 0 ? invalidWords : null;
+}
 
 const TILE_BAG = [
   ...Array(12).fill('A'),...Array(2).fill('B'),...Array(4).fill('C'),
@@ -276,6 +325,23 @@ exports.submitMove = onCall(async (request) => {
     const blankKeys = new Set(tiles.filter(t=>t.isBlank).map(t=>`${t.r}-${t.c}`));
     const words = extractWords(newBoard, tiles);
     const score = calcScore(words, newKeys, blankKeys);
+
+    // ── WORD VALIDATION ──
+    const language = game.language || 'es';
+    const invalidWords = validateWords(words, language);
+    if (invalidWords && invalidWords.length > 0) {
+      const wordList = invalidWords.join(', ');
+      if (VALIDATION_MODE === 'strict') {
+        throw new HttpsError('invalid-argument',
+          language === 'es'
+            ? `Palabra${invalidWords.length > 1 ? 's' : ''} no válida${invalidWords.length > 1 ? 's' : ''}: ${wordList}`
+            : `Invalid word${invalidWords.length > 1 ? 's' : ''}: ${wordList}`
+        );
+      } else {
+        // Relaxed mode — log warning but allow move
+        console.log(`RELAXED: Invalid words allowed: ${wordList}`);
+      }
+    }
     const { drawn, remaining: newBag } = dealTiles(game.bag, tiles.length);
     const newRack = rack.filter((_, i) => !usedIndices.includes(i)).concat(drawn);
     const nextPlayer = game.players.find(p => p !== uid);
@@ -299,27 +365,25 @@ exports.submitMove = onCall(async (request) => {
       timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
     if (newRack.length === 0 && newBag.length === 0) {
-      // Standard Scrabble end-game scoring adjustment
-      // Winner gets opponent's remaining tile values added
-      // Opponent loses those tile values
+      // Standard Scrabble end-game scoring
       const oppUid = game.players.find(p => p !== uid);
-      const oppRackSnap = await db.collection('games').doc(gameId)
-        .collection('racks').doc(oppUid).get();
+      const oppRackRef = gameRef.collection('racks').doc(oppUid);
+      const oppRackSnap = await tx.get(oppRackRef);
       const oppRack = oppRackSnap.exists ? oppRackSnap.data().tiles : [];
       const oppTileSum = oppRack.reduce((sum, l) => sum + (LETTER_VALUES[l] || 0), 0);
-
       const adjustments = {};
       if(oppTileSum > 0){
-        adjustments[uid] = oppTileSum;      // winner gains
-        adjustments[oppUid] = -oppTileSum;  // loser deducts
+        adjustments[uid] = oppTileSum;
+        adjustments[oppUid] = -oppTileSum;
       }
-
       tx.update(gameRef, {
         status: 'finished',
         [`scores.${uid}`]: newScore + oppTileSum,
-        [`scores.${oppUid}`]: (game.scores[oppUid] || 0) - oppTileSum,
+        [`scores.${oppUid}`]: Math.max(0, (game.scores[oppUid] || 0) - oppTileSum),
         scoreAdjustments: adjustments,
       });
+    } else {
+      // Game continues — score already updated in main tx.update above
     }
     return {
       success: true, score, nextPlayer, action: 'play',
