@@ -10,7 +10,7 @@ setGlobalOptions({ region: 'northamerica-northeast2' });
 
 // ── DICTIONARY ──
 // Validation mode: 'relaxed' = warn only, 'strict' = reject invalid words
-const VALIDATION_MODE = 'relaxed'; // Change to 'strict' when ready
+const VALIDATION_MODE = 'strict'; // Strict mode — invalid words rejected
 
 // Spanish dictionary — loaded once on cold start
 let ES_WORDS = null;
