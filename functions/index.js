@@ -42,12 +42,13 @@ function validateWords(words, language = 'es') {
   for (const tiles of words) {
     if (tiles.length < 2) continue; // single letters always ok
     const word = tiles.map(t => t.letter).join('');
-    // Normalize: remove accents for lookup (dictionary is accent-stripped)
+    // Normalize for dictionary lookup — strip accents only, keep Ñ intact
     const normalized = word
       .toUpperCase()
       .replace(/[ÁÀÂÄ]/g,'A').replace(/[ÉÈÊË]/g,'E')
       .replace(/[ÍÌÎÏ]/g,'I').replace(/[ÓÒÔÖ]/g,'O')
       .replace(/[ÚÙÛÜ]/g,'U');
+    // Note: Ñ is kept as-is — dictionary contains Ñ words correctly
     if (!dict.has(normalized)) {
       invalidWords.push(word);
     }
