@@ -265,23 +265,22 @@ exports.submitMove = onCall(async (request) => {
         currentTurn: nextPlayer, consecutivePasses: passes,
         lastMove: { playerId: uid, type: 'pass', timestamp: admin.firestore.FieldValue.serverTimestamp() }
       });
-    if (passes >= 4) {
-      // Both players deduct their remaining tile values
-      const myRackSnap = await db.collection('games').doc(gameId)
-        .collection('racks').doc(uid).get();
-      const myRack = myRackSnap.exists ? myRackSnap.data().tiles : [];
-      const myTileSum = myRack.reduce((sum,l)=>sum+(LETTER_VALUES[l]||0),0);
-      const oppRackSnap = await db.collection('games').doc(gameId)
-        .collection('racks').doc(nextPlayer).get();
-      const oppRack = oppRackSnap.exists ? oppRackSnap.data().tiles : [];
-      const oppTileSum = oppRack.reduce((sum,l)=>sum+(LETTER_VALUES[l]||0),0);
-      tx.update(gameRef, {
-        status: 'finished',
-        [`scores.${uid}`]: Math.max(0,(game.scores[uid]||0)-myTileSum),
-        [`scores.${nextPlayer}`]: Math.max(0,(game.scores[nextPlayer]||0)-oppTileSum),
-        scoreAdjustments: { [uid]: -myTileSum, [nextPlayer]: -oppTileSum },
-      });
-    }
+      // 2 consecutive passes (one each) = game over
+      if (passes >= 2) {
+        const myRackRef = gameRef.collection('racks').doc(uid);
+        const oppRackRef = gameRef.collection('racks').doc(nextPlayer);
+        const [myRackSnap, oppRackSnap] = await Promise.all([tx.get(myRackRef), tx.get(oppRackRef)]);
+        const myRack = myRackSnap.exists ? myRackSnap.data().tiles : [];
+        const oppRack = oppRackSnap.exists ? oppRackSnap.data().tiles : [];
+        const myTileSum = myRack.reduce((sum,l)=>sum+(LETTER_VALUES[l]||0),0);
+        const oppTileSum = oppRack.reduce((sum,l)=>sum+(LETTER_VALUES[l]||0),0);
+        tx.update(gameRef, {
+          status: 'finished',
+          [`scores.${uid}`]: Math.max(0,(game.scores[uid]||0)-myTileSum),
+          [`scores.${nextPlayer}`]: Math.max(0,(game.scores[nextPlayer]||0)-oppTileSum),
+          scoreAdjustments: { [uid]: -myTileSum, [nextPlayer]: -oppTileSum },
+        });
+      }
       return { success: true, nextPlayer, action: 'pass' };
     }
 
